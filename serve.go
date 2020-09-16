@@ -20,7 +20,7 @@ func ListenAndServe(addr string, width, height int, title string, run func(*Cont
 		title: title, eventMask: eventMask,
 	})
 	http.HandleFunc("/canvas-websocket.js", javaScriptHandler)
-	http.Handle("/run", &drawHandler{
+	http.Handle("/draw", &drawHandler{
 		width: width, height: height, draw: run,
 	})
 	err := http.ListenAndServe(addr, nil)
