@@ -79,8 +79,8 @@ func main() {
 }
 
 func run(ctx *canvas.Context) {
-    ctx.SetFillStyle(color.RGBA{R: 200, A: 255})
-    ctx.FillRect(10, 10, 50, 50)
+	ctx.SetFillStyle(color.RGBA{R: 200, A: 255})
+	ctx.FillRect(10, 10, 50, 50)
 	// ...
 	ctx.Flush()
 }
