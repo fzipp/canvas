@@ -31,6 +31,7 @@ package main
 import (
 	"image/color"
 	"math"
+	"time"
 
 	"github.com/fzipp/canvas"
 )
@@ -75,6 +76,7 @@ func run(ctx *canvas.Context) {
 			handle(event, mouse)
 		default:
 			update(ctx, cloth, mouse)
+			time.Sleep(5 * time.Millisecond)
 		}
 	}
 }
