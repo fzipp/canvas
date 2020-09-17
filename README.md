@@ -26,29 +26,6 @@ to the Canvas API, and it uses consecutive numeric byte values to identify
 the various draw commands rather than mnemonic ASCII letters. The protocol
 is subject to change.
 
-## Alternatives
-
-If this module is not the right thing for you, and if you are looking for a
-more direct solution for 2D graphics have a look at these alternatives:
-
-* [github.com/tfriedel6/canvas](https://github.com/tfriedel6/canvas) -
-  A canvas implementation for Go with OpenGL backends for various
-  operating systems.
-* [github.com/llgcode/draw2d](https://github.com/llgcode/draw2d) -
-  A 2D vector graphics library for Go with support for multiple outputs
-  such as images, PDF documents, OpenGL and SVG.
-* [github.com/ajstarks/svgo](https://github.com/ajstarks/svgo) -
-  A Go library for SVG generation.
-* [github.com/tdewolff/canvas](https://github.com/tdewolff/canvas) -
-  A common vector drawing target that can output SVG, PDF, EPS,
-  raster images (PNG, JPG, GIF, ...), HTML Canvas through WASM, and OpenGL.
-
-2D game engines:
-
-* [github.com/faiface/pixel](https://github.com/faiface/pixel) - Pixel
-* [github.com/hajimehoshi/ebiten](https://github.com/hajimehoshi/ebiten) - Ebiten
-* [github.com/oakmound/oak](https://github.com/oakmound/oak) - Oak
-
 ## Examples
 
 ### Draw a static image
@@ -205,6 +182,29 @@ func (d *Demo) handle(event canvas.Event) {
 	}
 }
 ```
+
+## Alternatives
+
+If this module is not the right thing for you, and if you are looking for a
+more direct solution for 2D graphics have a look at these alternatives:
+
+* [github.com/tfriedel6/canvas](https://github.com/tfriedel6/canvas) -
+  A canvas implementation for Go with OpenGL backends for various
+  operating systems.
+* [github.com/llgcode/draw2d](https://github.com/llgcode/draw2d) -
+  A 2D vector graphics library for Go with support for multiple outputs
+  such as images, PDF documents, OpenGL and SVG.
+* [github.com/ajstarks/svgo](https://github.com/ajstarks/svgo) -
+  A Go library for SVG generation.
+* [github.com/tdewolff/canvas](https://github.com/tdewolff/canvas) -
+  A common vector drawing target that can output SVG, PDF, EPS,
+  raster images (PNG, JPG, GIF, ...), HTML Canvas through WASM, and OpenGL.
+
+2D game engines:
+
+* [github.com/faiface/pixel](https://github.com/faiface/pixel) - Pixel
+* [github.com/hajimehoshi/ebiten](https://github.com/hajimehoshi/ebiten) - Ebiten
+* [github.com/oakmound/oak](https://github.com/oakmound/oak) - Oak
 
 ## License
 
