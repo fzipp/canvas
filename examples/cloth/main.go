@@ -48,65 +48,116 @@ const (
 	tearDistance    = 60
 )
 
-var (
-	boundsX float64
-	boundsY float64
-)
-
 func main() {
-	canvas.ListenAndServe(":8080",
-		560, 350, "Tearable Cloth", run,
-		canvas.SendMouseMove|canvas.SendMouseDown|canvas.SendMouseUp)
+	canvas.ListenAndServe(":8080", run,
+		canvas.Size(560, 350),
+		canvas.Title("Tearable Cloth"),
+		canvas.EnableEvents(
+			canvas.SendMouseMove,
+			canvas.SendMouseDown,
+			canvas.SendMouseUp,
+		),
+	)
 }
 
 func run(ctx *canvas.Context) {
-	boundsX = float64(ctx.CanvasWidth() - 1)
-	boundsY = float64(ctx.CanvasHeight() - 1)
-
 	ctx.SetStrokeStyle(color.RGBA{R: 0x88, G: 0x88, B: 0x88, A: 0xFF})
 
-	mouse := &Mouse{}
-	cloth := newCloth(ctx.CanvasWidth())
+	cloth := newCloth(
+		ctx.CanvasWidth(),
+		float64(ctx.CanvasWidth() - 1),
+		float64(ctx.CanvasHeight() - 1),
+	)
 
 	for {
 		select {
 		case <-ctx.Quit():
 			return
 		case event := <-ctx.Events():
-			handle(event, mouse)
+			cloth.handle(event)
 		default:
-			update(ctx, cloth, mouse)
+			cloth.update()
+			cloth.draw(ctx)
+			ctx.Flush()
 			time.Sleep(5 * time.Millisecond)
 		}
 	}
 }
 
-func handle(event canvas.Event, mouse *Mouse) {
+type Cloth struct {
+	boundsX float64
+	boundsY float64
+	mouse   Mouse
+	points  []*Point
+}
+
+func newCloth(canvasWidth int, boundsX, boundsY float64) *Cloth {
+	cloth := &Cloth{
+		boundsX: boundsX,
+		boundsY: boundsY,
+	}
+	startX := float64(canvasWidth)/2 - clothWidth*spacing/2
+	for y := 0; y <= clothHeight; y++ {
+		for x := 0; x <= clothWidth; x++ {
+			p := newPoint(
+				startX+float64(x*spacing),
+				startY+float64(y*spacing),
+			)
+			if x != 0 {
+				p.attach(cloth.points[len(cloth.points)-1])
+			}
+			if y == 0 {
+				p.pin(p.x, p.y)
+			}
+			if y != 0 {
+				p.attach(cloth.points[x+(y-1)*(clothWidth+1)])
+			}
+			cloth.points = append(cloth.points, p)
+		}
+	}
+	return cloth
+}
+
+func (c *Cloth) handle(event canvas.Event) {
 	switch e := event.(type) {
 	case canvas.MouseMoveEvent:
-		mouse.px = mouse.x
-		mouse.py = mouse.y
-		mouse.x = float64(e.X)
-		mouse.y = float64(e.Y)
+		c.mouse.px = c.mouse.x
+		c.mouse.py = c.mouse.y
+		c.mouse.x = float64(e.X)
+		c.mouse.y = float64(e.Y)
 	case canvas.MouseUpEvent:
-		mouse.down = false
+		c.mouse.down = false
 	case canvas.MouseDownEvent:
-		mouse.button = e.Button
-		mouse.px = mouse.x
-		mouse.py = mouse.y
-		mouse.x = float64(e.X)
-		mouse.y = float64(e.Y)
-		mouse.down = true
+		c.mouse.button = e.Button
+		c.mouse.px = c.mouse.x
+		c.mouse.py = c.mouse.y
+		c.mouse.x = float64(e.X)
+		c.mouse.y = float64(e.Y)
+		c.mouse.down = true
 	}
 }
 
-func update(ctx *canvas.Context, cloth *Cloth, mouse *Mouse) {
+func (c *Cloth) update() {
+	for i := 0; i < physicsAccuracy; i++ {
+		for _, p := range c.points {
+			p.resolveConstraints(c.boundsX, c.boundsY)
+		}
+	}
+	for _, p := range c.points {
+		p.update(.016, &c.mouse)
+	}
+}
+
+func (c *Cloth) draw(ctx *canvas.Context) {
 	ctx.ClearRect(0, 0,
 		float64(ctx.CanvasWidth()),
 		float64(ctx.CanvasHeight()))
-	cloth.update(mouse)
-	cloth.draw(ctx)
-	ctx.Flush()
+
+	ctx.BeginPath()
+	for _, p := range c.points {
+		p.draw(ctx)
+	}
+	ctx.Stroke()
 }
 
 type Mouse struct {
@@ -189,7 +240,7 @@ func (p *Point) addForce(x, y float64) {
 	p.vy = math.Floor(p.vy*round) / round
 }
 
-func (p *Point) resolveConstraints() {
+func (p *Point) resolveConstraints(boundsX, boundsY float64) {
 	if !math.IsNaN(p.pinX) && !math.IsNaN(p.pinY) {
 		p.x = p.pinX
 		p.y = p.pinY
@@ -256,51 +307,4 @@ func (c *Constraint) resolve() {
 	c.p1.y += py
 	c.p2.x -= px
 	c.p2.y -= py
-}
-
-type Cloth struct {
-	points []*Point
-}
-
-func newCloth(canvasWidth int) *Cloth {
-	cloth := &Cloth{}
-	startX := float64(canvasWidth)/2 - clothWidth*spacing/2
-	for y := 0; y <= clothHeight; y++ {
-		for x := 0; x <= clothWidth; x++ {
-			p := newPoint(
-				startX+float64(x*spacing),
-				startY+float64(y*spacing),
-			)
-			if x != 0 {
-				p.attach(cloth.points[len(cloth.points)-1])
-			}
-			if y == 0 {
-				p.pin(p.x, p.y)
-			}
-			if y != 0 {
-				p.attach(cloth.points[x+(y-1)*(clothWidth+1)])
-			}
-			cloth.points = append(cloth.points, p)
-		}
-	}
-	return cloth
-}
-
-func (c Cloth) update(mouse *Mouse) {
-	for i := 0; i < physicsAccuracy; i++ {
-		for _, p := range c.points {
-			p.resolveConstraints()
-		}
-	}
-	for _, p := range c.points {
-		p.update(.016, mouse)
-	}
-}
-
-func (c Cloth) draw(ctx *canvas.Context) {
-	ctx.BeginPath()
-	for _, p := range c.points {
-		p.draw(ctx)
-	}
-	ctx.Stroke()
 }

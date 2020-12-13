@@ -10,8 +10,9 @@ import (
 )
 
 type Image struct {
-	id            uint32
-	width, height int
+	id     uint32
+	width  int
+	height int
 }
 
 func (img *Image) Width() int {

@@ -15,8 +15,7 @@ import (
 var byteOrder = binary.BigEndian
 
 type Context struct {
-	width       int
-	height      int
+	config      config
 	draws       chan<- []byte
 	events      <-chan Event
 	quit        <-chan struct{}
@@ -24,10 +23,9 @@ type Context struct {
 	nextImageID uint32
 }
 
-func newContext(width, height int, draws chan<- []byte, events <-chan Event, quit <-chan struct{}) *Context {
+func newContext(draws chan<- []byte, events <-chan Event, quit <-chan struct{}, config config) *Context {
 	return &Context{
-		width:  width,
-		height: height,
+		config: config,
 		draws:  draws,
 		events: events,
 		quit:   quit,
@@ -43,11 +41,11 @@ func (ctx *Context) Quit() <-chan struct{} {
 }
 
 func (ctx *Context) CanvasWidth() int {
-	return ctx.width
+	return ctx.config.width
 }
 
 func (ctx *Context) CanvasHeight() int {
-	return ctx.height
+	return ctx.config.height
 }
 
 func (ctx *Context) SetFillStyle(c color.Color) {

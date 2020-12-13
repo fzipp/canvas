@@ -12,9 +12,16 @@ import (
 )
 
 func main() {
-	canvas.ListenAndServe(":8080",
-		800, 600, "Breakout", run,
-		canvas.SendMouseMove|canvas.SendKeyPress|canvas.SendKeyDown)
+	canvas.ListenAndServe(":8080", run,
+		canvas.Size(800, 600),
+		canvas.Title("Breakout"),
+		canvas.DisableCursor(),
+		canvas.EnableEvents(
+			canvas.SendMouseMove,
+			canvas.SendKeyPress,
+			canvas.SendKeyDown,
+		),
+	)
 }
 
 func run(ctx *canvas.Context) {

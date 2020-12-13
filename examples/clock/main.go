@@ -20,7 +20,10 @@ import (
 )
 
 func main() {
-	canvas.ListenAndServe(":8080", 800, 600, "Clock", run, canvas.SendNoEvents)
+	canvas.ListenAndServe(":8080", run,
+		canvas.Size(800, 600),
+		canvas.Title("Clock"),
+	)
 }
 
 func run(ctx *canvas.Context) {

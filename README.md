@@ -20,27 +20,17 @@ The WebSocket communication imposes some overhead, but it is good enough for
 many use cases. Different browsers also have different performance
 characteristics.
 
-The internal binary protocol is loosely inspired by Plan 9's
-[draw](https://plan9.io/magic/man2html/3/draw) protocol, but it is tailored
-to the Canvas API, and it uses consecutive numeric byte values to identify
-the various draw commands rather than mnemonic ASCII letters. The protocol
-is subject to change.
-
 ## Examples
 
 ### Draw a static image
 
-The ListenAndServe function initializes the canvas server and takes the
-following arguments: the network address with the port number to bind to, the
-canvas size as width and height in pixels, a title for the browser window,
-a run function, and an event mask.
+The `ListenAndServe` function initializes the canvas server and takes the
+following arguments: the network address with the port number to bind to, a
+run function, and zero or more options, such as the canvas size in pixels,
+or a title for the browser tab.
 
-The run function gets executed when a client connects to the server.
+The run function is executed when a client connects to the server.
 This is the entry point for drawing.
-
-A later example demonstrates how to use the event mask. If you are not
-interested in any mouse or keyboard events use the canvas.SendNoEvents
-constant.
 
 ```
 package main
@@ -52,7 +42,10 @@ import (
 )
 
 func main() {
-	canvas.ListenAndServe(":8080", 100, 80, "Example 1", run, canvas.SendNoEvents)
+	canvas.ListenAndServe(":8080", run,
+		canvas.Size(100, 80),
+		canvas.Title("Example 1: Drawing"),
+	)
 }
 
 func run(ctx *canvas.Context) {
@@ -63,11 +56,11 @@ func run(ctx *canvas.Context) {
 }
 ```
 
-After the program has been started the canvas can be accessed by
+After the program has been started, the canvas can be accessed by
 opening http://localhost:8080 in a web browser.
 
 The server does not immediately send each drawing operation to the client,
-but buffers them until the Flush method gets called.
+but buffers them until the `Flush` method gets called.
 The flush should happen once the image, or an animation frame is complete.
 Without a flush nothing gets displayed.
 
@@ -77,6 +70,9 @@ want to share state between connections you should keep it local to the run
 function and pass the state to other functions called by the run function.
 
 ### An animation loop
+
+You can create an animation by putting a `for` loop in the `run` function.
+Within this loop the `ctx.Quit()` channel should be observed. 
 
 ```
 package main
@@ -88,7 +84,10 @@ import (
 )
 
 func main() {
-	canvas.ListenAndServe(":8080", 800, 600, "Example 2", run, canvas.SendNoEvents)
+	canvas.ListenAndServe(":8080", run,
+		canvas.Size(800, 600),
+		canvas.Title("Example 2: Animation"),
+	)
 }
 
 func run(ctx *canvas.Context) {
@@ -108,11 +107,13 @@ func run(ctx *canvas.Context) {
 
 type Demo struct {
 	X, Y int
+	// ...
 }
 
 func (d *Demo) update() {
 	d.X += 1
 	d.Y += 1
+	// ...
 }
 
 func (d *Demo) draw(ctx *canvas.Context) {
@@ -123,16 +124,16 @@ func (d *Demo) draw(ctx *canvas.Context) {
 ### Keyboard and mouse events
 
 In order to handle keyboard and mouse events you have to specify which events
-the client should observe and send to the server by passing an event mask
-argument to the ListenAndServe function.
-This mask is a composition of the desired event types via
-the binary OR operator "|". Mouse move events typically create more
-WebSocket communication than the others. So you may want to enable
-them only if you actually use them.
+the client should observe and send to the server.
+This is done by passing an `EnableEvents` option to the `ListenAndServe`
+function. 
+Mouse move events typically create more WebSocket communication than the
+others.
+So you may want to enable them only if you actually use them.
 
-The ctx.Events() channel receives the observed events, and a type switch
+The `ctx.Events()` channel receives the observed events, and a type switch
 determines the specific event type.
-A useful pattern is a "handle" method dedicated to event handling:
+A useful pattern is a `handle` method dedicated to event handling:
 
 ```
 package main
@@ -140,8 +141,15 @@ package main
 import "github.com/fzipp/canvas"
 
 func main() {
-	canvas.ListenAndServe(":8080", 800, 600, "Example 3", run,
-		canvas.SendMouseDown|canvas.SendMouseMove|canvas.SendKeyDown)
+	canvas.ListenAndServe(":8080", run,
+		canvas.Size(800, 600),
+		canvas.Title("Example 3: Events"),
+		canvas.EnableEvents(
+			canvas.SendMouseDown,
+			canvas.SendMouseMove,
+			canvas.SendKeyDown,
+		),
+	)
 }
 
 func run(ctx *canvas.Context) {
@@ -163,14 +171,6 @@ type Demo struct {
 	// ...
 }
 
-func (d *Demo) update() {
-	// ...
-}
-
-func (d *Demo) draw(ctx *canvas.Context) {
-	// ...
-}
-
 func (d *Demo) handle(event canvas.Event) {
 	switch e := event.(type) {
 	case canvas.MouseDownEvent:
@@ -180,6 +180,14 @@ func (d *Demo) handle(event canvas.Event) {
    	case canvas.KeyDownEvent:
 		// ...
 	}
+}
+
+func (d *Demo) update() {
+	// ...
+}
+
+func (d *Demo) draw(ctx *canvas.Context) {
+	// ...
 }
 ```
 

@@ -17,14 +17,15 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-func ListenAndServe(addr string, width, height int, title string, run func(*Context), eventMask SendEventMask) {
+func ListenAndServe(addr string, run func(*Context), options ...Option) {
+	config := configFrom(options)
 	http.Handle("/", &htmlHandler{
-		width: width, height: height,
-		title: title, eventMask: eventMask,
+		config: config,
 	})
 	http.HandleFunc("/canvas-websocket.js", javaScriptHandler)
 	http.Handle("/draw", &drawHandler{
-		width: width, height: height, draw: run,
+		config: config,
+		draw:   run,
 	})
 	err := http.ListenAndServe(addr, nil)
 	if err != nil {
@@ -33,19 +34,17 @@ func ListenAndServe(addr string, width, height int, title string, run func(*Cont
 }
 
 type htmlHandler struct {
-	width     int
-	height    int
-	title     string
-	eventMask SendEventMask
+	config config
 }
 
 func (h *htmlHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	model := map[string]interface{}{
-		"Width":         h.width,
-		"Height":        h.height,
-		"Title":         h.title,
-		"DrawURL":       template.URL("ws://localhost:8080/draw"),
-		"SendEventMask": h.eventMask,
+		"DrawURL":        template.URL("ws://localhost:8080/draw"),
+		"Width":          h.config.width,
+		"Height":         h.config.height,
+		"Title":          h.config.title,
+		"SendEventMask":  h.config.eventMask,
+		"CursorDisabled": h.config.cursorDisabled,
 	}
 	err := htmlTemplate.Execute(w, model)
 	if err != nil {
@@ -69,8 +68,7 @@ var upgrader = websocket.Upgrader{
 }
 
 type drawHandler struct {
-	width  int
-	height int
+	config config
 	draw   func(*Context)
 }
 
@@ -92,7 +90,7 @@ func (h *drawHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	go readMessages(conn, events, &wg)
 	go writeMessages(conn, draws, &wg)
 
-	ctx := newContext(h.width, h.height, draws, events, quit)
+	ctx := newContext(draws, events, quit, h.config)
 	go func() {
 		defer wg.Done()
 		h.draw(ctx)
