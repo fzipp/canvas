@@ -1,5 +1,9 @@
 # canvas
 
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/fzipp/canvas)](https://pkg.go.dev/github.com/fzipp/canvas)
+![Build Status](https://github.com/fzipp/canvas/workflows/build/badge.svg)
+[![Go Report Card](https://goreportcard.com/badge/github.com/fzipp/canvas)](https://goreportcard.com/report/github.com/fzipp/canvas)
+
 This Go module uses WebSockets to communicate with a
 [2D canvas graphics context](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D)
 in a web browser.
