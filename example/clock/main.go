@@ -12,6 +12,7 @@
 package main
 
 import (
+	"fmt"
 	"image/color"
 	"math"
 	"time"
@@ -20,7 +21,9 @@ import (
 )
 
 func main() {
-	canvas.ListenAndServe(":8080", run,
+	port := ":8080"
+	fmt.Println("Listening on http://localhost" + port)
+	canvas.ListenAndServe(port, run,
 		canvas.Size(800, 600),
 		canvas.Title("Clock"),
 	)

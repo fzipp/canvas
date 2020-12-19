@@ -29,6 +29,7 @@
 package main
 
 import (
+	"fmt"
 	"image/color"
 	"math"
 	"time"
@@ -49,7 +50,9 @@ const (
 )
 
 func main() {
-	canvas.ListenAndServe(":8080", run,
+	port := ":8080"
+	fmt.Println("Listening on http://localhost" + port)
+	canvas.ListenAndServe(port, run,
 		canvas.Size(560, 350),
 		canvas.Title("Tearable Cloth"),
 		canvas.EnableEvents(
@@ -65,8 +68,8 @@ func run(ctx *canvas.Context) {
 
 	cloth := newCloth(
 		ctx.CanvasWidth(),
-		float64(ctx.CanvasWidth() - 1),
-		float64(ctx.CanvasHeight() - 1),
+		float64(ctx.CanvasWidth()-1),
+		float64(ctx.CanvasHeight()-1),
 	)
 
 	for {
