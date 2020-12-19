@@ -36,7 +36,7 @@ or a title for the browser tab.
 The run function is executed when a client connects to the server.
 This is the entry point for drawing.
 
-```
+```go
 package main
 
 import (
@@ -78,7 +78,7 @@ function and pass the state to other functions called by the run function.
 You can create an animation by putting a `for` loop in the `run` function.
 Within this loop the `ctx.Quit()` channel should be observed. 
 
-```
+```go
 package main
 
 import (
@@ -139,7 +139,7 @@ The `ctx.Events()` channel receives the observed events, and a type switch
 determines the specific event type.
 A useful pattern is a `handle` method dedicated to event handling:
 
-```
+```go
 package main
 
 import "github.com/fzipp/canvas"
