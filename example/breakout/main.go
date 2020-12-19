@@ -5,6 +5,7 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"time"
 
@@ -12,6 +13,7 @@ import (
 )
 
 func main() {
+	fmt.Println("Listening on http://localhost:8080")
 	canvas.ListenAndServe(":8080", run,
 		canvas.Size(800, 600),
 		canvas.Title("Breakout"),
