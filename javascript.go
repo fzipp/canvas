@@ -22,8 +22,18 @@ document.addEventListener("DOMContentLoaded", function () {
         const drawUrl = canvas.dataset.websocketDrawUrl;
         const eventMask = parseInt(canvas.dataset.websocketEventMask, 10);
         if (drawUrl) {
-            webSocketCanvas(drawUrl, canvas, eventMask);
+            const absoluteDrawUrl = absoluteWebSocketUrl(drawUrl);
+            webSocketCanvas(absoluteDrawUrl, canvas, eventMask);
         }
+    }
+
+    function absoluteWebSocketUrl(url) {
+        if (url.indexOf("ws://") === 0 || url.indexOf("wss://") === 0) {
+            return url;
+        }
+        const wsUrl = new URL(url, window.location.href);
+        wsUrl.protocol = wsUrl.protocol.replace("http", "ws");
+        return wsUrl.href;
     }
 
     function webSocketCanvas(url, canvas, eventMask) {

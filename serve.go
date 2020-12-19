@@ -39,7 +39,7 @@ type htmlHandler struct {
 
 func (h *htmlHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	model := map[string]interface{}{
-		"DrawURL":        template.URL("ws://localhost:8080/draw"),
+		"DrawURL":        template.URL("draw"),
 		"Width":          h.config.width,
 		"Height":         h.config.height,
 		"Title":          h.config.title,
