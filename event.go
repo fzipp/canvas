@@ -8,7 +8,7 @@ type Event interface {
 }
 
 type MouseEvent struct {
-	Button  int
+	Buttons int
 	X, Y    int
 	modKeys modifierKey
 }

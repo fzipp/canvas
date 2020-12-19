@@ -131,7 +131,7 @@ func (c *Cloth) handle(event canvas.Event) {
 	case canvas.MouseUpEvent:
 		c.mouse.down = false
 	case canvas.MouseDownEvent:
-		c.mouse.button = e.Button
+		c.mouse.button = e.Buttons
 		c.mouse.px = c.mouse.x
 		c.mouse.py = c.mouse.y
 		c.mouse.x = float64(e.X)

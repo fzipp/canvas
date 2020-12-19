@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const eventMessage = new ArrayBuffer(11);
                 const data = new DataView(eventMessage);
                 data.setUint8(0, eventType);
-                data.setUint8(1, event.which);
+                data.setUint8(1, event.buttons);
                 data.setUint32(2, event.clientX - rect.left);
                 data.setUint32(6, event.clientY - rect.top);
                 data.setUint8(10, encodeModifierKeys(event));
