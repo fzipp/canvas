@@ -165,7 +165,7 @@ func (c *Cloth) draw(ctx *canvas.Context) {
 
 type Mouse struct {
 	down   bool
-	button int
+	button canvas.Buttons
 	x, y   float64
 	px, py float64
 }

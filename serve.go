@@ -161,7 +161,7 @@ func decodeEvent(p []byte) (Event, error) {
 
 func decodeMouseEvent(p []byte) MouseEvent {
 	return MouseEvent{
-		Buttons: int(p[1]),
+		Buttons: Buttons(p[1]),
 		X:       int(byteOrder.Uint32(p[2:])),
 		Y:       int(byteOrder.Uint32(p[6:])),
 		modKeys: modifierKey(p[10]),
