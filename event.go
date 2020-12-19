@@ -64,5 +64,4 @@ const (
 	SendKeyPress
 	SendKeyDown
 	SendKeyUp
-	SendNoEvents SendEventMask = 0
 )
