@@ -211,6 +211,8 @@ more direct solution for 2D graphics have a look at these alternatives:
 * [github.com/tdewolff/canvas](https://github.com/tdewolff/canvas) -
   A common vector drawing target that can output SVG, PDF, EPS,
   raster images (PNG, JPG, GIF, ...), HTML Canvas through WASM, and OpenGL.
+* [github.com/fogleman/gg](https://github.com/fogleman/gg) -
+  A library for rendering 2D graphics in pure Go.
 
 2D game engines:
 
