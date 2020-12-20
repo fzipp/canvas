@@ -23,6 +23,7 @@ type Context struct {
 
 	nextImageID    uint32
 	nextGradientID uint32
+	nextPatternID  uint32
 }
 
 func newContext(draws chan<- []byte, events <-chan Event, quit <-chan struct{}, config config) *Context {
@@ -66,6 +67,12 @@ func (ctx *Context) SetFillStyleString(color string) {
 func (ctx *Context) SetFillStyleGradient(g *Gradient) {
 	msg := [1 + 4]byte{bFillStyleGradient}
 	byteOrder.PutUint32(msg[1:], g.id)
+	ctx.write(msg[:])
+}
+
+func (ctx *Context) SetFillStylePattern(p *Pattern) {
+	msg := [1 + 4]byte{bFillStylePattern}
+	byteOrder.PutUint32(msg[1:], p.id)
 	ctx.write(msg[:])
 }
 
@@ -168,6 +175,12 @@ func (ctx *Context) SetStrokeStyleString(color string) {
 func (ctx *Context) SetStrokeStyleGradient(g *Gradient) {
 	msg := [1 + 4]byte{bStrokeStyleGradient}
 	byteOrder.PutUint32(msg[1:], g.id)
+	ctx.write(msg[:])
+}
+
+func (ctx *Context) SetStrokeStylePattern(p *Pattern) {
+	msg := [1 + 4]byte{bStrokeStylePattern}
+	byteOrder.PutUint32(msg[1:], p.id)
 	ctx.write(msg[:])
 }
 
@@ -502,6 +515,17 @@ func (ctx *Context) CreateRadialGradient(x0, y0, r0, x1, y1, r1 float64) *Gradie
 	byteOrder.PutUint64(msg[45:], math.Float64bits(r1))
 	ctx.write(msg[:])
 	return &Gradient{id: id, ctx: ctx}
+}
+
+func (ctx *Context) CreatePattern(img *Image, repetition PatternRepetition) *Pattern {
+	id := ctx.nextPatternID
+	ctx.nextPatternID++
+	msg := [1 + 2*4 + 1]byte{bCreatePattern}
+	byteOrder.PutUint32(msg[1:], id)
+	byteOrder.PutUint32(msg[5:], img.id)
+	msg[9] = byte(repetition)
+	ctx.write(msg[:])
+	return &Pattern{id: id, ctx: ctx}
 }
 
 func (ctx *Context) Flush() {

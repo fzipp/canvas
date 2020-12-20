@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	const knownImageData = {};
 	const offscreenCanvas = {};
 	const knownGradients = {};
+	const knownPatterns = {};
 
     const canvases = document.getElementsByTagName("canvas");
     for (let i = 0; i < canvases.length; i++) {
@@ -176,6 +177,28 @@ document.addEventListener("DOMContentLoaded", function () {
 				knownGradients[id] = gradient;
 				return 37;
 			}
+			case 10: {
+				const id = data.getUint32(1);
+				const image = offscreenCanvas[data.getUint32(5)];
+                let repetition = null;
+                switch (data.getUint8(9)) {
+                    case 0:
+                        repetition = "repeat";
+                        break;
+                    case 1:
+                        repetition = "repeat-x";
+                        break;
+                    case 2:
+                        repetition = "repeat-y";
+                        break;
+                    case 3:
+                        repetition = "no-repeat";
+                        break;
+				}
+                const pattern = ctx.createPattern(image, repetition);
+				knownPatterns[id] = pattern;
+				return 10;
+			}
 			case 11: {
 				const id = data.getUint32(1);
 				const x0 = data.getFloat64(5);
@@ -330,6 +353,11 @@ document.addEventListener("DOMContentLoaded", function () {
 			case 26:
 				ctx.strokeStyle = knownGradients[data.getUint32(1)];
 				return 5;
+			case 27: {
+                const id = data.getUint32(1);
+                knownPatterns[id] = null;
+				return 5;
+            }
             case 28:
                 let cap = null;
                 switch (data.getUint8(1)) {
@@ -554,6 +582,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 offscreenCanvas[id] = null;
 				return 5;
             }
+			case 66:
+				ctx.fillStyle = knownPatterns[data.getUint32(1)];
+				return 5;
+			case 67:
+				ctx.strokeStyle = knownPatterns[data.getUint32(1)];
+				return 5;
         }
         return 1;
     }

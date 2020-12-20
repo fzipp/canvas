@@ -72,6 +72,15 @@ const (
 	BaselineMiddle
 )
 
+type PatternRepetition byte
+
+const (
+	PatternRepeat PatternRepetition = iota
+	PatternRepeatX
+	PatternRepeatY
+	PatternNoRepeat
+)
+
 const (
 	bArc byte = 1 + iota
 	bArcTo
@@ -99,7 +108,7 @@ const (
 	bGlobalCompositeOperation
 	bImageSmoothingEnabled
 	bStrokeStyleGradient
-	_
+	bReleasePattern
 	bLineCap
 	bLineDashOffset
 	bLineJoin
@@ -138,4 +147,6 @@ const (
 	bDrawImageScaled
 	bDrawImageSubRectangle
 	bReleaseImage
+	bFillStylePattern
+	bStrokeStylePattern
 )
