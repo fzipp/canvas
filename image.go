@@ -11,6 +11,7 @@ import (
 
 type Image struct {
 	id     uint32
+	ctx    *Context
 	width  int
 	height int
 }
@@ -21,6 +22,12 @@ func (img *Image) Width() int {
 
 func (img *Image) Height() int {
 	return img.height
+}
+
+func (img *Image) Release() {
+	msg := [1 + 4]byte{bReleaseImage}
+	byteOrder.PutUint32(msg[1:], img.id)
+	img.ctx.write(msg[:])
 }
 
 func ensureRGBA(img image.Image) *image.RGBA {

@@ -15,12 +15,14 @@ import (
 var byteOrder = binary.BigEndian
 
 type Context struct {
-	config      config
-	draws       chan<- []byte
-	events      <-chan Event
-	quit        <-chan struct{}
-	buf         bytes.Buffer
-	nextImageID uint32
+	config config
+	draws  chan<- []byte
+	events <-chan Event
+	quit   <-chan struct{}
+	buf    bytes.Buffer
+
+	nextImageID    uint32
+	nextGradientID uint32
 }
 
 func newContext(draws chan<- []byte, events <-chan Event, quit <-chan struct{}, config config) *Context {
@@ -59,6 +61,12 @@ func (ctx *Context) SetFillStyleString(color string) {
 	byteOrder.PutUint32(msg[1:], uint32(len(color)))
 	copy(msg[5:], color)
 	ctx.write(msg)
+}
+
+func (ctx *Context) SetFillStyleGradient(g *Gradient) {
+	msg := [1 + 4]byte{bFillStyleGradient}
+	byteOrder.PutUint32(msg[1:], g.id)
+	ctx.write(msg[:])
 }
 
 func (ctx *Context) SetFont(font string) {
@@ -155,6 +163,12 @@ func (ctx *Context) SetStrokeStyleString(color string) {
 	byteOrder.PutUint32(msg[1:], uint32(len(color)))
 	copy(msg[5:], color)
 	ctx.write(msg)
+}
+
+func (ctx *Context) SetStrokeStyleGradient(g *Gradient) {
+	msg := [1 + 4]byte{bStrokeStyleGradient}
+	byteOrder.PutUint32(msg[1:], g.id)
+	ctx.write(msg[:])
 }
 
 func (ctx *Context) SetTextAlign(align TextAlign) {
@@ -407,7 +421,7 @@ func (ctx *Context) CreateImageData(img image.Image) *Image {
 	byteOrder.PutUint32(msg[9:], uint32(bounds.Dy()))
 	copy(msg[13:], rgba.Pix)
 	ctx.write(msg)
-	return &Image{id: id, width: bounds.Dx(), height: bounds.Dy()}
+	return &Image{id: id, ctx: ctx, width: bounds.Dx(), height: bounds.Dy()}
 }
 
 func (ctx *Context) PutImageData(img *Image, dx, dy float64) {
@@ -462,10 +476,32 @@ func (ctx *Context) DrawImageSubRectangle(img *Image, sx, sy, sWidth, sHeight, d
 	ctx.write(msg[:])
 }
 
-func (ctx *Context) ReleaseImage(img *Image) {
-	msg := [1 + 4]byte{bReleaseImage}
-	byteOrder.PutUint32(msg[1:], img.id)
+func (ctx *Context) CreateLinearGradient(x0, y0, x1, y1 float64) *Gradient {
+	id := ctx.nextGradientID
+	ctx.nextGradientID++
+	msg := [1 + 4 + 4*8]byte{bCreateLinearGradient}
+	byteOrder.PutUint32(msg[1:], id)
+	byteOrder.PutUint64(msg[5:], math.Float64bits(x0))
+	byteOrder.PutUint64(msg[13:], math.Float64bits(y0))
+	byteOrder.PutUint64(msg[21:], math.Float64bits(x1))
+	byteOrder.PutUint64(msg[29:], math.Float64bits(y1))
 	ctx.write(msg[:])
+	return &Gradient{id: id, ctx: ctx}
+}
+
+func (ctx *Context) CreateRadialGradient(x0, y0, r0, x1, y1, r1 float64) *Gradient {
+	id := ctx.nextGradientID
+	ctx.nextGradientID++
+	msg := [1 + 4 + 6*8]byte{bCreateRadialGradient}
+	byteOrder.PutUint32(msg[1:], id)
+	byteOrder.PutUint64(msg[5:], math.Float64bits(x0))
+	byteOrder.PutUint64(msg[13:], math.Float64bits(y0))
+	byteOrder.PutUint64(msg[21:], math.Float64bits(r0))
+	byteOrder.PutUint64(msg[29:], math.Float64bits(x1))
+	byteOrder.PutUint64(msg[37:], math.Float64bits(y1))
+	byteOrder.PutUint64(msg[45:], math.Float64bits(r1))
+	ctx.write(msg[:])
+	return &Gradient{id: id, ctx: ctx}
 }
 
 func (ctx *Context) Flush() {

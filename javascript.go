@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	const knownImageData = {};
 	const offscreenCanvas = {};
+	const knownGradients = {};
 
     const canvases = document.getElementsByTagName("canvas");
     for (let i = 0; i < canvases.length; i++) {
@@ -165,6 +166,28 @@ document.addEventListener("DOMContentLoaded", function () {
 			    offscreenCanvas[id] = offCanvas;
 				return 13 + len;
 			}
+			case 9: {
+				const id = data.getUint32(1);
+				const x0 = data.getFloat64(5);
+				const y0 = data.getFloat64(13);
+				const x1 = data.getFloat64(21);
+				const y1 = data.getFloat64(29);
+                const gradient = ctx.createLinearGradient(x0, y0, x1, y1);
+				knownGradients[id] = gradient;
+				return 37;
+			}
+			case 11: {
+				const id = data.getUint32(1);
+				const x0 = data.getFloat64(5);
+				const y0 = data.getFloat64(13);
+				const r0 = data.getFloat64(21);
+				const x1 = data.getFloat64(29);
+				const y1 = data.getFloat64(37);
+				const r1 = data.getFloat64(45);
+                const gradient = ctx.createRadialGradient(x0, y0, r0, x1, y1, r1);
+				knownGradients[id] = gradient;
+				return 53;
+			}
 			case 13:
                 ctx.drawImage(offscreenCanvas[data.getUint32(1)],
                     data.getFloat64(5), data.getFloat64(13));
@@ -197,6 +220,23 @@ document.addEventListener("DOMContentLoaded", function () {
                 ctx.font = font.value;
                 return 1 + font.byteLen;
             }
+			case 20: {
+				const id = data.getUint32(1);
+				const gradient = knownGradients[id];
+				gradient.addColorStop(data.getFloat64(5), getRGBA(data, 13));
+				return 17;
+			}
+			case 21: {
+				const id = data.getUint32(1);
+				const offset = data.getFloat64(5);
+				const color = getString(data, 13);
+				const gradient = knownGradients[id];
+				gradient.addColorStop(offset, color.value);
+				return 13 + color.byteLen;
+			}
+			case 22:
+				ctx.fillStyle = knownGradients[data.getUint32(1)];
+				return 5;
             case 23:
                 ctx.globalAlpha = data.getFloat64(1);
                 return 9;
@@ -287,6 +327,9 @@ document.addEventListener("DOMContentLoaded", function () {
             case 25:
                 ctx.imageSmoothingEnabled = !!data.getUint8(1);
                 return 2;
+			case 26:
+				ctx.strokeStyle = knownGradients[data.getUint32(1)];
+				return 5;
             case 28:
                 let cap = null;
                 switch (data.getUint8(1)) {
@@ -326,6 +369,11 @@ document.addEventListener("DOMContentLoaded", function () {
             case 32:
                 ctx.lineWidth = data.getFloat64(1);
                 return 9;
+			case 33: {
+                const id = data.getUint32(1);
+                knownGradients[id] = null;
+				return 5;
+            }
             case 34:
                 ctx.miterLimit = data.getFloat64(1);
                 return 9;

@@ -92,20 +92,20 @@ const (
 	bFillStyle
 	bFillText
 	bFont
-	bGetImageData
-	bGetLineDash
-	bGetTransform
+	bGradientAddColorStop
+	bGradientAddColorStopString
+	bFillStyleGradient
 	bGlobalAlpha
 	bGlobalCompositeOperation
 	bImageSmoothingEnabled
-	bIsPointInPath
-	bIsPointInStroke
+	bStrokeStyleGradient
+	_
 	bLineCap
 	bLineDashOffset
 	bLineJoin
 	bLineTo
 	bLineWidth
-	bMeasureText
+	bReleaseGradient
 	bMiterLimit
 	bMoveTo
 	bPutImageData
