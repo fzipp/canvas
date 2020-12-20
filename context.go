@@ -10,6 +10,7 @@ import (
 	"image"
 	"image/color"
 	"math"
+	"sync"
 )
 
 var byteOrder = binary.BigEndian
@@ -538,11 +539,14 @@ func (ctx *Context) write(p []byte) {
 }
 
 type idGenerator struct {
-	next uint32
+	nextMu sync.Mutex
+	next   uint32
 }
 
 func (g *idGenerator) GenerateID() uint32 {
+	g.nextMu.Lock()
 	id := g.next
 	g.next++
+	g.nextMu.Unlock()
 	return id
 }
