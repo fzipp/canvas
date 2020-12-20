@@ -545,8 +545,8 @@ type idGenerator struct {
 
 func (g *idGenerator) GenerateID() uint32 {
 	g.nextMu.Lock()
+	defer g.nextMu.Unlock()
 	id := g.next
 	g.next++
-	g.nextMu.Unlock()
 	return id
 }
