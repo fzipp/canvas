@@ -21,9 +21,9 @@ type Context struct {
 	quit   <-chan struct{}
 	buf    bytes.Buffer
 
-	nextImageID    uint32
-	nextGradientID uint32
-	nextPatternID  uint32
+	imageIDs    idGenerator
+	gradientIDs idGenerator
+	patternIDs  idGenerator
 }
 
 func newContext(draws chan<- []byte, events <-chan Event, quit <-chan struct{}, config config) *Context {
@@ -427,8 +427,7 @@ func (ctx *Context) CreateImageData(img image.Image) *Image {
 	msg := make([]byte, 1+3*4+len(rgba.Pix))
 	msg[0] = bCreateImageData
 	bounds := img.Bounds()
-	id := ctx.nextImageID
-	ctx.nextImageID++
+	id := ctx.imageIDs.GenerateID()
 	byteOrder.PutUint32(msg[1:], id)
 	byteOrder.PutUint32(msg[5:], uint32(bounds.Dx()))
 	byteOrder.PutUint32(msg[9:], uint32(bounds.Dy()))
@@ -490,8 +489,7 @@ func (ctx *Context) DrawImageSubRectangle(img *Image, sx, sy, sWidth, sHeight, d
 }
 
 func (ctx *Context) CreateLinearGradient(x0, y0, x1, y1 float64) *Gradient {
-	id := ctx.nextGradientID
-	ctx.nextGradientID++
+	id := ctx.gradientIDs.GenerateID()
 	msg := [1 + 4 + 4*8]byte{bCreateLinearGradient}
 	byteOrder.PutUint32(msg[1:], id)
 	byteOrder.PutUint64(msg[5:], math.Float64bits(x0))
@@ -503,8 +501,7 @@ func (ctx *Context) CreateLinearGradient(x0, y0, x1, y1 float64) *Gradient {
 }
 
 func (ctx *Context) CreateRadialGradient(x0, y0, r0, x1, y1, r1 float64) *Gradient {
-	id := ctx.nextGradientID
-	ctx.nextGradientID++
+	id := ctx.gradientIDs.GenerateID()
 	msg := [1 + 4 + 6*8]byte{bCreateRadialGradient}
 	byteOrder.PutUint32(msg[1:], id)
 	byteOrder.PutUint64(msg[5:], math.Float64bits(x0))
@@ -518,8 +515,7 @@ func (ctx *Context) CreateRadialGradient(x0, y0, r0, x1, y1, r1 float64) *Gradie
 }
 
 func (ctx *Context) CreatePattern(img *Image, repetition PatternRepetition) *Pattern {
-	id := ctx.nextPatternID
-	ctx.nextPatternID++
+	id := ctx.patternIDs.GenerateID()
 	msg := [1 + 2*4 + 1]byte{bCreatePattern}
 	byteOrder.PutUint32(msg[1:], id)
 	byteOrder.PutUint32(msg[5:], img.id)
@@ -539,4 +535,14 @@ func (ctx *Context) Flush() {
 
 func (ctx *Context) write(p []byte) {
 	ctx.buf.Write(p)
+}
+
+type idGenerator struct {
+	next uint32
+}
+
+func (g *idGenerator) GenerateID() uint32 {
+	id := g.next
+	g.next++
+	return id
 }
