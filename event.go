@@ -8,7 +8,7 @@ type Event interface {
 }
 
 type MouseEvent struct {
-	Buttons Buttons
+	Buttons MouseButtons
 	X, Y    int
 	modKeys modifierKey
 }
@@ -66,13 +66,13 @@ const (
 	SendKeyUp
 )
 
-type Buttons int
+type MouseButtons int
 
 const (
-	ButtonPrimary Buttons = 1 << iota
+	ButtonPrimary MouseButtons = 1 << iota
 	ButtonSecondary
 	ButtonAuxiliary
 	Button4th
 	Button5th
-	ButtonNone Buttons = 0
+	ButtonNone MouseButtons = 0
 )
