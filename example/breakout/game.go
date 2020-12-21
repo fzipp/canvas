@@ -76,7 +76,7 @@ func (g *game) initialBricks(columns, rows int) []brick {
 	return bricks
 }
 
-func (g *game) handle(event canvas.Event) {
+func (g *game) handle(event canvas.Event, ctx *canvas.Context) {
 	switch e := event.(type) {
 	case canvas.MouseMoveEvent:
 		if g.started {
@@ -87,8 +87,14 @@ func (g *game) handle(event canvas.Event) {
 		switch e.Key {
 		case "ArrowRight":
 			g.paddle.pos.X += paddleSpeedX
+			if g.paddle.pos.X >= ctx.CanvasWidth() {
+				g.paddle.pos.X = ctx.CanvasWidth() - 1
+			}
 		case "ArrowLeft":
 			g.paddle.pos.X -= paddleSpeedX
+			if g.paddle.pos.X < 0 {
+				g.paddle.pos.X = 0
+			}
 		}
 	case canvas.KeyPressEvent:
 		switch e.Key {

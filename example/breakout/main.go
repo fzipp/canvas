@@ -36,7 +36,7 @@ func run(ctx *canvas.Context) {
 		case <-ctx.Quit():
 			return
 		case event := <-ctx.Events():
-			game.handle(event)
+			game.handle(event, ctx)
 		default:
 			game.update()
 			game.draw(ctx)
