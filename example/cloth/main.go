@@ -90,7 +90,7 @@ func run(ctx *canvas.Context) {
 type cloth struct {
 	boundsX float64
 	boundsY float64
-	mouse   Mouse
+	mouse   mouse
 	points  []*point
 }
 
@@ -163,7 +163,7 @@ func (c *cloth) draw(ctx *canvas.Context) {
 	ctx.Stroke()
 }
 
-type Mouse struct {
+type mouse struct {
 	down   bool
 	button canvas.MouseButtons
 	x, y   float64
@@ -187,7 +187,7 @@ func newPoint(x, y float64) *point {
 	}
 }
 
-func (p *point) update(delta float64, mouse *Mouse) {
+func (p *point) update(delta float64, mouse *mouse) {
 	if mouse.down {
 		diffX := p.x - mouse.x
 		diffY := p.y - mouse.y
