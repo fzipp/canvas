@@ -53,5 +53,5 @@ func (buf *buffer) addColor(c color.Color) {
 }
 
 func (buf *buffer) reset() {
-	buf.bytes = buf.bytes[:0]
+	buf.bytes = make([]byte, 0, len(buf.bytes))
 }
