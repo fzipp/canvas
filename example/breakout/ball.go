@@ -39,38 +39,38 @@ func (b *ball) bounds() image.Rectangle {
 		b.pos.X+b.radius, b.pos.Y+b.radius)
 }
 
-func (b *ball) bounceOnCollision(rect image.Rectangle) Collision {
+func (b *ball) bounceOnCollision(rect image.Rectangle) collision {
 	c := b.checkCollision(rect)
 	switch c {
-	case CollisionLeft, CollisionRight:
+	case collisionLeft, collisionRight:
 		b.v.X = -b.v.X
-	case CollisionTop, CollisionBottom:
+	case collisionTop, collisionBottom:
 		b.v.Y = -b.v.Y
 	}
 	return c
 }
 
-func (b *ball) checkCollision(rect image.Rectangle) Collision {
+func (b *ball) checkCollision(rect image.Rectangle) collision {
 	is := b.bounds().Intersect(rect)
 	switch {
 	case is.Max.X == rect.Max.X:
-		return CollisionRight
+		return collisionRight
 	case is.Min.X == rect.Min.X:
-		return CollisionLeft
+		return collisionLeft
 	case is.Max.Y == rect.Max.Y:
-		return CollisionBottom
+		return collisionBottom
 	case is.Min.Y == rect.Min.Y:
-		return CollisionTop
+		return collisionTop
 	}
-	return CollisionNone
+	return collisionNone
 }
 
-type Collision int
+type collision int
 
 const (
-	CollisionNone = iota
-	CollisionLeft
-	CollisionRight
-	CollisionTop
-	CollisionBottom
+	collisionNone = iota
+	collisionLeft
+	collisionRight
+	collisionTop
+	collisionBottom
 )

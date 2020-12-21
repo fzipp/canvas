@@ -137,7 +137,7 @@ func (g *game) checkBrickCollisions() {
 	survivingBricks := make([]brick, 0, len(g.bricks))
 	for _, brick := range g.bricks {
 		collision := g.ball.bounceOnCollision(brick.bounds())
-		if collision == CollisionNone {
+		if collision == collisionNone {
 			survivingBricks = append(survivingBricks, brick)
 		} else {
 			g.score += brick.points
@@ -146,7 +146,7 @@ func (g *game) checkBrickCollisions() {
 	g.bricks = survivingBricks
 }
 
-func (g *game) checkPaddleCollision() Collision {
+func (g *game) checkPaddleCollision() collision {
 	return g.ball.bounceOnCollision(g.paddle.bounds())
 }
 
