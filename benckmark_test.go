@@ -12,7 +12,10 @@ import (
 
 func BenchmarkContext(b *testing.B) {
 	draws := make(chan []byte)
-	go func() {for range draws {}}()
+	go func() {
+		for range draws {
+		}
+	}()
 	ctx := newContext(draws, nil, nil, config{})
 	for n := 0; n < b.N; n++ {
 		ctx.SetFillStyle(color.White)

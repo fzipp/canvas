@@ -10,7 +10,6 @@ type Pattern struct {
 }
 
 func (p *Pattern) Release() {
-	msg := [1 + 4]byte{bReleasePattern}
-	byteOrder.PutUint32(msg[1:], p.id)
-	p.ctx.write(msg[:])
+	p.ctx.buf.addByte(bReleasePattern)
+	p.ctx.buf.addUint32(p.id)
 }

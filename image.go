@@ -25,9 +25,8 @@ func (img *Image) Height() int {
 }
 
 func (img *Image) Release() {
-	msg := [1 + 4]byte{bReleaseImage}
-	byteOrder.PutUint32(msg[1:], img.id)
-	img.ctx.write(msg[:])
+	img.ctx.buf.addByte(bReleaseImage)
+	img.ctx.buf.addUint32(img.id)
 }
 
 func ensureRGBA(img image.Image) *image.RGBA {
