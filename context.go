@@ -8,7 +8,6 @@ import (
 	"encoding/binary"
 	"image"
 	"image/color"
-	"math"
 	"sync"
 )
 
@@ -19,7 +18,7 @@ type Context struct {
 	draws  chan<- []byte
 	events <-chan Event
 	quit   <-chan struct{}
-	buf    messageBuffer
+	buf    buffer
 
 	imageIDs    idGenerator
 	gradientIDs idGenerator
@@ -479,51 +478,4 @@ func (g *idGenerator) GenerateID() uint32 {
 	id := g.next
 	g.next++
 	return id
-}
-
-type messageBuffer struct {
-	bytes []byte
-}
-
-func (mb *messageBuffer) addByte(b byte) {
-	mb.bytes = append(mb.bytes, b)
-}
-
-func (mb *messageBuffer) addFloat64(f float64) {
-	mb.bytes = append(mb.bytes, 0, 0, 0, 0, 0, 0, 0, 0)
-	byteOrder.PutUint64(mb.bytes[len(mb.bytes)-8:], math.Float64bits(f))
-}
-
-func (mb *messageBuffer) addUint32(i uint32) {
-	mb.bytes = append(mb.bytes, 0, 0, 0, 0)
-	byteOrder.PutUint32(mb.bytes[len(mb.bytes)-4:], i)
-}
-
-func (mb *messageBuffer) addString(s string) {
-	mb.addUint32(uint32(len(s)))
-	mb.bytes = append(mb.bytes, []byte(s)...)
-}
-
-func (mb *messageBuffer) addColor(c color.Color) {
-	clr := color.RGBAModel.Convert(c).(color.RGBA)
-	mb.addByte(clr.R)
-	mb.addByte(clr.G)
-	mb.addByte(clr.B)
-	mb.addByte(clr.A)
-}
-
-func (mb *messageBuffer) addBool(b bool) {
-	if b {
-		mb.addByte(1)
-	} else {
-		mb.addByte(0)
-	}
-}
-
-func (mb *messageBuffer) addBytes(p []byte) {
-	mb.bytes = append(mb.bytes, p...)
-}
-
-func (mb *messageBuffer) reset() {
-	mb.bytes = mb.bytes[:0]
 }
