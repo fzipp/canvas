@@ -87,15 +87,15 @@ func run(ctx *canvas.Context) {
 	}
 }
 
-type Cloth struct {
+type cloth struct {
 	boundsX float64
 	boundsY float64
 	mouse   Mouse
-	points  []*Point
+	points  []*point
 }
 
-func newCloth(canvasWidth int, boundsX, boundsY float64) *Cloth {
-	cloth := &Cloth{
+func newCloth(canvasWidth int, boundsX, boundsY float64) *cloth {
+	cloth := &cloth{
 		boundsX: boundsX,
 		boundsY: boundsY,
 	}
@@ -121,7 +121,7 @@ func newCloth(canvasWidth int, boundsX, boundsY float64) *Cloth {
 	return cloth
 }
 
-func (c *Cloth) handle(event canvas.Event) {
+func (c *cloth) handle(event canvas.Event) {
 	switch e := event.(type) {
 	case canvas.MouseMoveEvent:
 		c.mouse.px = c.mouse.x
@@ -140,7 +140,7 @@ func (c *Cloth) handle(event canvas.Event) {
 	}
 }
 
-func (c *Cloth) update() {
+func (c *cloth) update() {
 	for i := 0; i < physicsAccuracy; i++ {
 		for _, p := range c.points {
 			p.resolveConstraints(c.boundsX, c.boundsY)
@@ -151,7 +151,7 @@ func (c *Cloth) update() {
 	}
 }
 
-func (c *Cloth) draw(ctx *canvas.Context) {
+func (c *cloth) draw(ctx *canvas.Context) {
 	ctx.ClearRect(0, 0,
 		float64(ctx.CanvasWidth()),
 		float64(ctx.CanvasHeight()))
@@ -170,16 +170,16 @@ type Mouse struct {
 	px, py float64
 }
 
-type Point struct {
+type point struct {
 	x, y        float64
 	px, py      float64
 	vx, vy      float64
 	pinX, pinY  float64
-	constraints []*Constraint
+	constraints []*constraint
 }
 
-func newPoint(x, y float64) *Point {
-	return &Point{
+func newPoint(x, y float64) *point {
+	return &point{
 		x: x, y: y,
 		px: x, py: y,
 		vx: 0, vy: 0,
@@ -187,7 +187,7 @@ func newPoint(x, y float64) *Point {
 	}
 }
 
-func (p *Point) update(delta float64, mouse *Mouse) {
+func (p *point) update(delta float64, mouse *Mouse) {
 	if mouse.down {
 		diffX := p.x - mouse.x
 		diffY := p.y - mouse.y
@@ -219,22 +219,22 @@ func (p *Point) update(delta float64, mouse *Mouse) {
 	p.vx = 0
 }
 
-func (p *Point) draw(ctx *canvas.Context) {
+func (p *point) draw(ctx *canvas.Context) {
 	for _, c := range p.constraints {
 		c.draw(ctx)
 	}
 }
 
-func (p *Point) attach(q *Point) {
+func (p *point) attach(q *point) {
 	p.constraints = append(p.constraints, newConstraint(p, q))
 }
 
-func (p *Point) pin(x, y float64) {
+func (p *point) pin(x, y float64) {
 	p.pinX = x
 	p.pinY = y
 }
 
-func (p *Point) addForce(x, y float64) {
+func (p *point) addForce(x, y float64) {
 	p.vx += x
 	p.vy += y
 
@@ -243,7 +243,7 @@ func (p *Point) addForce(x, y float64) {
 	p.vy = math.Floor(p.vy*round) / round
 }
 
-func (p *Point) resolveConstraints(boundsX, boundsY float64) {
+func (p *point) resolveConstraints(boundsX, boundsY float64) {
 	if !math.IsNaN(p.pinX) && !math.IsNaN(p.pinY) {
 		p.x = p.pinX
 		p.y = p.pinY
@@ -270,7 +270,7 @@ func (p *Point) resolveConstraints(boundsX, boundsY float64) {
 	}
 }
 
-func (p *Point) removeConstraint(c *Constraint) {
+func (p *point) removeConstraint(c *constraint) {
 	for i, elem := range p.constraints {
 		if elem == c {
 			p.constraints = append(p.constraints[:i], p.constraints[i+1:]...)
@@ -279,21 +279,21 @@ func (p *Point) removeConstraint(c *Constraint) {
 	}
 }
 
-type Constraint struct {
-	p1, p2 *Point
+type constraint struct {
+	p1, p2 *point
 	length float64
 }
 
-func newConstraint(p1, p2 *Point) *Constraint {
-	return &Constraint{p1: p1, p2: p2, length: spacing}
+func newConstraint(p1, p2 *point) *constraint {
+	return &constraint{p1: p1, p2: p2, length: spacing}
 }
 
-func (c *Constraint) draw(ctx *canvas.Context) {
+func (c *constraint) draw(ctx *canvas.Context) {
 	ctx.MoveTo(c.p1.x, c.p1.y)
 	ctx.LineTo(c.p2.x, c.p2.y)
 }
 
-func (c *Constraint) resolve() {
+func (c *constraint) resolve() {
 	diffX := c.p1.x - c.p2.x
 	diffY := c.p1.y - c.p2.y
 	dist := math.Sqrt(diffX*diffX + diffY*diffY)
