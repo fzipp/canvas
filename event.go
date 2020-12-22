@@ -36,6 +36,9 @@ func (e *MouseEvent) isPressed(k modifierKey) bool {
 type MouseMoveEvent struct{ MouseEvent }
 type MouseDownEvent struct{ MouseEvent }
 type MouseUpEvent struct{ MouseEvent }
+type ClickEvent struct{ MouseEvent }
+type DblClickEvent struct{ MouseEvent }
+type AuxClickEvent struct{ MouseEvent }
 
 type KeyboardEvent struct {
 	Key     string
@@ -64,6 +67,9 @@ const (
 	SendKeyPress
 	SendKeyDown
 	SendKeyUp
+	SendClick
+	SendDblClick
+	SendAuxClick
 )
 
 type MouseButtons int

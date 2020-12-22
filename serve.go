@@ -138,6 +138,9 @@ const (
 	evKeyPress
 	evKeyDown
 	evKeyUp
+	evClick
+	evDblClick
+	evAuxClick
 )
 
 func decodeEvent(p []byte) (Event, error) {
@@ -155,6 +158,12 @@ func decodeEvent(p []byte) (Event, error) {
 		return KeyDownEvent{decodeKeyboardEvent(p)}, nil
 	case evKeyUp:
 		return KeyUpEvent{decodeKeyboardEvent(p)}, nil
+	case evClick:
+		return ClickEvent{decodeMouseEvent(p)}, nil
+	case evDblClick:
+		return DblClickEvent{decodeMouseEvent(p)}, nil
+	case evAuxClick:
+		return AuxClickEvent{decodeMouseEvent(p)}, nil
 	}
 	return nil, errors.New("unknown event type: '" + string(eventType) + "'")
 }

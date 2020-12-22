@@ -72,6 +72,15 @@ document.addEventListener("DOMContentLoaded", function () {
         if (eventMask & 32) {
             document.onkeyup = sendKeyEvent(6);
         }
+        if (eventMask & 64) {
+            document.onclick = sendMouseEvent(7);
+        }
+        if (eventMask & 128) {
+            document.ondblclick = sendMouseEvent(8);
+        }
+        if (eventMask & 256) {
+            document.onauxclick = sendMouseEvent(9);
+        }
 
         const rect = canvas.getBoundingClientRect();
 
