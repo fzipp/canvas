@@ -156,7 +156,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 const width = data.getUint32(5);
                 const height = data.getUint32(9);
                 const len = width * height * 4;
-                const buffer = data.buffer.slice(13, 13 + len);
+                const bufferOffset = data.byteOffset + 13;
+                const buffer = data.buffer.slice(bufferOffset, bufferOffset + len);
                 const array = new Uint8ClampedArray(buffer);
                 const imageData = new ImageData(array, width, height);
                 knownImageData[id] = imageData;
