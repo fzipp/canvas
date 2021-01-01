@@ -43,7 +43,7 @@ func (h *htmlHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		"Width":          h.config.width,
 		"Height":         h.config.height,
 		"Title":          h.config.title,
-		"SendEventMask":  h.config.eventMask,
+		"EventMask":      h.config.eventMask,
 		"CursorDisabled": h.config.cursorDisabled,
 	}
 	err := htmlTemplate.Execute(w, model)

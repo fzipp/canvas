@@ -56,9 +56,9 @@ func main() {
 		canvas.Size(560, 350),
 		canvas.Title("Tearable Cloth"),
 		canvas.EnableEvents(
-			canvas.SendMouseMove,
-			canvas.SendMouseDown,
-			canvas.SendMouseUp,
+			canvas.MouseMoveEvent{},
+			canvas.MouseDownEvent{},
+			canvas.MouseUpEvent{},
 		),
 	)
 }

@@ -20,9 +20,9 @@ func main() {
 		canvas.Title("Breakout"),
 		canvas.DisableCursor(),
 		canvas.EnableEvents(
-			canvas.SendMouseMove,
-			canvas.SendKeyPress,
-			canvas.SendKeyDown,
+			canvas.MouseMoveEvent{},
+			canvas.KeyPressEvent{},
+			canvas.KeyDownEvent{},
 		),
 	)
 }

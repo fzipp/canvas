@@ -24,9 +24,9 @@ The WebSocket communication imposes some overhead, but it is good enough for
 many use cases. Different browsers also have different performance
 characteristics.
 
-## Examples
+## Usage
 
-### Draw a static image
+### Drawing
 
 The `ListenAndServe` function initializes the canvas server and takes the
 following arguments: the network address with the port number to bind to, a
@@ -95,7 +95,7 @@ func main() {
 }
 
 func run(ctx *canvas.Context) {
-	d := &Demo{}
+	d := &demo{}
 	for {
 		select {
 		case <-ctx.Quit():
@@ -109,18 +109,18 @@ func run(ctx *canvas.Context) {
 	}
 }
 
-type Demo struct {
-	X, Y int
+type demo struct {
+	x, y int
 	// ...
 }
 
-func (d *Demo) update() {
-	d.X += 1
-	d.Y += 1
+func (d *demo) update() {
+	d.x += 1
+	d.y += 1
 	// ...
 }
 
-func (d *Demo) draw(ctx *canvas.Context) {
+func (d *demo) draw(ctx *canvas.Context) {
 	// ...
 }
 ```
@@ -149,15 +149,15 @@ func main() {
 		canvas.Size(800, 600),
 		canvas.Title("Example 3: Events"),
 		canvas.EnableEvents(
-			canvas.SendMouseDown,
-			canvas.SendMouseMove,
-			canvas.SendKeyDown,
+			canvas.MouseDownEvent{},
+			canvas.MouseMoveEvent{},
+			canvas.KeyDownEvent{},
 		),
 	)
 }
 
 func run(ctx *canvas.Context) {
-	d := &Demo{}
+	d := &demo{}
 	for {
 		d.update()
 		d.draw(ctx)
@@ -171,11 +171,11 @@ func run(ctx *canvas.Context) {
 	}
 }
 
-type Demo struct {
+type demo struct {
 	// ...
 }
 
-func (d *Demo) handle(event canvas.Event) {
+func (d *demo) handle(event canvas.Event) {
 	switch e := event.(type) {
 	case canvas.MouseDownEvent:
 		// ...
@@ -186,11 +186,11 @@ func (d *Demo) handle(event canvas.Event) {
 	}
 }
 
-func (d *Demo) update() {
+func (d *demo) update() {
 	// ...
 }
 
-func (d *Demo) draw(ctx *canvas.Context) {
+func (d *demo) draw(ctx *canvas.Context) {
 	// ...
 }
 ```

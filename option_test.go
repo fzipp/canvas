@@ -24,7 +24,7 @@ func TestConfigFrom(t *testing.T) {
 		},
 		{
 			"EnableEvents",
-			[]Option{EnableEvents(SendMouseMove, SendMouseDown, SendKeyPress)},
+			[]Option{EnableEvents(MouseMoveEvent{}, MouseDownEvent{}, KeyPressEvent{})},
 			config{eventMask: 0b1011},
 		},
 		{
@@ -37,7 +37,7 @@ func TestConfigFrom(t *testing.T) {
 			[]Option{
 				Title("hello, world"),
 				Size(320, 200),
-				EnableEvents(SendMouseMove, SendMouseDown, SendMouseUp),
+				EnableEvents(MouseMoveEvent{}, MouseDownEvent{}, MouseUpEvent{}),
 				DisableCursor(),
 			},
 			config{

@@ -5,12 +5,17 @@
 package canvas
 
 type Event interface {
+	mask() eventMask
 }
 
 type MouseEvent struct {
 	Buttons MouseButtons
 	X, Y    int
 	modKeys modifierKey
+}
+
+func (e MouseEvent) mask() eventMask {
+	return maskMouseMove | maskMouseUp | maskKeyDown | maskClick | maskDblClick | maskAuxClick
 }
 
 func (e *MouseEvent) AltKey() bool {
@@ -34,20 +39,49 @@ func (e *MouseEvent) isPressed(k modifierKey) bool {
 }
 
 type MouseMoveEvent struct{ MouseEvent }
+
+func (e MouseMoveEvent) mask() eventMask { return maskMouseMove }
+
 type MouseDownEvent struct{ MouseEvent }
+
+func (e MouseDownEvent) mask() eventMask { return maskMouseDown }
+
 type MouseUpEvent struct{ MouseEvent }
+
+func (e MouseUpEvent) mask() eventMask { return maskMouseUp }
+
 type ClickEvent struct{ MouseEvent }
+
+func (e ClickEvent) mask() eventMask { return maskClick }
+
 type DblClickEvent struct{ MouseEvent }
+
+func (e DblClickEvent) mask() eventMask { return maskDblClick }
+
 type AuxClickEvent struct{ MouseEvent }
+
+func (e AuxClickEvent) mask() eventMask { return maskAuxClick }
 
 type KeyboardEvent struct {
 	Key     string
 	modKeys modifierKey
 }
 
+func (e KeyboardEvent) mask() eventMask {
+	return maskKeyPress | maskKeyDown | maskKeyUp
+}
+
 type KeyPressEvent struct{ KeyboardEvent }
+
+func (e KeyPressEvent) mask() eventMask { return maskKeyPress }
+
 type KeyDownEvent struct{ KeyboardEvent }
+
+func (e KeyDownEvent) mask() eventMask { return maskKeyDown }
+
 type KeyUpEvent struct{ KeyboardEvent }
+
+func (e KeyUpEvent) mask() eventMask { return maskKeyUp }
 
 type modifierKey byte
 
@@ -58,18 +92,18 @@ const (
 	modKeyMeta
 )
 
-type SendEventMask int
+type eventMask int
 
 const (
-	SendMouseMove SendEventMask = 1 << iota
-	SendMouseDown
-	SendMouseUp
-	SendKeyPress
-	SendKeyDown
-	SendKeyUp
-	SendClick
-	SendDblClick
-	SendAuxClick
+	maskMouseMove eventMask = 1 << iota
+	maskMouseDown
+	maskMouseUp
+	maskKeyPress
+	maskKeyDown
+	maskKeyUp
+	maskClick
+	maskDblClick
+	maskAuxClick
 )
 
 type MouseButtons int

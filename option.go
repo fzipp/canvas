@@ -19,10 +19,10 @@ func Size(width, height int) Option {
 	}
 }
 
-func EnableEvents(eventTypes ...SendEventMask) Option {
+func EnableEvents(events ...Event) Option {
 	return func(c *config) {
-		for _, eventType := range eventTypes {
-			c.eventMask |= eventType
+		for _, e := range events {
+			c.eventMask |= e.mask()
 		}
 	}
 }
@@ -37,7 +37,7 @@ type config struct {
 	title          string
 	width          int
 	height         int
-	eventMask      SendEventMask
+	eventMask      eventMask
 	cursorDisabled bool
 }
 
