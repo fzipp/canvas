@@ -33,19 +33,26 @@ func TestConfigFrom(t *testing.T) {
 			config{cursorDisabled: true},
 		},
 		{
+			"DisableContextMenu",
+			[]Option{DisableContextMenu()},
+			config{contextMenuDisabled: true},
+		},
+		{
 			"Multiple options",
 			[]Option{
 				Title("hello, world"),
 				Size(320, 200),
 				EnableEvents(MouseMoveEvent{}, MouseDownEvent{}, MouseUpEvent{}),
 				DisableCursor(),
+				DisableContextMenu(),
 			},
 			config{
-				title:          "hello, world",
-				width:          320,
-				height:         200,
-				eventMask:      0b0111,
-				cursorDisabled: true,
+				title:               "hello, world",
+				width:               320,
+				height:              200,
+				eventMask:           0b0111,
+				cursorDisabled:      true,
+				contextMenuDisabled: true,
 			},
 		},
 	}

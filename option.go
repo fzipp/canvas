@@ -33,12 +33,19 @@ func DisableCursor() Option {
 	}
 }
 
+func DisableContextMenu() Option {
+	return func(c *config) {
+		c.contextMenuDisabled = true
+	}
+}
+
 type config struct {
-	title          string
-	width          int
-	height         int
-	eventMask      eventMask
-	cursorDisabled bool
+	title               string
+	width               int
+	height              int
+	eventMask           eventMask
+	cursorDisabled      bool
+	contextMenuDisabled bool
 }
 
 func configFrom(options []Option) config {

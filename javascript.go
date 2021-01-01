@@ -23,9 +23,10 @@ document.addEventListener("DOMContentLoaded", function () {
         const canvas = canvases[i];
         const drawUrl = canvas.dataset.websocketDrawUrl;
         const eventMask = parseInt(canvas.dataset.websocketEventMask, 10);
+        const disableContextMenu = (canvas.dataset.disableContextMenu === "true");
         if (drawUrl) {
             const absoluteDrawUrl = absoluteWebSocketUrl(drawUrl);
-            webSocketCanvas(absoluteDrawUrl, canvas, eventMask);
+            webSocketCanvas(absoluteDrawUrl, canvas, eventMask, disableContextMenu);
         }
     }
 
@@ -38,7 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
         return wsUrl.href;
     }
 
-    function webSocketCanvas(url, canvas, eventMask) {
+    function webSocketCanvas(url, canvas, eventMask, disableContextMenu) {
         const ctx = canvas.getContext("2d");
         const webSocket = new WebSocket(url);
         webSocket.binaryType = "arraybuffer";
@@ -51,6 +52,11 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         };
         webSocketCanvasEvents(webSocket, canvas, eventMask);
+        if (disableContextMenu) {
+             canvas.addEventListener("contextmenu", function (e) {
+                 e.preventDefault();
+             }, false);
+        }
     }
 
     function webSocketCanvasEvents(webSocket, canvas, eventMask) {

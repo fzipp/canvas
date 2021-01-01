@@ -39,12 +39,13 @@ type htmlHandler struct {
 
 func (h *htmlHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	model := map[string]interface{}{
-		"DrawURL":        template.URL("draw"),
-		"Width":          h.config.width,
-		"Height":         h.config.height,
-		"Title":          h.config.title,
-		"EventMask":      h.config.eventMask,
-		"CursorDisabled": h.config.cursorDisabled,
+		"DrawURL":             template.URL("draw"),
+		"Width":               h.config.width,
+		"Height":              h.config.height,
+		"Title":               h.config.title,
+		"EventMask":           h.config.eventMask,
+		"CursorDisabled":      h.config.cursorDisabled,
+		"ContextMenuDisabled": h.config.contextMenuDisabled,
 	}
 	err := htmlTemplate.Execute(w, model)
 	if err != nil {

@@ -21,7 +21,8 @@ func init() {
     <canvas width="{{.Width}}" height="{{.Height}}"
             style="cursor: {{if .CursorDisabled}}none{{else}}default{{end}}"
             data-websocket-draw-url="{{.DrawURL}}"
-            data-websocket-event-mask="{{.EventMask}}"></canvas>
+            data-websocket-event-mask="{{.EventMask}}"
+            data-disable-context-menu="{{.ContextMenuDisabled}}"></canvas>
   </body>
 </html>
 `))
