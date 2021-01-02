@@ -14,23 +14,20 @@ type Gradient struct {
 }
 
 func (g *Gradient) AddColorStop(offset float64, c color.Color) {
-	buf := g.ctx.buf
-	buf.addByte(bGradientAddColorStop)
-	buf.addUint32(g.id)
-	buf.addFloat64(offset)
-	buf.addColor(c)
+	g.ctx.buf.addByte(bGradientAddColorStop)
+	g.ctx.buf.addUint32(g.id)
+	g.ctx.buf.addFloat64(offset)
+	g.ctx.buf.addColor(c)
 }
 
 func (g *Gradient) AddColorStopString(offset float64, color string) {
-	buf := g.ctx.buf
-	buf.addByte(bGradientAddColorStopString)
-	buf.addUint32(g.id)
-	buf.addFloat64(offset)
-	buf.addString(color)
+	g.ctx.buf.addByte(bGradientAddColorStopString)
+	g.ctx.buf.addUint32(g.id)
+	g.ctx.buf.addFloat64(offset)
+	g.ctx.buf.addString(color)
 }
 
 func (g *Gradient) Release() {
-	buf := g.ctx.buf
-	buf.addByte(bReleaseGradient)
-	buf.addUint32(g.id)
+	g.ctx.buf.addByte(bReleaseGradient)
+	g.ctx.buf.addUint32(g.id)
 }
