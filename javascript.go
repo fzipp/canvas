@@ -21,16 +21,24 @@ document.addEventListener("DOMContentLoaded", function () {
     const canvases = document.getElementsByTagName("canvas");
     for (let i = 0; i < canvases.length; i++) {
         const canvas = canvases[i];
-        const drawUrl = canvas.dataset.websocketDrawUrl;
-        const eventMask = parseInt(canvas.dataset.websocketEventMask, 10);
-        const disableContextMenu = (canvas.dataset.disableContextMenu === "true");
-        if (drawUrl) {
-            const absoluteDrawUrl = absoluteWebSocketUrl(drawUrl);
-            webSocketCanvas(absoluteDrawUrl, canvas, eventMask, disableContextMenu);
+        const config = configFrom(canvas.dataset);
+        if (config.drawUrl) {
+            webSocketCanvas(canvas, config);
         }
     }
 
+    function configFrom(dataset) {
+        return {
+            drawUrl: absoluteWebSocketUrl(dataset.websocketDrawUrl),
+            eventMask: parseInt(dataset.websocketEventMask, 10),
+            contextMenuDisabled: (dataset.disableContextMenu === "true")
+        };
+    }
+
     function absoluteWebSocketUrl(url) {
+        if (!url) {
+            return null;
+        }
         if (url.indexOf("ws://") === 0 || url.indexOf("wss://") === 0) {
             return url;
         }
@@ -39,9 +47,9 @@ document.addEventListener("DOMContentLoaded", function () {
         return wsUrl.href;
     }
 
-    function webSocketCanvas(url, canvas, eventMask, disableContextMenu) {
+    function webSocketCanvas(canvas, config) {
         const ctx = canvas.getContext("2d");
-        const webSocket = new WebSocket(url);
+        const webSocket = new WebSocket(config.drawUrl);
         webSocket.binaryType = "arraybuffer";
         webSocket.onmessage = function (event) {
             const data = event.data;
@@ -51,8 +59,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 offset += draw(ctx, new DataView(data, offset));
             }
         };
-        webSocketCanvasEvents(webSocket, canvas, eventMask);
-        if (disableContextMenu) {
+        webSocketCanvasEvents(webSocket, canvas, config.eventMask);
+        if (config.contextMenuDisabled) {
              canvas.addEventListener("contextmenu", function (e) {
                  e.preventDefault();
              }, false);
