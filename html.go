@@ -18,6 +18,7 @@ func init() {
     <style>body {margin: 0}</style>
   </head>
   <body>
+    <noscript><p>Please enable JavaScript in your browser.</p></noscript>
     <canvas width="{{.Width}}" height="{{.Height}}"
             style="cursor: {{if .CursorDisabled}}none{{else}}default{{end}}"
             data-websocket-draw-url="{{.DrawURL}}"
