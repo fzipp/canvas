@@ -13,10 +13,10 @@ func init() {
 document.addEventListener("DOMContentLoaded", function () {
     "use strict";
 
-    const knownImageData = {};
-    const offscreenCanvas = {};
-    const knownGradients = {};
-    const knownPatterns = {};
+    const allocImageData = {};
+    const allocOffscreenCanvas = {};
+    const allocGradient = {};
+    const allocPattern = {};
 
     const canvases = document.getElementsByTagName("canvas");
     for (let i = 0; i < canvases.length; i++) {
@@ -183,12 +183,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 const buffer = data.buffer.slice(bufferOffset, bufferOffset + len);
                 const array = new Uint8ClampedArray(buffer);
                 const imageData = new ImageData(array, width, height);
-                knownImageData[id] = imageData;
+                allocImageData[id] = imageData;
                 const offCanvas = document.createElement("canvas");
                 offCanvas.width = width;
                 offCanvas.height = height;
                 offCanvas.getContext("2d").putImageData(imageData, 0, 0);
-                offscreenCanvas[id] = offCanvas;
+                allocOffscreenCanvas[id] = offCanvas;
                 return 13 + len;
             }
             case 9: {
@@ -197,12 +197,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 const y0 = data.getFloat64(13);
                 const x1 = data.getFloat64(21);
                 const y1 = data.getFloat64(29);
-                knownGradients[id] = ctx.createLinearGradient(x0, y0, x1, y1);
+                allocGradient[id] = ctx.createLinearGradient(x0, y0, x1, y1);
                 return 37;
             }
             case 10: {
                 const id = data.getUint32(1);
-                const image = offscreenCanvas[data.getUint32(5)];
+                const image = allocOffscreenCanvas[data.getUint32(5)];
                 let repetition = null;
                 switch (data.getUint8(9)) {
                     case 0:
@@ -218,7 +218,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         repetition = "no-repeat";
                         break;
                 }
-                knownPatterns[id] = ctx.createPattern(image, repetition);
+                allocPattern[id] = ctx.createPattern(image, repetition);
                 return 10;
             }
             case 11: {
@@ -229,11 +229,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 const x1 = data.getFloat64(29);
                 const y1 = data.getFloat64(37);
                 const r1 = data.getFloat64(45);
-                knownGradients[id] = ctx.createRadialGradient(x0, y0, r0, x1, y1, r1);
+                allocGradient[id] = ctx.createRadialGradient(x0, y0, r0, x1, y1, r1);
                 return 53;
             }
             case 13:
-                ctx.drawImage(offscreenCanvas[data.getUint32(1)],
+                ctx.drawImage(allocOffscreenCanvas[data.getUint32(1)],
                     data.getFloat64(5), data.getFloat64(13));
                 return 21;
             case 14:
@@ -266,7 +266,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             case 20: {
                 const id = data.getUint32(1);
-                const gradient = knownGradients[id];
+                const gradient = allocGradient[id];
                 gradient.addColorStop(data.getFloat64(5), getRGBA(data, 13));
                 return 17;
             }
@@ -274,12 +274,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 const id = data.getUint32(1);
                 const offset = data.getFloat64(5);
                 const color = getString(data, 13);
-                const gradient = knownGradients[id];
+                const gradient = allocGradient[id];
                 gradient.addColorStop(offset, color.value);
                 return 13 + color.byteLen;
             }
             case 22:
-                ctx.fillStyle = knownGradients[data.getUint32(1)];
+                ctx.fillStyle = allocGradient[data.getUint32(1)];
                 return 5;
             case 23:
                 ctx.globalAlpha = data.getFloat64(1);
@@ -372,11 +372,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 ctx.imageSmoothingEnabled = !!data.getUint8(1);
                 return 2;
             case 26:
-                ctx.strokeStyle = knownGradients[data.getUint32(1)];
+                ctx.strokeStyle = allocGradient[data.getUint32(1)];
                 return 5;
             case 27: {
                 const id = data.getUint32(1);
-                knownPatterns[id] = null;
+                allocPattern[id] = null;
                 return 5;
             }
             case 28:
@@ -420,7 +420,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return 9;
             case 33: {
                 const id = data.getUint32(1);
-                knownGradients[id] = null;
+                allocGradient[id] = null;
                 return 5;
             }
             case 34:
@@ -430,7 +430,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 ctx.moveTo(data.getFloat64(1), data.getFloat64(9));
                 return 17;
             case 36:
-                ctx.putImageData(knownImageData[data.getUint32(1)],
+                ctx.putImageData(allocImageData[data.getUint32(1)],
                     data.getFloat64(5), data.getFloat64(13));
                 return 21;
             case 37:
@@ -580,18 +580,18 @@ document.addEventListener("DOMContentLoaded", function () {
                 return 1 + color.byteLen;
             }
             case 62:
-                ctx.putImageData(knownImageData[data.getUint32(1)],
+                ctx.putImageData(allocImageData[data.getUint32(1)],
                     data.getFloat64(5), data.getFloat64(13),
                     data.getFloat64(21), data.getFloat64(29),
                     data.getFloat64(37), data.getFloat64(45));
                 return 53;
             case 63:
-                ctx.drawImage(offscreenCanvas[data.getUint32(1)],
+                ctx.drawImage(allocOffscreenCanvas[data.getUint32(1)],
                     data.getFloat64(5), data.getFloat64(13),
                     data.getFloat64(21), data.getFloat64(29));
                 return 37;
             case 64:
-                ctx.drawImage(offscreenCanvas[data.getUint32(1)],
+                ctx.drawImage(allocOffscreenCanvas[data.getUint32(1)],
                     data.getFloat64(5), data.getFloat64(13),
                     data.getFloat64(21), data.getFloat64(29),
                     data.getFloat64(37), data.getFloat64(45),
@@ -599,15 +599,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 return 69;
             case 65: {
                 const id = data.getUint32(1);
-                knownImageData[id] = null;
-                offscreenCanvas[id] = null;
+                allocImageData[id] = null;
+                allocOffscreenCanvas[id] = null;
                 return 5;
             }
             case 66:
-                ctx.fillStyle = knownPatterns[data.getUint32(1)];
+                ctx.fillStyle = allocPattern[data.getUint32(1)];
                 return 5;
             case 67:
-                ctx.strokeStyle = knownPatterns[data.getUint32(1)];
+                ctx.strokeStyle = allocPattern[data.getUint32(1)];
                 return 5;
         }
         return 1;
