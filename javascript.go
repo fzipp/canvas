@@ -80,7 +80,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 offset += draw(ctx, new DataView(data, offset));
             }
         };
-        webSocketCanvasEvents(webSocket, canvas, config.eventMask);
+        webSocket.onopen = function () {
+            webSocketCanvasEvents(webSocket, canvas, config.eventMask);
+        };
         if (config.contextMenuDisabled) {
              canvas.addEventListener("contextmenu", function (e) {
                  e.preventDefault();
