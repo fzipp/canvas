@@ -18,6 +18,27 @@ document.addEventListener("DOMContentLoaded", function () {
     const allocGradient = {};
     const allocPattern = {};
 
+    const enumRepetition = ["repeat", "repeat-x", "repeat-y", "no-repeat"];
+
+    const enumCompositeOperation = [
+        "source-over", "source-in", "source-out", "source-atop",
+        "destination-over", "destination-in", "destination-out",
+        "destination-atop", "lighter", "copy", "xor", "multiply", "screen",
+        "overlay", "darken", "lighten", "color-dodge", "color-burn",
+        "hard-light", "soft-light", "difference", "exclusion", "hue",
+        "saturation", "color", "luminosity"
+    ];
+
+    const enumLineCap = ["butt", "round", "square"];
+
+    const enumLineJoin = ["miter", "round", "bevel"];
+
+    const enumTextAlign = ["start", "end", "left", "right", "center"];
+
+    const enumTextBaseline = [
+        "alphabetic", "ideographic", "top", "bottom", "middle"
+    ];
+
     const canvases = document.getElementsByTagName("canvas");
     for (let i = 0; i < canvases.length; i++) {
         const canvas = canvases[i];
@@ -203,21 +224,7 @@ document.addEventListener("DOMContentLoaded", function () {
             case 10: {
                 const id = data.getUint32(1);
                 const image = allocOffscreenCanvas[data.getUint32(5)];
-                let repetition = null;
-                switch (data.getUint8(9)) {
-                    case 0:
-                        repetition = "repeat";
-                        break;
-                    case 1:
-                        repetition = "repeat-x";
-                        break;
-                    case 2:
-                        repetition = "repeat-y";
-                        break;
-                    case 3:
-                        repetition = "no-repeat";
-                        break;
-                }
+                const repetition = enumRepetition[data.getUint8(9)];
                 allocPattern[id] = ctx.createPattern(image, repetition);
                 return 10;
             }
@@ -285,88 +292,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 ctx.globalAlpha = data.getFloat64(1);
                 return 9;
             case 24:
-                let mode = null;
-                switch (data.getUint8(1)) {
-                    case 0:
-                        mode = "source-over";
-                        break;
-                    case 1:
-                        mode = "source-in";
-                        break;
-                    case 2:
-                        mode = "source-out";
-                        break;
-                    case 3:
-                        mode = "source-atop";
-                        break;
-                    case 4:
-                        mode = "destination-over";
-                        break;
-                    case 5:
-                        mode = "destination-in";
-                        break;
-                    case 6:
-                        mode = "destination-out";
-                        break;
-                    case 7:
-                        mode = "destination-atop";
-                        break;
-                    case 8:
-                        mode = "lighter";
-                        break;
-                    case 9:
-                        mode = "copy";
-                        break;
-                    case 10:
-                        mode = "xor";
-                        break;
-                    case 11:
-                        mode = "multiply";
-                        break;
-                    case 12:
-                        mode = "screen";
-                        break;
-                    case 13:
-                        mode = "overlay";
-                        break;
-                    case 14:
-                        mode = "darken";
-                        break;
-                    case 15:
-                        mode = "lighten";
-                        break;
-                    case 16:
-                        mode = "color-dodge";
-                        break;
-                    case 17:
-                        mode = "color-burn";
-                        break;
-                    case 18:
-                        mode = "hard-light";
-                        break;
-                    case 19:
-                        mode = "soft-light";
-                        break;
-                    case 20:
-                        mode = "difference";
-                        break;
-                    case 21:
-                        mode = "exclusion";
-                        break;
-                    case 22:
-                        mode = "hue";
-                        break;
-                    case 23:
-                        mode = "saturation";
-                        break;
-                    case 24:
-                        mode = "color";
-                        break;
-                    case 25:
-                        mode = "luminosity";
-                        break;
-                }
-                ctx.globalCompositeOperation = mode;
+                ctx.globalCompositeOperation = enumCompositeOperation[data.getUint8(1)];
                 return 2;
             case 25:
                 ctx.imageSmoothingEnabled = !!data.getUint8(1);
@@ -380,37 +306,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 return 5;
             }
             case 28:
-                let cap = null;
-                switch (data.getUint8(1)) {
-                    case 0:
-                        cap = "butt";
-                        break;
-                    case 1:
-                        cap = "round";
-                        break;
-                    case 2:
-                        cap = "square";
-                        break;
-                }
-                ctx.lineCap = cap;
+                ctx.lineCap = enumLineCap[data.getUint8(1)];
                 return 2;
             case 29:
                 ctx.lineDashOffset = data.getFloat64(1);
                 return 9;
             case 30:
-                let join = null;
-                switch (data.getUint8(1)) {
-                    case 0:
-                        join = "miter";
-                        break;
-                    case 1:
-                        join = "round";
-                        break;
-                    case 2:
-                        join = "bevel";
-                        break;
-                }
-                ctx.lineJoin = join;
+                ctx.lineJoin = enumLineJoin[data.getUint8(1)];
                 return 2;
             case 31:
                 ctx.lineTo(data.getFloat64(1), data.getFloat64(9));
@@ -501,49 +403,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 return 17 + text.byteLen;
             }
             case 53:
-                let align = null;
-                switch (data.getUint8(1)) {
-                    case 0:
-                        align = "start";
-                        break;
-                    case 1:
-                        align = "end";
-                        break;
-                    case 2:
-                        align = "left";
-                        break;
-                    case 3:
-                        align = "right";
-                        break;
-                    case 4:
-                        align = "center";
-                        break;
-                }
-                ctx.textAlign = align;
+                ctx.textAlign = enumTextAlign[data.getUint8(1)];
                 return 2;
             case 54:
-                let baseline = null;
-                switch (data.getUint8(1)) {
-                    case 0:
-                        baseline = "alphabetic";
-                        break;
-                    case 1:
-                        baseline = "ideographic";
-                        break;
-                    case 2:
-                        baseline = "top";
-                        break;
-                    case 3:
-                        baseline = "bottom";
-                        break;
-                    case 4:
-                        baseline = "hanging";
-                        break;
-                    case 5:
-                        baseline = "middle";
-                        break;
-                }
-                ctx.textBaseline = baseline;
+                ctx.textBaseline = enumTextBaseline[data.getUint8(1)];
                 return 2;
             case 55:
                 ctx.transform(
