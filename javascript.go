@@ -53,9 +53,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function configFrom(dataset) {
         return {
-            drawUrl: absoluteWebSocketUrl(dataset.websocketDrawUrl),
-            eventMask: parseInt(dataset.websocketEventMask, 10),
-            contextMenuDisabled: (dataset.disableContextMenu === "true"),
+            drawUrl: absoluteWebSocketUrl(dataset["websocketDrawUrl"]),
+            eventMask: parseInt(dataset["websocketEventMask"], 10),
+            contextMenuDisabled: (dataset["disableContextMenu"] === "true"),
             reconnectInterval: 1000
         };
     }
@@ -80,10 +80,10 @@ document.addEventListener("DOMContentLoaded", function () {
         webSocket.addEventListener("open", function () {
             handlers = addEventListeners(canvas, config.eventMask, webSocket);
         });
-        webSocket.addEventListener("error", function (err) {
+        webSocket.addEventListener("error", function () {
             webSocket.close();
         });
-        webSocket.addEventListener("close", function (e) {
+        webSocket.addEventListener("close", function () {
             removeEventListeners(canvas, handlers);
             setTimeout(function () {
                 webSocketCanvas(canvas, config);
@@ -130,7 +130,7 @@ document.addEventListener("DOMContentLoaded", function () {
             handlers["auxclick"] = sendMouseEvent(9);
         }
 
-        Object.keys(handlers).forEach(function(type) {
+        Object.keys(handlers).forEach(function (type) {
             const target = (type.indexOf("key") !== 0) ? canvas : document;
             target.addEventListener(type, handlers[type]);
         });
@@ -169,7 +169,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function removeEventListeners(canvas, handlers) {
-        Object.keys(handlers).forEach(function(type) {
+        Object.keys(handlers).forEach(function (type) {
             const target = (type.indexOf("key") !== 0) ? canvas : document;
             target.removeEventListener(type, handlers[type]);
         });
