@@ -45,6 +45,9 @@ document.addEventListener("DOMContentLoaded", function () {
         const config = configFrom(canvas.dataset);
         if (config.drawUrl) {
             webSocketCanvas(canvas, config);
+            if (config.contextMenuDisabled) {
+                disableContextMenu(canvas);
+            }
         }
     }
 
@@ -52,7 +55,8 @@ document.addEventListener("DOMContentLoaded", function () {
         return {
             drawUrl: absoluteWebSocketUrl(dataset.websocketDrawUrl),
             eventMask: parseInt(dataset.websocketEventMask, 10),
-            contextMenuDisabled: (dataset.disableContextMenu === "true")
+            contextMenuDisabled: (dataset.disableContextMenu === "true"),
+            reconnectInterval: 1000
         };
     }
 
@@ -71,53 +75,65 @@ document.addEventListener("DOMContentLoaded", function () {
     function webSocketCanvas(canvas, config) {
         const ctx = canvas.getContext("2d");
         const webSocket = new WebSocket(config.drawUrl);
+        let handlers = {};
         webSocket.binaryType = "arraybuffer";
-        webSocket.onmessage = function (event) {
+        webSocket.addEventListener("open", function () {
+            handlers = addEventListeners(canvas, config.eventMask, webSocket);
+        });
+        webSocket.addEventListener("error", function (err) {
+            webSocket.close();
+        });
+        webSocket.addEventListener("close", function (e) {
+            removeEventListeners(canvas, handlers);
+            setTimeout(function () {
+                webSocketCanvas(canvas, config);
+            }, config.reconnectInterval);
+        });
+        webSocket.addEventListener("message", function (event) {
             const data = event.data;
             let offset = 0;
             const len = data.byteLength;
             while (offset < len) {
                 offset += draw(ctx, new DataView(data, offset));
             }
-        };
-        webSocket.onopen = function () {
-            webSocketCanvasEvents(webSocket, canvas, config.eventMask);
-        };
-        if (config.contextMenuDisabled) {
-             canvas.addEventListener("contextmenu", function (e) {
-                 e.preventDefault();
-             }, false);
-        }
+        });
     }
 
-    function webSocketCanvasEvents(webSocket, canvas, eventMask) {
+    function addEventListeners(canvas, eventMask, webSocket) {
+        const handlers = {};
+
         if (eventMask & 1) {
-            canvas.onmousemove = sendMouseEvent(1);
+            handlers["mousemove"] = sendMouseEvent(1);
         }
         if (eventMask & 2) {
-            canvas.onmousedown = sendMouseEvent(2);
+            handlers["mousedown"] = sendMouseEvent(2);
         }
         if (eventMask & 4) {
-            canvas.onmouseup = sendMouseEvent(3);
+            handlers["onmouseup"] = sendMouseEvent(3);
         }
         if (eventMask & 8) {
-            document.onkeypress = sendKeyEvent(4);
+            handlers["keypress"] = sendKeyEvent(4);
         }
         if (eventMask & 16) {
-            document.onkeydown = sendKeyEvent(5);
+            handlers["keydown"] = sendKeyEvent(5);
         }
         if (eventMask & 32) {
-            document.onkeyup = sendKeyEvent(6);
+            handlers["keyup"] = sendKeyEvent(6);
         }
         if (eventMask & 64) {
-            document.onclick = sendMouseEvent(7);
+            handlers["click"] = sendMouseEvent(7);
         }
         if (eventMask & 128) {
-            document.ondblclick = sendMouseEvent(8);
+            handlers["dblclick"] = sendMouseEvent(8);
         }
         if (eventMask & 256) {
-            document.onauxclick = sendMouseEvent(9);
+            handlers["auxclick"] = sendMouseEvent(9);
         }
+
+        Object.keys(handlers).forEach(function(type) {
+            const target = (type.indexOf("key") !== 0) ? canvas : document;
+            target.addEventListener(type, handlers[type]);
+        });
 
         const rect = canvas.getBoundingClientRect();
 
@@ -148,6 +164,21 @@ document.addEventListener("DOMContentLoaded", function () {
                 webSocket.send(eventMessage);
             };
         }
+
+        return handlers;
+    }
+
+    function removeEventListeners(canvas, handlers) {
+        Object.keys(handlers).forEach(function(type) {
+            const target = (type.indexOf("key") !== 0) ? canvas : document;
+            target.removeEventListener(type, handlers[type]);
+        });
+    }
+
+    function disableContextMenu(canvas) {
+        canvas.addEventListener("contextmenu", function (e) {
+            e.preventDefault();
+        }, false);
     }
 
     function encodeModifierKeys(event) {
