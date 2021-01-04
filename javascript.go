@@ -54,9 +54,9 @@ document.addEventListener("DOMContentLoaded", function () {
     function configFrom(dataset) {
         return {
             drawUrl: absoluteWebSocketUrl(dataset["websocketDrawUrl"]),
-            eventMask: parseInt(dataset["websocketEventMask"], 10),
-            contextMenuDisabled: (dataset["disableContextMenu"] === "true"),
-            reconnectInterval: 1000
+            eventMask: parseInt(dataset["websocketEventMask"], 10) || 0,
+            reconnectInterval: parseInt(dataset["websocketReconnectInterval"], 10) || 0,
+            contextMenuDisabled: (dataset["disableContextMenu"] === "true")
         };
     }
 
@@ -85,6 +85,9 @@ document.addEventListener("DOMContentLoaded", function () {
         });
         webSocket.addEventListener("close", function () {
             removeEventListeners(canvas, handlers);
+            if (!config.reconnectInterval) {
+                return;
+            }
             setTimeout(function () {
                 webSocketCanvas(canvas, config);
             }, config.reconnectInterval);

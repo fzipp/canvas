@@ -4,6 +4,8 @@
 
 package canvas
 
+import "time"
+
 type Option func(c *config)
 
 func Title(text string) Option {
@@ -39,6 +41,12 @@ func DisableContextMenu() Option {
 	}
 }
 
+func Reconnect(interval time.Duration) Option {
+	return func(c *config) {
+		c.reconnectInterval = interval
+	}
+}
+
 type config struct {
 	title               string
 	width               int
@@ -46,6 +54,7 @@ type config struct {
 	eventMask           eventMask
 	cursorDisabled      bool
 	contextMenuDisabled bool
+	reconnectInterval   time.Duration
 }
 
 func configFrom(options []Option) config {

@@ -23,6 +23,7 @@ func init() {
             style="cursor: {{if .CursorDisabled}}none{{else}}default{{end}}"
             data-websocket-draw-url="{{.DrawURL}}"
             data-websocket-event-mask="{{.EventMask}}"
+            data-websocket-reconnect-interval="{{.ReconnectInterval}}"
             data-disable-context-menu="{{.ContextMenuDisabled}}"></canvas>
   </body>
 </html>
