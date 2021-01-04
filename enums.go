@@ -149,4 +149,5 @@ const (
 	bReleaseImageData
 	bFillStylePattern
 	bStrokeStylePattern
+	bGetImageData
 )

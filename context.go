@@ -20,9 +20,9 @@ type Context struct {
 	quit   <-chan struct{}
 	buf    buffer
 
-	imageIDs    idGenerator
-	gradientIDs idGenerator
-	patternIDs  idGenerator
+	imageDataIDs idGenerator
+	gradientIDs  idGenerator
+	patternIDs   idGenerator
 }
 
 func newContext(draws chan<- []byte, events <-chan Event, quit <-chan struct{}, config config) *Context {
@@ -369,7 +369,7 @@ func (ctx *Context) SetLineDash(segments []float64) {
 func (ctx *Context) CreateImageData(img image.Image) *ImageData {
 	rgba := ensureRGBA(img)
 	bounds := img.Bounds()
-	id := ctx.imageIDs.GenerateID()
+	id := ctx.imageDataIDs.GenerateID()
 	ctx.buf.addByte(bCreateImageData)
 	ctx.buf.addUint32(id)
 	ctx.buf.addUint32(uint32(bounds.Dx()))
@@ -456,6 +456,17 @@ func (ctx *Context) CreatePattern(img *ImageData, repetition PatternRepetition) 
 	ctx.buf.addUint32(img.id)
 	ctx.buf.addByte(byte(repetition))
 	return &Pattern{id: id, ctx: ctx}
+}
+
+func (ctx *Context) GetImageData(sx, sy, sw, sh float64) *ImageData {
+	id := ctx.imageDataIDs.GenerateID()
+	ctx.buf.addByte(bGetImageData)
+	ctx.buf.addUint32(id)
+	ctx.buf.addFloat64(sx)
+	ctx.buf.addFloat64(sy)
+	ctx.buf.addFloat64(sw)
+	ctx.buf.addFloat64(sh)
+	return &ImageData{id: id, ctx: ctx, width: int(sw), height: int(sh)}
 }
 
 func (ctx *Context) Flush() {

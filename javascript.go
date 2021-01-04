@@ -508,6 +508,14 @@ document.addEventListener("DOMContentLoaded", function () {
             case 67:
                 ctx.strokeStyle = allocPattern[data.getUint32(1)];
                 return 5;
+            case 68: {
+                const id = data.getUint32(1);
+                const imageData = ctx.getImageData(
+                    data.getFloat64(5), data.getFloat64(13),
+                    data.getFloat64(21), data.getFloat64(29));
+                allocImageData[id] = imageData;
+                return 37;
+            }
         }
         return 1;
     }
