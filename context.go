@@ -366,7 +366,7 @@ func (ctx *Context) SetLineDash(segments []float64) {
 	}
 }
 
-func (ctx *Context) CreateImageData(img image.Image) *Image {
+func (ctx *Context) CreateImageData(img image.Image) *ImageData {
 	rgba := ensureRGBA(img)
 	bounds := img.Bounds()
 	id := ctx.imageIDs.GenerateID()
@@ -375,17 +375,17 @@ func (ctx *Context) CreateImageData(img image.Image) *Image {
 	ctx.buf.addUint32(uint32(bounds.Dx()))
 	ctx.buf.addUint32(uint32(bounds.Dy()))
 	ctx.buf.addBytes(rgba.Pix)
-	return &Image{id: id, ctx: ctx, width: bounds.Dx(), height: bounds.Dy()}
+	return &ImageData{id: id, ctx: ctx, width: bounds.Dx(), height: bounds.Dy()}
 }
 
-func (ctx *Context) PutImageData(img *Image, dx, dy float64) {
+func (ctx *Context) PutImageData(img *ImageData, dx, dy float64) {
 	ctx.buf.addByte(bPutImageData)
 	ctx.buf.addUint32(img.id)
 	ctx.buf.addFloat64(dx)
 	ctx.buf.addFloat64(dy)
 }
 
-func (ctx *Context) PutImageDataDirty(img *Image, dx, dy, dirtyX, dirtyY, dirtyWidth, dirtyHeight float64) {
+func (ctx *Context) PutImageDataDirty(img *ImageData, dx, dy, dirtyX, dirtyY, dirtyWidth, dirtyHeight float64) {
 	ctx.buf.addByte(bPutImageDataDirty)
 	ctx.buf.addUint32(img.id)
 	ctx.buf.addFloat64(dx)
@@ -396,14 +396,14 @@ func (ctx *Context) PutImageDataDirty(img *Image, dx, dy, dirtyX, dirtyY, dirtyW
 	ctx.buf.addFloat64(dirtyHeight)
 }
 
-func (ctx *Context) DrawImage(img *Image, dx, dy float64) {
+func (ctx *Context) DrawImage(img *ImageData, dx, dy float64) {
 	ctx.buf.addByte(bDrawImage)
 	ctx.buf.addUint32(img.id)
 	ctx.buf.addFloat64(dx)
 	ctx.buf.addFloat64(dy)
 }
 
-func (ctx *Context) DrawImageScaled(img *Image, dx, dy, dWidth, dHeight float64) {
+func (ctx *Context) DrawImageScaled(img *ImageData, dx, dy, dWidth, dHeight float64) {
 	ctx.buf.addByte(bDrawImageScaled)
 	ctx.buf.addUint32(img.id)
 	ctx.buf.addFloat64(dx)
@@ -412,7 +412,7 @@ func (ctx *Context) DrawImageScaled(img *Image, dx, dy, dWidth, dHeight float64)
 	ctx.buf.addFloat64(dHeight)
 }
 
-func (ctx *Context) DrawImageSubRectangle(img *Image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight float64) {
+func (ctx *Context) DrawImageSubRectangle(img *ImageData, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight float64) {
 	ctx.buf.addByte(bDrawImageSubRectangle)
 	ctx.buf.addUint32(img.id)
 	ctx.buf.addFloat64(sx)
@@ -449,7 +449,7 @@ func (ctx *Context) CreateRadialGradient(x0, y0, r0, x1, y1, r1 float64) *Gradie
 	return &Gradient{id: id, ctx: ctx}
 }
 
-func (ctx *Context) CreatePattern(img *Image, repetition PatternRepetition) *Pattern {
+func (ctx *Context) CreatePattern(img *ImageData, repetition PatternRepetition) *Pattern {
 	id := ctx.patternIDs.GenerateID()
 	ctx.buf.addByte(bCreatePattern)
 	ctx.buf.addUint32(id)

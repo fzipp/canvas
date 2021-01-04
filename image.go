@@ -9,24 +9,24 @@ import (
 	"image/draw"
 )
 
-type Image struct {
+type ImageData struct {
 	id     uint32
 	ctx    *Context
 	width  int
 	height int
 }
 
-func (img *Image) Width() int {
-	return img.width
+func (m *ImageData) Width() int {
+	return m.width
 }
 
-func (img *Image) Height() int {
-	return img.height
+func (m *ImageData) Height() int {
+	return m.height
 }
 
-func (img *Image) Release() {
-	img.ctx.buf.addByte(bReleaseImage)
-	img.ctx.buf.addUint32(img.id)
+func (m *ImageData) Release() {
+	m.ctx.buf.addByte(bReleaseImageData)
+	m.ctx.buf.addUint32(m.id)
 }
 
 func ensureRGBA(img image.Image) *image.RGBA {

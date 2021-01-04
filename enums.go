@@ -146,7 +146,7 @@ const (
 	bPutImageDataDirty
 	bDrawImageScaled
 	bDrawImageSubRectangle
-	bReleaseImage
+	bReleaseImageData
 	bFillStylePattern
 	bStrokeStylePattern
 )

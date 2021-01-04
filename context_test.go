@@ -619,7 +619,7 @@ func TestContextDrawing(t *testing.T) {
 		{
 			"PutImageData",
 			func(ctx *Context) {
-				img := &Image{id: 255, ctx: ctx}
+				img := &ImageData{id: 255, ctx: ctx}
 				ctx.PutImageData(img, 30, 45)
 			},
 			[]byte{
@@ -632,7 +632,7 @@ func TestContextDrawing(t *testing.T) {
 		{
 			"PutImageDataDirty",
 			func(ctx *Context) {
-				img := &Image{id: 256, ctx: ctx}
+				img := &ImageData{id: 256, ctx: ctx}
 				ctx.PutImageDataDirty(img, 320, 200, 110, 85, 50, 40)
 			},
 			[]byte{
@@ -649,7 +649,7 @@ func TestContextDrawing(t *testing.T) {
 		{
 			"DrawImage",
 			func(ctx *Context) {
-				img := &Image{id: 3, ctx: ctx}
+				img := &ImageData{id: 3, ctx: ctx}
 				ctx.DrawImage(img, 80, 90)
 			},
 			[]byte{
@@ -662,7 +662,7 @@ func TestContextDrawing(t *testing.T) {
 		{
 			"DrawImageScaled",
 			func(ctx *Context) {
-				img := &Image{id: 1000000, ctx: ctx}
+				img := &ImageData{id: 1000000, ctx: ctx}
 				ctx.DrawImageScaled(img, 400, 500, 2.5, 3.2)
 			},
 			[]byte{
@@ -677,7 +677,7 @@ func TestContextDrawing(t *testing.T) {
 		{
 			"DrawImageSubRectangle",
 			func(ctx *Context) {
-				img := &Image{id: 65535, ctx: ctx}
+				img := &ImageData{id: 65535, ctx: ctx}
 				ctx.DrawImageSubRectangle(img, 42, 32, 30, 24, 10, 15, 40, 34)
 			},
 			[]byte{
@@ -694,9 +694,9 @@ func TestContextDrawing(t *testing.T) {
 			},
 		},
 		{
-			"Image.Release",
+			"ImageData.Release",
 			func(ctx *Context) {
-				img := &Image{id: 999, ctx: ctx}
+				img := &ImageData{id: 999, ctx: ctx}
 				img.Release()
 			},
 			[]byte{
@@ -803,13 +803,13 @@ func TestContextDrawing(t *testing.T) {
 		{
 			"CreatePattern",
 			func(ctx *Context) {
-				img := &Image{id: 16}
+				img := &ImageData{id: 16}
 				ctx.CreatePattern(img, PatternRepeatX)
 			},
 			[]byte{
 				0x0a,                   // CreatePattern
 				0x00, 0x00, 0x00, 0x00, // ID
-				0x00, 0x00, 0x00, 0x10, // Image ID
+				0x00, 0x00, 0x00, 0x10, // ImageData ID
 				0x01,
 			},
 		},
