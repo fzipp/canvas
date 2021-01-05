@@ -62,6 +62,26 @@ type AuxClickEvent struct{ MouseEvent }
 
 func (e AuxClickEvent) mask() eventMask { return maskAuxClick }
 
+type WheelEvent struct {
+	MouseEvent
+	DeltaX    float64
+	DeltaY    float64
+	DeltaZ    float64
+	DeltaMode DeltaMode
+}
+
+func (e WheelEvent) mask() eventMask {
+	return maskWheel
+}
+
+type DeltaMode byte
+
+const (
+	DeltaPixel DeltaMode = iota
+	DeltaLine
+	DeltaPage
+)
+
 type KeyboardEvent struct {
 	Key     string
 	modKeys modifierKey
@@ -104,6 +124,7 @@ const (
 	maskClick
 	maskDblClick
 	maskAuxClick
+	maskWheel
 )
 
 type MouseButtons int

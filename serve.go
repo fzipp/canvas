@@ -11,6 +11,7 @@ import (
 	"errors"
 	"html/template"
 	"log"
+	"math"
 	"net/http"
 	"sync"
 	"time"
@@ -144,6 +145,7 @@ const (
 	evClick
 	evDblClick
 	evAuxClick
+	evWheel
 )
 
 func decodeEvent(p []byte) (Event, error) {
@@ -167,6 +169,8 @@ func decodeEvent(p []byte) (Event, error) {
 		return DblClickEvent{decodeMouseEvent(p)}, nil
 	case evAuxClick:
 		return AuxClickEvent{decodeMouseEvent(p)}, nil
+	case evWheel:
+		return decodeWheelEvent(p), nil
 	}
 	return nil, errors.New("unknown event type: '" + string(eventType) + "'")
 }
@@ -185,5 +189,15 @@ func decodeKeyboardEvent(p []byte) KeyboardEvent {
 	return KeyboardEvent{
 		Key:     string(p[6 : 6+keyStringLength]),
 		modKeys: modifierKey(p[1]),
+	}
+}
+
+func decodeWheelEvent(p []byte) WheelEvent {
+	return WheelEvent{
+		MouseEvent: decodeMouseEvent(p),
+		DeltaX:     math.Float64frombits(byteOrder.Uint64(p[11:])),
+		DeltaY:     math.Float64frombits(byteOrder.Uint64(p[19:])),
+		DeltaZ:     math.Float64frombits(byteOrder.Uint64(p[27:])),
+		DeltaMode:  DeltaMode(p[35]),
 	}
 }

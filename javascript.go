@@ -132,6 +132,9 @@ document.addEventListener("DOMContentLoaded", function () {
         if (eventMask & 256) {
             handlers["auxclick"] = sendMouseEvent(9);
         }
+        if (eventMask & 512) {
+            handlers["wheel"] = sendWheelEvent(10);
+        }
 
         Object.keys(handlers).forEach(function (type) {
             const target = (type.indexOf("key") !== 0) ? canvas : document;
@@ -143,14 +146,31 @@ document.addEventListener("DOMContentLoaded", function () {
         function sendMouseEvent(eventType) {
             return function (event) {
                 const eventMessage = new ArrayBuffer(11);
-                const data = new DataView(eventMessage);
-                data.setUint8(0, eventType);
-                data.setUint8(1, event.buttons);
-                data.setUint32(2, event.clientX - rect.left);
-                data.setUint32(6, event.clientY - rect.top);
-                data.setUint8(10, encodeModifierKeys(event));
+                const dataView = new DataView(eventMessage);
+                setMouseEvent(dataView, eventType, event);
                 webSocket.send(eventMessage);
             };
+        }
+
+        function sendWheelEvent(eventType) {
+            return function (event) {
+                const eventMessage = new ArrayBuffer(36);
+                const dataView = new DataView(eventMessage);
+                setMouseEvent(dataView, eventType, event);
+                dataView.setFloat64(11, event.deltaX);
+                dataView.setFloat64(19, event.deltaY);
+                dataView.setFloat64(27, event.deltaZ);
+                dataView.setUint8(35, event.deltaMode);
+                webSocket.send(eventMessage);
+            };
+        }
+
+        function setMouseEvent(dataView, eventType, event) {
+            dataView.setUint8(0, eventType);
+            dataView.setUint8(1, event.buttons);
+            dataView.setUint32(2, event.clientX - rect.left);
+            dataView.setUint32(6, event.clientY - rect.top);
+            dataView.setUint8(10, encodeModifierKeys(event));
         }
 
         function sendKeyEvent(eventType) {
