@@ -41,15 +41,19 @@ package main
 
 import (
 	"image/color"
+	"log"
 
 	"github.com/fzipp/canvas"
 )
 
 func main() {
-	canvas.ListenAndServe(":8080", run,
+	err := canvas.ListenAndServe(":8080", run,
 		canvas.Size(100, 80),
 		canvas.Title("Example 1: Drawing"),
 	)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func run(ctx *canvas.Context) {
@@ -82,16 +86,20 @@ Within this loop the `ctx.Quit()` channel should be observed.
 package main
 
 import (
+	"log"
 	"time"
 
 	"github.com/fzipp/canvas"
 )
 
 func main() {
-	canvas.ListenAndServe(":8080", run,
+	err := canvas.ListenAndServe(":8080", run,
 		canvas.Size(800, 600),
 		canvas.Title("Example 2: Animation"),
 	)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func run(ctx *canvas.Context) {
@@ -142,10 +150,14 @@ A useful pattern is a `handle` method dedicated to event handling:
 ```go
 package main
 
-import "github.com/fzipp/canvas"
+import (
+	"log"
+
+	"github.com/fzipp/canvas"
+)
 
 func main() {
-	canvas.ListenAndServe(":8080", run,
+	err := canvas.ListenAndServe(":8080", run,
 		canvas.Size(800, 600),
 		canvas.Title("Example 3: Events"),
 		canvas.EnableEvents(
@@ -154,6 +166,9 @@ func main() {
 			canvas.KeyDownEvent{},
 		),
 	)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func run(ctx *canvas.Context) {
