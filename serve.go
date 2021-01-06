@@ -20,16 +20,27 @@ import (
 )
 
 func ListenAndServe(addr string, run func(*Context), options ...Option) error {
+	mux := http.DefaultServeMux
+	setupHandlers(mux, run, options)
+	return http.ListenAndServe(addr, mux)
+}
+
+func ListenAndServeTLS(addr, certFile, keyFile string, run func(*Context), options ...Option) error {
+	mux := http.DefaultServeMux
+	setupHandlers(mux, run, options)
+	return http.ListenAndServeTLS(addr, certFile, keyFile, mux)
+}
+
+func setupHandlers(mux *http.ServeMux, run func(*Context), options []Option) {
 	config := configFrom(options)
-	http.Handle("/", &htmlHandler{
+	mux.Handle("/", &htmlHandler{
 		config: config,
 	})
-	http.HandleFunc("/canvas-websocket.js", javaScriptHandler)
-	http.Handle("/draw", &drawHandler{
+	mux.HandleFunc("/canvas-websocket.js", javaScriptHandler)
+	mux.Handle("/draw", &drawHandler{
 		config: config,
 		draw:   run,
 	})
-	return http.ListenAndServe(addr, nil)
 }
 
 type htmlHandler struct {
