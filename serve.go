@@ -19,7 +19,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-func ListenAndServe(addr string, run func(*Context), options ...Option) {
+func ListenAndServe(addr string, run func(*Context), options ...Option) error {
 	config := configFrom(options)
 	http.Handle("/", &htmlHandler{
 		config: config,
@@ -29,10 +29,7 @@ func ListenAndServe(addr string, run func(*Context), options ...Option) {
 		config: config,
 		draw:   run,
 	})
-	err := http.ListenAndServe(addr, nil)
-	if err != nil {
-		log.Println(err)
-	}
+	return http.ListenAndServe(addr, nil)
 }
 
 type htmlHandler struct {
