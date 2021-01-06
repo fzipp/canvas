@@ -7,6 +7,7 @@ package main
 import (
 	"fmt"
 	"image"
+	"log"
 	"time"
 
 	"github.com/fzipp/canvas"
@@ -15,7 +16,7 @@ import (
 func main() {
 	port := ":8080"
 	fmt.Println("Listening on http://localhost" + port)
-	canvas.ListenAndServe(port, run,
+	err := canvas.ListenAndServe(port, run,
 		canvas.Size(800, 600),
 		canvas.Title("Breakout"),
 		canvas.DisableCursor(),
@@ -25,6 +26,9 @@ func main() {
 			canvas.KeyDownEvent{},
 		),
 	)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func run(ctx *canvas.Context) {

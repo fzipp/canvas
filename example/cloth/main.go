@@ -31,6 +31,7 @@ package main
 import (
 	"fmt"
 	"image/color"
+	"log"
 	"math"
 	"time"
 
@@ -52,7 +53,7 @@ const (
 func main() {
 	port := ":8080"
 	fmt.Println("Listening on http://localhost" + port)
-	canvas.ListenAndServe(port, run,
+	err := canvas.ListenAndServe(port, run,
 		canvas.Size(560, 350),
 		canvas.Title("Tearable Cloth"),
 		canvas.EnableEvents(
@@ -61,6 +62,9 @@ func main() {
 			canvas.MouseUpEvent{},
 		),
 	)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func run(ctx *canvas.Context) {
