@@ -11,31 +11,11 @@ type Event interface {
 type MouseEvent struct {
 	Buttons MouseButtons
 	X, Y    int
-	modKeys modifierKey
+	modifierKeys
 }
 
 func (e MouseEvent) mask() eventMask {
 	return maskMouseMove | maskMouseUp | maskKeyDown | maskClick | maskDblClick | maskAuxClick
-}
-
-func (e *MouseEvent) AltKey() bool {
-	return e.isPressed(modKeyAlt)
-}
-
-func (e *MouseEvent) ShiftKey() bool {
-	return e.isPressed(modKeyShift)
-}
-
-func (e *MouseEvent) CtrlKey() bool {
-	return e.isPressed(modKeyCtrl)
-}
-
-func (e *MouseEvent) MetaKey() bool {
-	return e.isPressed(modKeyMeta)
-}
-
-func (e *MouseEvent) isPressed(k modifierKey) bool {
-	return e.modKeys&k != 0
 }
 
 type MouseMoveEvent struct{ MouseEvent }
@@ -83,8 +63,8 @@ const (
 )
 
 type KeyboardEvent struct {
-	Key     string
-	modKeys modifierKey
+	Key string
+	modifierKeys
 }
 
 func (e KeyboardEvent) mask() eventMask {
@@ -103,14 +83,69 @@ type KeyUpEvent struct{ KeyboardEvent }
 
 func (e KeyUpEvent) mask() eventMask { return maskKeyUp }
 
-type modifierKey byte
+type TouchEvent struct {
+	Touches        TouchList
+	ChangedTouches TouchList
+	TargetTouches  TouchList
+	modifierKeys
+}
+
+func (e TouchEvent) mask() eventMask {
+	return maskTouchStart | maskTouchMove | maskTouchEnd | maskTouchCancel
+}
+
+type TouchList []Touch
+
+type Touch struct {
+	Identifier uint32
+	X          int
+	Y          int
+}
+
+type TouchStartEvent struct{ TouchEvent }
+
+func (e TouchStartEvent) mask() eventMask { return maskTouchStart }
+
+type TouchMoveEvent struct{ TouchEvent }
+
+func (e TouchMoveEvent) mask() eventMask { return maskTouchMove }
+
+type TouchEndEvent struct{ TouchEvent }
+
+func (e TouchEndEvent) mask() eventMask { return maskTouchEnd }
+
+type TouchCancelEvent struct{ TouchEvent }
+
+func (e TouchCancelEvent) mask() eventMask { return maskTouchCancel }
+
+type modifierKeys byte
 
 const (
-	modKeyAlt modifierKey = 1 << iota
+	modKeyAlt modifierKeys = 1 << iota
 	modKeyShift
 	modKeyCtrl
 	modKeyMeta
 )
+
+func (m modifierKeys) AltKey() bool {
+	return m.isPressed(modKeyAlt)
+}
+
+func (m modifierKeys) ShiftKey() bool {
+	return m.isPressed(modKeyShift)
+}
+
+func (m modifierKeys) CtrlKey() bool {
+	return m.isPressed(modKeyCtrl)
+}
+
+func (m modifierKeys) MetaKey() bool {
+	return m.isPressed(modKeyMeta)
+}
+
+func (m modifierKeys) isPressed(k modifierKeys) bool {
+	return m&k != 0
+}
 
 type eventMask int
 
@@ -125,6 +160,10 @@ const (
 	maskDblClick
 	maskAuxClick
 	maskWheel
+	maskTouchStart
+	maskTouchMove
+	maskTouchEnd
+	maskTouchCancel
 )
 
 type MouseButtons int

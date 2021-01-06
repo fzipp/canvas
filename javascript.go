@@ -135,6 +135,18 @@ document.addEventListener("DOMContentLoaded", function () {
         if (eventMask & 512) {
             handlers["wheel"] = sendWheelEvent(10);
         }
+        if (eventMask & 1024) {
+            handlers["touchstart"] = sendTouchEvent(11);
+        }
+        if (eventMask & 2048) {
+            handlers["touchmove"] = sendTouchEvent(12);
+        }
+        if (eventMask & 4096) {
+            handlers["touchend"] = sendTouchEvent(13);
+        }
+        if (eventMask & 8192) {
+            handlers["touchcancel"] = sendTouchEvent(14);
+        }
 
         Object.keys(handlers).forEach(function (type) {
             const target = (type.indexOf("key") !== 0) ? canvas : document;
@@ -171,6 +183,42 @@ document.addEventListener("DOMContentLoaded", function () {
             dataView.setUint32(2, event.clientX - rect.left);
             dataView.setUint32(6, event.clientY - rect.top);
             dataView.setUint8(10, encodeModifierKeys(event));
+        }
+
+        function sendTouchEvent(eventType) {
+            return function (event) {
+                const touchBytes = 12;
+                const eventMessage = new ArrayBuffer(1 +
+                    1 + (event.touches.length * touchBytes) +
+                    1 + (event.changedTouches.length * touchBytes) +
+                    1 + (event.targetTouches.length * touchBytes) +
+                    1);
+                const dataView = new DataView(eventMessage);
+                let offset = 0;
+                dataView.setUint8(offset, eventType);
+                offset++;
+                offset = setTouches(dataView, offset, event.touches);
+                offset = setTouches(dataView, offset, event.changedTouches);
+                offset = setTouches(dataView, offset, event.targetTouches);
+                dataView.setUint8(offset, encodeModifierKeys(event));
+                webSocket.send(eventMessage);
+            };
+        }
+
+        function setTouches(dataView, offset, touches) {
+            const len = touches.length;
+            dataView.setUint8(offset, len);
+            offset++;
+            for (let i = 0; i < len; i++) {
+                const touch = touches[i];
+                dataView.setUint32(offset, touch.identifier);
+                offset += 4;
+                dataView.setUint32(offset, touch.clientX - rect.left);
+                offset += 4;
+                dataView.setUint32(offset, touch.clientY - rect.top);
+                offset += 4;
+            }
+            return offset;
         }
 
         function sendKeyEvent(eventType) {

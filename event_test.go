@@ -15,7 +15,7 @@ func TestMouseEventModifierKeys(t *testing.T) {
 	}
 	tests := []struct {
 		name    string
-		modKeys modifierKey
+		modKeys modifierKeys
 		want    modifierKeyStates
 	}{
 		{
@@ -51,7 +51,7 @@ func TestMouseEventModifierKeys(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			event := MouseEvent{modKeys: tt.modKeys}
+			event := MouseEvent{modifierKeys: tt.modKeys}
 			got := modifierKeyStates{
 				altKey:   event.AltKey(),
 				shiftKey: event.ShiftKey(),
