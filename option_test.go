@@ -4,7 +4,10 @@
 
 package canvas
 
-import "testing"
+import (
+	"testing"
+	"time"
+)
 
 func TestConfigFrom(t *testing.T) {
 	tests := []struct {
@@ -38,6 +41,11 @@ func TestConfigFrom(t *testing.T) {
 			config{contextMenuDisabled: true},
 		},
 		{
+			"Reconnect",
+			[]Option{Reconnect(2 * time.Second)},
+			config{reconnectInterval: 2 * time.Second},
+		},
+		{
 			"Multiple options",
 			[]Option{
 				Title("hello, world"),
@@ -45,6 +53,7 @@ func TestConfigFrom(t *testing.T) {
 				EnableEvents(MouseMoveEvent{}, MouseDownEvent{}, MouseUpEvent{}),
 				DisableCursor(),
 				DisableContextMenu(),
+				Reconnect(1500 * time.Millisecond),
 			},
 			config{
 				title:               "hello, world",
@@ -53,6 +62,7 @@ func TestConfigFrom(t *testing.T) {
 				eventMask:           0b0111,
 				cursorDisabled:      true,
 				contextMenuDisabled: true,
+				reconnectInterval:   1500 * time.Millisecond,
 			},
 		},
 	}
