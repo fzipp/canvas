@@ -150,13 +150,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
         Object.keys(handlers).forEach(function (type) {
             const target = (type.indexOf("key") !== 0) ? canvas : document;
-            target.addEventListener(type, handlers[type]);
+            target.addEventListener(type, handlers[type], { passive: false });
         });
 
         const rect = canvas.getBoundingClientRect();
 
         function sendMouseEvent(eventType) {
             return function (event) {
+                event.preventDefault();
                 const eventMessage = new ArrayBuffer(11);
                 const dataView = new DataView(eventMessage);
                 setMouseEvent(dataView, eventType, event);
@@ -166,6 +167,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         function sendWheelEvent(eventType) {
             return function (event) {
+                event.preventDefault();
                 const eventMessage = new ArrayBuffer(36);
                 const dataView = new DataView(eventMessage);
                 setMouseEvent(dataView, eventType, event);
@@ -187,6 +189,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         function sendTouchEvent(eventType) {
             return function (event) {
+                event.preventDefault();
                 const touchBytes = 12;
                 const eventMessage = new ArrayBuffer(1 +
                     1 + (event.touches.length * touchBytes) +
@@ -223,6 +226,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         function sendKeyEvent(eventType) {
             return function (event) {
+                event.preventDefault();
                 const keyBytes = new TextEncoder().encode(event.key);
                 const eventMessage = new ArrayBuffer(6 + keyBytes.byteLength);
                 const data = new DataView(eventMessage);
