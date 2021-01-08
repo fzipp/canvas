@@ -41,6 +41,11 @@ func TestConfigFrom(t *testing.T) {
 			config{contextMenuDisabled: true},
 		},
 		{
+			"FullPage",
+			[]Option{FullPage()},
+			config{fullPage: true},
+		},
+		{
 			"Reconnect",
 			[]Option{Reconnect(2 * time.Second)},
 			config{reconnectInterval: 2 * time.Second},
@@ -53,6 +58,7 @@ func TestConfigFrom(t *testing.T) {
 				EnableEvents(MouseMoveEvent{}, MouseDownEvent{}, MouseUpEvent{}),
 				DisableCursor(),
 				DisableContextMenu(),
+				FullPage(),
 				Reconnect(1500 * time.Millisecond),
 			},
 			config{
@@ -62,6 +68,7 @@ func TestConfigFrom(t *testing.T) {
 				eventMask:           0b0111,
 				cursorDisabled:      true,
 				contextMenuDisabled: true,
+				fullPage:            true,
 				reconnectInterval:   1500 * time.Millisecond,
 			},
 		},

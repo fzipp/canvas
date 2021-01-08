@@ -41,6 +41,12 @@ func DisableContextMenu() Option {
 	}
 }
 
+func FullPage() Option {
+	return func(c *config) {
+		c.fullPage = true
+	}
+}
+
 func Reconnect(interval time.Duration) Option {
 	return func(c *config) {
 		c.reconnectInterval = interval
@@ -54,6 +60,7 @@ type config struct {
 	eventMask           eventMask
 	cursorDisabled      bool
 	contextMenuDisabled bool
+	fullPage            bool
 	reconnectInterval   time.Duration
 }
 

@@ -54,6 +54,7 @@ func (h *htmlHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		"EventMask":           h.config.eventMask,
 		"CursorDisabled":      h.config.cursorDisabled,
 		"ContextMenuDisabled": h.config.contextMenuDisabled,
+		"FullPage":            h.config.fullPage,
 		"ReconnectInterval":   int64(h.config.reconnectInterval / time.Millisecond),
 	}
 	err := htmlTemplate.Execute(w, model)

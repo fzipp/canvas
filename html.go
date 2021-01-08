@@ -15,12 +15,26 @@ func init() {
   <head>
     <title>{{.Title}}</title>
     <script src="canvas-websocket.js"></script>
-    <style>body {margin: 0}</style>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      body, html {
+        height: 100%;
+      }
+      .full-page {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
   </head>
   <body>
     <noscript><p>Please enable JavaScript in your browser.</p></noscript>
     <canvas width="{{.Width}}" height="{{.Height}}"
             style="cursor: {{if .CursorDisabled}}none{{else}}default{{end}}"
+            class="{{if .FullPage}}full-page{{end}}"
             data-websocket-draw-url="{{.DrawURL}}"
             data-websocket-event-mask="{{.EventMask}}"
             data-websocket-reconnect-interval="{{.ReconnectInterval}}"
