@@ -180,8 +180,8 @@ document.addEventListener("DOMContentLoaded", function () {
         function setMouseEvent(dataView, eventType, event) {
             dataView.setUint8(0, eventType);
             dataView.setUint8(1, event.buttons);
-            dataView.setUint32(2, event.clientX - rect.left);
-            dataView.setUint32(6, event.clientY - rect.top);
+            dataView.setUint32(2, ((event.clientX - rect.left) / canvas.offsetWidth) * canvas.width);
+            dataView.setUint32(6, ((event.clientY - rect.top) / canvas.offsetHeight) * canvas.height);
             dataView.setUint8(10, encodeModifierKeys(event));
         }
 
@@ -213,9 +213,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 const touch = touches[i];
                 dataView.setUint32(offset, touch.identifier);
                 offset += 4;
-                dataView.setUint32(offset, touch.clientX - rect.left);
+                dataView.setUint32(offset, ((touch.clientX - rect.left) / canvas.offsetWidth) * canvas.width);
                 offset += 4;
-                dataView.setUint32(offset, touch.clientY - rect.top);
+                dataView.setUint32(offset, ((touch.clientY - rect.top) / canvas.offsetHeight) * canvas.height);
                 offset += 4;
             }
             return offset;
