@@ -17,14 +17,18 @@ func main() {
 	port := ":8080"
 	fmt.Println("Listening on http://localhost" + port)
 	err := canvas.ListenAndServe(port, run,
-		canvas.Size(800, 600),
+		canvas.Size(1334, 750),
+		canvas.FullPage(),
 		canvas.Title("Breakout"),
 		canvas.DisableCursor(),
 		canvas.EnableEvents(
 			canvas.MouseMoveEvent{},
 			canvas.KeyPressEvent{},
 			canvas.KeyDownEvent{},
+			canvas.TouchStartEvent{},
+			canvas.TouchMoveEvent{},
 		),
+		canvas.Reconnect(time.Second),
 	)
 	if err != nil {
 		log.Fatal(err)

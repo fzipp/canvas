@@ -82,6 +82,14 @@ func (g *game) handle(event canvas.Event, ctx *canvas.Context) {
 		if g.started {
 			g.paddle.pos.X = e.X
 		}
+	case canvas.TouchStartEvent:
+		if len(e.Touches) == 1 {
+			g.paddle.pos.X = e.Touches[0].X
+		}
+	case canvas.TouchMoveEvent:
+		if len(e.Touches) == 1 {
+			g.paddle.pos.X = e.Touches[0].X
+		}
 	case canvas.KeyDownEvent:
 		const paddleSpeedX = 15
 		switch e.Key {
