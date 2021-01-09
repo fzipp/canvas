@@ -52,6 +52,35 @@ func (buf *buffer) addColor(c color.Color) {
 	buf.addByte(clr.A)
 }
 
+func (buf *buffer) readByte() byte {
+	b := buf.bytes[0]
+	buf.bytes = buf.bytes[1:]
+	return b
+}
+
+func (buf *buffer) readUint32() uint32 {
+	i := byteOrder.Uint32(buf.bytes)
+	buf.bytes = buf.bytes[4:]
+	return i
+}
+
+func (buf *buffer) readUint64() uint64 {
+	i := byteOrder.Uint64(buf.bytes)
+	buf.bytes = buf.bytes[8:]
+	return i
+}
+
+func (buf *buffer) readFloat64() float64 {
+	return math.Float64frombits(buf.readUint64())
+}
+
+func (buf *buffer) readString() string {
+	length := int(buf.readUint32())
+	s := string(buf.bytes[:length])
+	buf.bytes = buf.bytes[length:]
+	return s
+}
+
 func (buf *buffer) reset() {
 	buf.bytes = make([]byte, 0, cap(buf.bytes))
 }

@@ -4,10 +4,7 @@
 
 package canvas
 
-import (
-	"errors"
-	"math"
-)
+import "errors"
 
 type Event interface {
 	mask() eventMask
@@ -200,95 +197,93 @@ const (
 )
 
 func decodeEvent(p []byte) (Event, error) {
-	eventType := p[0]
+	buf := &buffer{bytes: p}
+	eventType := buf.readByte()
 	switch eventType {
 	case evMouseMove:
-		return MouseMoveEvent{decodeMouseEvent(p)}, nil
+		return MouseMoveEvent{decodeMouseEvent(buf)}, nil
 	case evMouseDown:
-		return MouseDownEvent{decodeMouseEvent(p)}, nil
+		return MouseDownEvent{decodeMouseEvent(buf)}, nil
 	case evMouseUp:
-		return MouseUpEvent{decodeMouseEvent(p)}, nil
+		return MouseUpEvent{decodeMouseEvent(buf)}, nil
 	case evKeyPress:
-		return KeyPressEvent{decodeKeyboardEvent(p)}, nil
+		return KeyPressEvent{decodeKeyboardEvent(buf)}, nil
 	case evKeyDown:
-		return KeyDownEvent{decodeKeyboardEvent(p)}, nil
+		return KeyDownEvent{decodeKeyboardEvent(buf)}, nil
 	case evKeyUp:
-		return KeyUpEvent{decodeKeyboardEvent(p)}, nil
+		return KeyUpEvent{decodeKeyboardEvent(buf)}, nil
 	case evClick:
-		return ClickEvent{decodeMouseEvent(p)}, nil
+		return ClickEvent{decodeMouseEvent(buf)}, nil
 	case evDblClick:
-		return DblClickEvent{decodeMouseEvent(p)}, nil
+		return DblClickEvent{decodeMouseEvent(buf)}, nil
 	case evAuxClick:
-		return AuxClickEvent{decodeMouseEvent(p)}, nil
+		return AuxClickEvent{decodeMouseEvent(buf)}, nil
 	case evWheel:
-		return decodeWheelEvent(p), nil
+		return decodeWheelEvent(buf), nil
 	case evTouchStart:
-		return TouchStartEvent{decodeTouchEvent(p)}, nil
+		return TouchStartEvent{decodeTouchEvent(buf)}, nil
 	case evTouchMove:
-		return TouchMoveEvent{decodeTouchEvent(p)}, nil
+		return TouchMoveEvent{decodeTouchEvent(buf)}, nil
 	case evTouchEnd:
-		return TouchEndEvent{decodeTouchEvent(p)}, nil
+		return TouchEndEvent{decodeTouchEvent(buf)}, nil
 	case evTouchCancel:
-		return TouchCancelEvent{decodeTouchEvent(p)}, nil
+		return TouchCancelEvent{decodeTouchEvent(buf)}, nil
 	}
 	return nil, errors.New("unknown event type: '" + string(eventType) + "'")
 }
 
-func decodeMouseEvent(p []byte) MouseEvent {
+func decodeMouseEvent(buf *buffer) MouseEvent {
 	return MouseEvent{
-		Buttons:      MouseButtons(p[1]),
-		X:            int(byteOrder.Uint32(p[2:])),
-		Y:            int(byteOrder.Uint32(p[6:])),
-		modifierKeys: modifierKeys(p[10]),
+		Buttons:      MouseButtons(buf.readByte()),
+		X:            int(buf.readUint32()),
+		Y:            int(buf.readUint32()),
+		modifierKeys: modifierKeys(buf.readByte()),
 	}
 }
 
-func decodeKeyboardEvent(p []byte) KeyboardEvent {
-	keyStringLength := int(byteOrder.Uint32(p[2:]))
+func decodeKeyboardEvent(buf *buffer) KeyboardEvent {
+	modKeys := modifierKeys(buf.readByte())
 	return KeyboardEvent{
-		Key:          string(p[6 : 6+keyStringLength]),
-		modifierKeys: modifierKeys(p[1]),
+		Key:          buf.readString(),
+		modifierKeys: modKeys,
 	}
 }
 
-func decodeWheelEvent(p []byte) WheelEvent {
+func decodeWheelEvent(buf *buffer) WheelEvent {
 	return WheelEvent{
-		MouseEvent: decodeMouseEvent(p),
-		DeltaX:     math.Float64frombits(byteOrder.Uint64(p[11:])),
-		DeltaY:     math.Float64frombits(byteOrder.Uint64(p[19:])),
-		DeltaZ:     math.Float64frombits(byteOrder.Uint64(p[27:])),
-		DeltaMode:  DeltaMode(p[35]),
+		MouseEvent: decodeMouseEvent(buf),
+		DeltaX:     buf.readFloat64(),
+		DeltaY:     buf.readFloat64(),
+		DeltaZ:     buf.readFloat64(),
+		DeltaMode:  DeltaMode(buf.readByte()),
 	}
 }
 
-func decodeTouchEvent(p []byte) TouchEvent {
-	touches, p := decodeTouchList(p[1:])
-	changedTouches, p := decodeTouchList(p)
-	targetTouches, p := decodeTouchList(p)
+func decodeTouchEvent(buf *buffer) TouchEvent {
+	touches := decodeTouchList(buf)
+	changedTouches := decodeTouchList(buf)
+	targetTouches := decodeTouchList(buf)
 	return TouchEvent{
 		Touches:        touches,
 		ChangedTouches: changedTouches,
 		TargetTouches:  targetTouches,
-		modifierKeys:   modifierKeys(p[0]),
+		modifierKeys:   modifierKeys(buf.readByte()),
 	}
 }
 
-func decodeTouchList(p []byte) (TouchList, []byte) {
-	length := p[0]
-	p = p[1:]
+func decodeTouchList(buf *buffer) TouchList {
+	length := buf.readByte()
 	list := make(TouchList, length)
 	for i := range list {
-		var t Touch
-		t, p = decodeTouch(p)
-		list[i] = t
+		list[i] = decodeTouch(buf)
 	}
-	return list, p
+	return list
 }
 
-func decodeTouch(p []byte) (Touch, []byte) {
+func decodeTouch(buf *buffer) Touch {
 	return Touch{
-		Identifier: byteOrder.Uint32(p),
-		X:          int(byteOrder.Uint32(p[4:])),
-		Y:          int(byteOrder.Uint32(p[8:])),
-	}, p[12:]
+		Identifier: buf.readUint32(),
+		X:          int(buf.readUint32()),
+		Y:          int(buf.readUint32()),
+	}
 }
