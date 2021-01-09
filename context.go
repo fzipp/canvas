@@ -5,13 +5,10 @@
 package canvas
 
 import (
-	"encoding/binary"
 	"image"
 	"image/color"
 	"sync"
 )
-
-var byteOrder = binary.BigEndian
 
 type Context struct {
 	config config

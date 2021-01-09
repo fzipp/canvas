@@ -5,6 +5,7 @@
 package canvas
 
 import (
+	"encoding/binary"
 	"image/color"
 	"math"
 )
@@ -12,6 +13,8 @@ import (
 type buffer struct {
 	bytes []byte
 }
+
+var byteOrder = binary.BigEndian
 
 func (buf *buffer) addByte(b byte) {
 	buf.bytes = append(buf.bytes, b)
