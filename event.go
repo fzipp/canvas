@@ -242,10 +242,9 @@ func decodeMouseEvent(buf *buffer) MouseEvent {
 }
 
 func decodeKeyboardEvent(buf *buffer) KeyboardEvent {
-	modKeys := modifierKeys(buf.readByte())
 	return KeyboardEvent{
+		modifierKeys: modifierKeys(buf.readByte()),
 		Key:          buf.readString(),
-		modifierKeys: modKeys,
 	}
 }
 
@@ -260,13 +259,10 @@ func decodeWheelEvent(buf *buffer) WheelEvent {
 }
 
 func decodeTouchEvent(buf *buffer) TouchEvent {
-	touches := decodeTouchList(buf)
-	changedTouches := decodeTouchList(buf)
-	targetTouches := decodeTouchList(buf)
 	return TouchEvent{
-		Touches:        touches,
-		ChangedTouches: changedTouches,
-		TargetTouches:  targetTouches,
+		Touches:        decodeTouchList(buf),
+		ChangedTouches: decodeTouchList(buf),
+		TargetTouches:  decodeTouchList(buf),
 		modifierKeys:   modifierKeys(buf.readByte()),
 	}
 }
