@@ -18,19 +18,16 @@ import (
 )
 
 func ListenAndServe(addr string, run func(*Context), options ...Option) error {
-	mux := http.DefaultServeMux
-	setupHandlers(mux, run, options)
-	return http.ListenAndServe(addr, mux)
+	return http.ListenAndServe(addr, NewServeMux(run, options...))
 }
 
 func ListenAndServeTLS(addr, certFile, keyFile string, run func(*Context), options ...Option) error {
-	mux := http.DefaultServeMux
-	setupHandlers(mux, run, options)
-	return http.ListenAndServeTLS(addr, certFile, keyFile, mux)
+	return http.ListenAndServeTLS(addr, certFile, keyFile, NewServeMux(run, options...))
 }
 
-func setupHandlers(mux *http.ServeMux, run func(*Context), options []Option) {
+func NewServeMux(run func(*Context), options ...Option) *http.ServeMux {
 	config := configFrom(options)
+	mux := http.NewServeMux()
 	mux.Handle("/", &htmlHandler{
 		config: config,
 	})
@@ -39,6 +36,7 @@ func setupHandlers(mux *http.ServeMux, run func(*Context), options []Option) {
 		config: config,
 		draw:   run,
 	})
+	return mux
 }
 
 type htmlHandler struct {
