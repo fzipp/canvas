@@ -79,6 +79,7 @@ func BenchmarkContext(b *testing.B) {
 		ctx.CreateLinearGradient(1, 1, 1, 1)
 		ctx.CreateRadialGradient(1, 1, 1, 1, 1, 1)
 		ctx.CreatePattern(&ImageData{}, PatternRepeat)
+		ctx.GetImageData(1, 1, 1, 1)
 		ctx.Flush()
 	}
 	close(draws)
