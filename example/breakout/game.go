@@ -106,10 +106,7 @@ func (g *game) handle(event canvas.Event, ctx *canvas.Context) {
 			if g.paddle.pos.X < 0 {
 				g.paddle.pos.X = 0
 			}
-		}
-	case canvas.KeyPressEvent:
-		switch e.Key {
-		case "Space":
+		case " ":
 			g.started = !g.started
 		}
 	}

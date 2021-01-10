@@ -114,9 +114,6 @@ document.addEventListener("DOMContentLoaded", function () {
         if (eventMask & 4) {
             handlers["onmouseup"] = sendMouseEvent(3);
         }
-        if (eventMask & 8) {
-            handlers["keypress"] = sendKeyEvent(4);
-        }
         if (eventMask & 16) {
             handlers["keydown"] = sendKeyEvent(5);
         }

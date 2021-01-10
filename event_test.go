@@ -92,14 +92,14 @@ func TestDecodeEvent(t *testing.T) {
 			},
 		},
 		{
-			"KeyPressEvent",
+			"KeyDownEvent",
 			[]byte{
-				0x04,                   // Event type
+				0x05,                   // Event type
 				0b00001010,             // Modifier keys
 				0x00, 0x00, 0x00, 0x09, // len(Key)
 				0x41, 0x72, 0x72, 0x6f, 0x77, 0x4c, 0x65, 0x66, 0x74, // Key
 			},
-			KeyPressEvent{
+			KeyDownEvent{
 				KeyboardEvent{
 					Key:          "ArrowLeft",
 					modifierKeys: modKeyShift | modKeyMeta,

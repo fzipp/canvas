@@ -23,7 +23,6 @@ func main() {
 		canvas.DisableCursor(),
 		canvas.EnableEvents(
 			canvas.MouseMoveEvent{},
-			canvas.KeyPressEvent{},
 			canvas.KeyDownEvent{},
 			canvas.TouchStartEvent{},
 			canvas.TouchMoveEvent{},

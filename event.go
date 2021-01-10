@@ -74,12 +74,8 @@ type KeyboardEvent struct {
 }
 
 func (e KeyboardEvent) mask() eventMask {
-	return maskKeyPress | maskKeyDown | maskKeyUp
+	return maskKeyDown | maskKeyUp
 }
-
-type KeyPressEvent struct{ KeyboardEvent }
-
-func (e KeyPressEvent) mask() eventMask { return maskKeyPress }
 
 type KeyDownEvent struct{ KeyboardEvent }
 
@@ -159,7 +155,7 @@ const (
 	maskMouseMove eventMask = 1 << iota
 	maskMouseDown
 	maskMouseUp
-	maskKeyPress
+	_
 	maskKeyDown
 	maskKeyUp
 	maskClick
@@ -187,7 +183,7 @@ const (
 	evMouseMove byte = 1 + iota
 	evMouseDown
 	evMouseUp
-	evKeyPress
+	_
 	evKeyDown
 	evKeyUp
 	evClick
@@ -218,8 +214,6 @@ func decodeEventBuf(buf *buffer) (Event, error) {
 		return MouseDownEvent{decodeMouseEvent(buf)}, nil
 	case evMouseUp:
 		return MouseUpEvent{decodeMouseEvent(buf)}, nil
-	case evKeyPress:
-		return KeyPressEvent{decodeKeyboardEvent(buf)}, nil
 	case evKeyDown:
 		return KeyDownEvent{decodeKeyboardEvent(buf)}, nil
 	case evKeyUp:
