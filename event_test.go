@@ -176,6 +176,7 @@ func TestDecodeEvent(t *testing.T) {
 			got, err := decodeEvent(tt.p)
 			if err != nil {
 				t.Errorf("did not expect error, but got error: %s", err)
+				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("\ngot : %#v\nwant: %#v", got, tt.want)

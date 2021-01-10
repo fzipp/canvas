@@ -6,12 +6,14 @@ package canvas
 
 import (
 	"encoding/binary"
+	"errors"
 	"image/color"
 	"math"
 )
 
 type buffer struct {
 	bytes []byte
+	error error
 }
 
 var byteOrder = binary.BigEndian
@@ -56,18 +58,30 @@ func (buf *buffer) addColor(c color.Color) {
 }
 
 func (buf *buffer) readByte() byte {
+	if len(buf.bytes) < 1 {
+		buf.dataTooShort()
+		return 0
+	}
 	b := buf.bytes[0]
 	buf.bytes = buf.bytes[1:]
 	return b
 }
 
 func (buf *buffer) readUint32() uint32 {
+	if len(buf.bytes) < 4 {
+		buf.dataTooShort()
+		return 0
+	}
 	i := byteOrder.Uint32(buf.bytes)
 	buf.bytes = buf.bytes[4:]
 	return i
 }
 
 func (buf *buffer) readUint64() uint64 {
+	if len(buf.bytes) < 8 {
+		buf.dataTooShort()
+		return 0
+	}
 	i := byteOrder.Uint64(buf.bytes)
 	buf.bytes = buf.bytes[8:]
 	return i
@@ -79,6 +93,10 @@ func (buf *buffer) readFloat64() float64 {
 
 func (buf *buffer) readString() string {
 	length := int(buf.readUint32())
+	if len(buf.bytes) < length {
+		buf.dataTooShort()
+		return ""
+	}
 	s := string(buf.bytes[:length])
 	buf.bytes = buf.bytes[length:]
 	return s
@@ -86,4 +104,9 @@ func (buf *buffer) readString() string {
 
 func (buf *buffer) reset() {
 	buf.bytes = make([]byte, 0, cap(buf.bytes))
+}
+
+func (buf *buffer) dataTooShort() {
+	buf.reset()
+	buf.error = errors.New("data too short")
 }

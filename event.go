@@ -4,7 +4,7 @@
 
 package canvas
 
-import "errors"
+import "fmt"
 
 type Event interface {
 	mask() eventMask
@@ -198,6 +198,14 @@ const (
 
 func decodeEvent(p []byte) (Event, error) {
 	buf := &buffer{bytes: p}
+	event, err := decodeEventBuf(buf)
+	if buf.error != nil {
+		return nil, buf.error
+	}
+	return event, err
+}
+
+func decodeEventBuf(buf *buffer) (Event, error) {
 	eventType := buf.readByte()
 	switch eventType {
 	case evMouseMove:
@@ -229,7 +237,7 @@ func decodeEvent(p []byte) (Event, error) {
 	case evTouchCancel:
 		return TouchCancelEvent{decodeTouchEvent(buf)}, nil
 	}
-	return nil, errors.New("unknown event type: '" + string(eventType) + "'")
+	return nil, fmt.Errorf("unknown event type: %#x", eventType)
 }
 
 func decodeMouseEvent(buf *buffer) MouseEvent {
