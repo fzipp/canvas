@@ -28,7 +28,7 @@ func TestConfigFrom(t *testing.T) {
 		{
 			"EnableEvents",
 			[]Option{EnableEvents(MouseMoveEvent{}, MouseDownEvent{}, KeyDownEvent{})},
-			config{eventMask: 0b10011},
+			config{eventMask: 0b1011},
 		},
 		{
 			"DisableCursor",

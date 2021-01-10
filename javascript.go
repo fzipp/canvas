@@ -114,35 +114,35 @@ document.addEventListener("DOMContentLoaded", function () {
         if (eventMask & 4) {
             handlers["onmouseup"] = sendMouseEvent(3);
         }
+        if (eventMask & 8) {
+            handlers["keydown"] = sendKeyEvent(4);
+        }
         if (eventMask & 16) {
-            handlers["keydown"] = sendKeyEvent(5);
+            handlers["keyup"] = sendKeyEvent(5);
         }
         if (eventMask & 32) {
-            handlers["keyup"] = sendKeyEvent(6);
+            handlers["click"] = sendMouseEvent(6);
         }
         if (eventMask & 64) {
-            handlers["click"] = sendMouseEvent(7);
+            handlers["dblclick"] = sendMouseEvent(7);
         }
         if (eventMask & 128) {
-            handlers["dblclick"] = sendMouseEvent(8);
+            handlers["auxclick"] = sendMouseEvent(8);
         }
         if (eventMask & 256) {
-            handlers["auxclick"] = sendMouseEvent(9);
+            handlers["wheel"] = sendWheelEvent(9);
         }
         if (eventMask & 512) {
-            handlers["wheel"] = sendWheelEvent(10);
+            handlers["touchstart"] = sendTouchEvent(10);
         }
         if (eventMask & 1024) {
-            handlers["touchstart"] = sendTouchEvent(11);
+            handlers["touchmove"] = sendTouchEvent(11);
         }
         if (eventMask & 2048) {
-            handlers["touchmove"] = sendTouchEvent(12);
+            handlers["touchend"] = sendTouchEvent(12);
         }
         if (eventMask & 4096) {
-            handlers["touchend"] = sendTouchEvent(13);
-        }
-        if (eventMask & 8192) {
-            handlers["touchcancel"] = sendTouchEvent(14);
+            handlers["touchcancel"] = sendTouchEvent(13);
         }
 
         Object.keys(handlers).forEach(function (type) {

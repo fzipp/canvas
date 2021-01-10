@@ -94,7 +94,7 @@ func TestDecodeEvent(t *testing.T) {
 		{
 			"KeyDownEvent",
 			[]byte{
-				0x05,                   // Event type
+				0x04,                   // Event type
 				0b00001010,             // Modifier keys
 				0x00, 0x00, 0x00, 0x09, // len(Key)
 				0x41, 0x72, 0x72, 0x6f, 0x77, 0x4c, 0x65, 0x66, 0x74, // Key
@@ -109,7 +109,7 @@ func TestDecodeEvent(t *testing.T) {
 		{
 			"WheelEvent",
 			[]byte{
-				0x0A,                   // Event type
+				0x09,                   // Event type
 				0b00001100,             // Buttons
 				0x00, 0x00, 0x00, 0x82, // X
 				0x00, 0x00, 0x01, 0x9A, // Y
@@ -136,7 +136,7 @@ func TestDecodeEvent(t *testing.T) {
 		{
 			"TouchMoveEvent",
 			[]byte{
-				0x0C, // Event type
+				0x0b, // Event type
 
 				0x02,                   // len(Touches)
 				0x00, 0x00, 0x00, 0x00, // Touches[0].Identifier

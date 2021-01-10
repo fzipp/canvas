@@ -10,7 +10,7 @@ type Event interface {
 	mask() eventMask
 }
 
-type CloseEvent struct {}
+type CloseEvent struct{}
 
 func (e CloseEvent) mask() eventMask { return 0 }
 
@@ -155,7 +155,6 @@ const (
 	maskMouseMove eventMask = 1 << iota
 	maskMouseDown
 	maskMouseUp
-	_
 	maskKeyDown
 	maskKeyUp
 	maskClick
@@ -183,7 +182,6 @@ const (
 	evMouseMove byte = 1 + iota
 	evMouseDown
 	evMouseUp
-	_
 	evKeyDown
 	evKeyUp
 	evClick
