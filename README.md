@@ -80,7 +80,8 @@ function and pass the state to other functions called by the run function.
 ### An animation loop
 
 You can create an animation by putting a `for` loop in the `run` function.
-Within this loop the `ctx.Quit()` channel should be observed. 
+Within this loop the `ctx.Events()` channel should be observed for a
+`canvas.CloseEvent`.
 
 ```go
 package main
@@ -106,8 +107,10 @@ func run(ctx *canvas.Context) {
 	d := &demo{}
 	for {
 		select {
-		case <-ctx.Quit():
-			return
+		case event := <-ctx.Events():
+			if _, ok := event.(canvas.CloseEvent); ok {
+				return
+			}
 		default:
 			d.update()
 			d.draw(ctx)

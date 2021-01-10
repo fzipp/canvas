@@ -92,14 +92,13 @@ func (h *drawHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	defer close(events)
 	draws := make(chan []byte)
 	defer close(draws)
-	quit := make(chan struct{})
 
 	wg := sync.WaitGroup{}
 	wg.Add(2)
 	go readMessages(conn, events, &wg)
 	go writeMessages(conn, draws, &wg)
 
-	ctx := newContext(draws, events, quit, h.config)
+	ctx := newContext(draws, events, h.config)
 	go func() {
 		defer wg.Done()
 		h.draw(ctx)
@@ -107,7 +106,7 @@ func (h *drawHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 	wg.Add(1)
-	close(quit)
+	events <- CloseEvent{}
 	wg.Wait()
 }
 

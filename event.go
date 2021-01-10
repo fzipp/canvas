@@ -10,6 +10,10 @@ type Event interface {
 	mask() eventMask
 }
 
+type CloseEvent struct {}
+
+func (e CloseEvent) mask() eventMask { return 0 }
+
 type MouseEvent struct {
 	Buttons MouseButtons
 	X, Y    int

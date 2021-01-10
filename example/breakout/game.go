@@ -14,6 +14,7 @@ import (
 
 type game struct {
 	started bool
+	quit    bool
 	score   int
 	round   int
 	size    image.Point
@@ -78,6 +79,8 @@ func (g *game) initialBricks(columns, rows int) []brick {
 
 func (g *game) handle(event canvas.Event, ctx *canvas.Context) {
 	switch e := event.(type) {
+	case canvas.CloseEvent:
+		g.quit = true
 	case canvas.MouseMoveEvent:
 		if g.started {
 			g.paddle.pos.X = e.X

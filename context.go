@@ -14,7 +14,6 @@ type Context struct {
 	config config
 	draws  chan<- []byte
 	events <-chan Event
-	quit   <-chan struct{}
 	buf    buffer
 
 	imageDataIDs idGenerator
@@ -22,21 +21,16 @@ type Context struct {
 	patternIDs   idGenerator
 }
 
-func newContext(draws chan<- []byte, events <-chan Event, quit <-chan struct{}, config config) *Context {
+func newContext(draws chan<- []byte, events <-chan Event, config config) *Context {
 	return &Context{
 		config: config,
 		draws:  draws,
 		events: events,
-		quit:   quit,
 	}
 }
 
 func (ctx *Context) Events() <-chan Event {
 	return ctx.events
-}
-
-func (ctx *Context) Quit() <-chan struct{} {
-	return ctx.quit
 }
 
 func (ctx *Context) CanvasWidth() int {
@@ -467,12 +461,8 @@ func (ctx *Context) GetImageData(sx, sy, sw, sh float64) *ImageData {
 }
 
 func (ctx *Context) Flush() {
-	select {
-	case <-ctx.Quit():
-		return
-	case ctx.draws <- ctx.buf.bytes:
-		ctx.buf.reset()
-	}
+	ctx.draws <- ctx.buf.bytes
+	ctx.buf.reset()
 }
 
 type idGenerator struct {

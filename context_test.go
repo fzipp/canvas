@@ -842,7 +842,7 @@ func TestContextDrawing(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			draws := make(chan []byte)
-			ctx := newContext(draws, nil, nil, config{})
+			ctx := newContext(draws, nil, config{})
 			go func(draw func(*Context)) {
 				draw(ctx)
 				ctx.Flush()

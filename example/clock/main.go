@@ -36,8 +36,10 @@ func main() {
 func run(ctx *canvas.Context) {
 	for {
 		select {
-		case <-ctx.Quit():
-			return
+		case event := <-ctx.Events():
+			if _, ok := event.(canvas.CloseEvent); ok {
+				return
+			}
 		default:
 			drawClock(ctx)
 			ctx.Flush()

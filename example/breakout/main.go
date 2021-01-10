@@ -39,10 +39,8 @@ func run(ctx *canvas.Context) {
 	size := image.Pt(ctx.CanvasWidth(), ctx.CanvasHeight())
 	game := newGame(size)
 	ctx.SetFont("30px sans-serif")
-	for {
+	for !game.quit {
 		select {
-		case <-ctx.Quit():
-			return
 		case event := <-ctx.Events():
 			game.handle(event, ctx)
 		default:
