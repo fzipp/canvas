@@ -176,25 +176,27 @@ func main() {
 
 func run(ctx *canvas.Context) {
 	d := &demo{}
-	for {
-		d.update()
-		d.draw(ctx)
-		ctx.Flush()
+	for !d.quit {
 		select {
-		case <-ctx.Quit():
-			return
 		case event := <-ctx.Events():
 			d.handle(event)
+		default:
+			d.update()
+			d.draw(ctx)
+			ctx.Flush()
 		}
 	}
 }
 
 type demo struct {
+	quit bool
 	// ...
 }
 
 func (d *demo) handle(event canvas.Event) {
 	switch e := event.(type) {
+	case canvas.CloseEvent:
+		d.quit = true
 	case canvas.MouseDownEvent:
 		// ...
 	case canvas.MouseMoveEvent:
