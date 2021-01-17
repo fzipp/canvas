@@ -93,7 +93,7 @@ const (
 	bCreateLinearGradient
 	bCreatePattern
 	bCreateRadialGradient
-	bDrawFocusIfNeeded
+	_
 	bDrawImage
 	bEllipse
 	bFill
