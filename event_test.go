@@ -6,6 +6,7 @@ package canvas
 
 import (
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -176,6 +177,42 @@ func TestDecodeEvent(t *testing.T) {
 			},
 		},
 		{
+			"DblClickEvent",
+			[]byte{
+				0x07,                   // Event type
+				0b00000001,             // Buttons
+				0x00, 0x00, 0x0f, 0xc0, // X
+				0x00, 0x00, 0x14, 0xdf, // Y
+				0b00000011, // Modifier keys
+			},
+			DblClickEvent{
+				MouseEvent{
+					Buttons:      ButtonPrimary,
+					X:            4032,
+					Y:            5343,
+					modifierKeys: modKeyAlt | modKeyShift,
+				},
+			},
+		},
+		{
+			"AuxClickEvent",
+			[]byte{
+				0x08,                   // Event type
+				0b00000001,             // Buttons
+				0x00, 0x00, 0x01, 0x41, // X
+				0x00, 0x00, 0x02, 0x1f, // Y
+				0b00001100, // Modifier keys
+			},
+			AuxClickEvent{
+				MouseEvent{
+					Buttons:      ButtonPrimary,
+					X:            321,
+					Y:            543,
+					modifierKeys: modKeyCtrl | modKeyMeta,
+				},
+			},
+		},
+		{
 			"WheelEvent",
 			[]byte{
 				0x09,                   // Event type
@@ -251,6 +288,32 @@ func TestDecodeEvent(t *testing.T) {
 				t.Errorf("\ngot : %#v\nwant: %#v", got, tt.want)
 			}
 		})
+	}
+}
+
+func TestUnsupportedEventType(t *testing.T) {
+	tests := []byte{
+		0x00,
+		0xfa,
+		0xfb,
+		0xfc,
+	}
+	wantErrorMessage := "unknown event type: "
+	for _, tt := range tests {
+		got, err := decodeEvent([]byte{tt})
+		if err == nil {
+			t.Errorf("expected error, but got none")
+			return
+		}
+		if wantType, ok := err.(errUnknownEventType); !ok {
+			t.Errorf("expected %T error, but got: %#v", wantType, err)
+		}
+		if !strings.HasPrefix(err.Error(), wantErrorMessage) {
+			t.Errorf("expected %q error message, but got: %q", wantErrorMessage, err)
+		}
+		if got != nil {
+			t.Errorf("expected nil event, but got: %#v", got)
+		}
 	}
 }
 

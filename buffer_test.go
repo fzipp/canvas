@@ -174,11 +174,95 @@ func TestBufferRead(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			buf := &buffer{bytes: tt.bytes}
 			got := tt.read(buf)
+			if buf.error != nil {
+				t.Errorf("did not expect error, but got error: %s", buf.error)
+			}
 			if !reflect.DeepEqual(got, tt.wantValue) {
-				t.Errorf("\ngot : %#v\nwant: %#v", got, tt.wantValue)
+				t.Errorf("got: %#v, want: %#v", got, tt.wantValue)
 			}
 			if !reflect.DeepEqual(buf.bytes, tt.wantBytes) {
 				t.Errorf("\n(buf.bytes) got : %#v\n(buf.bytes) want: %#v", buf.bytes, tt.wantBytes)
+			}
+		})
+	}
+}
+
+func TestBufferReadErrors(t *testing.T) {
+	tests := []struct {
+		name      string
+		bytes     []byte
+		read      func(buf *buffer) interface{}
+		wantValue interface{}
+	}{
+		{
+			"readByte",
+			[]byte{},
+			func(buf *buffer) interface{} {
+				return buf.readByte()
+			},
+			byte(0),
+		},
+		{
+			"readUint32",
+			[]byte{0x01, 0x02, 0x03},
+			func(buf *buffer) interface{} {
+				return buf.readUint32()
+			},
+			uint32(0),
+		},
+		{
+			"readUint64",
+			[]byte{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07},
+			func(buf *buffer) interface{} {
+				return buf.readUint64()
+			},
+			uint64(0),
+		},
+		{
+			"readFloat64",
+			[]byte{0x40, 0x09, 0x99, 0x99, 0x99, 0x99, 0x99},
+			func(buf *buffer) interface{} {
+				return buf.readFloat64()
+			},
+			float64(0),
+		},
+		{
+			"readString: length data too short",
+			[]byte{0x00, 0x00, 0x00},
+			func(buf *buffer) interface{} {
+				return buf.readString()
+			},
+			"",
+		},
+		{
+			"readString: string data too short",
+			[]byte{0x00, 0x00, 0x00, 0x04, 0x54, 0x65, 0x73},
+			func(buf *buffer) interface{} {
+				return buf.readString()
+			},
+			"",
+		},
+	}
+	wantErrorMessage := "data too short"
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			buf := &buffer{bytes: tt.bytes}
+			got := tt.read(buf)
+			if buf.error == nil {
+				t.Errorf("expected error, but got none")
+				return
+			}
+			if wantType, ok := buf.error.(errDataTooShort); !ok {
+				t.Errorf("expected %T error, but got: %#v", wantType, buf.error)
+			}
+			if buf.error.Error() != wantErrorMessage {
+				t.Errorf("expected %q error message, but got: %q", wantErrorMessage, buf.error)
+			}
+			if !reflect.DeepEqual(got, tt.wantValue) {
+				t.Errorf("got: %#v, want: %#v", got, tt.wantValue)
+			}
+			if len(buf.bytes) != 0 {
+				t.Errorf("excpected buf.bytes to be empty after short read, but got: %#v", buf.bytes)
 			}
 		})
 	}

@@ -175,7 +175,6 @@ const (
 	ButtonAuxiliary
 	Button4th
 	Button5th
-	ButtonNone MouseButtons = 0
 )
 
 const (
@@ -233,7 +232,7 @@ func decodeEventBuf(buf *buffer) (Event, error) {
 	case evTouchCancel:
 		return TouchCancelEvent{decodeTouchEvent(buf)}, nil
 	}
-	return nil, fmt.Errorf("unknown event type: %#x", eventType)
+	return nil, errUnknownEventType{unknownType: eventType}
 }
 
 func decodeMouseEvent(buf *buffer) MouseEvent {
@@ -286,4 +285,12 @@ func decodeTouch(buf *buffer) Touch {
 		X:          int(buf.readUint32()),
 		Y:          int(buf.readUint32()),
 	}
+}
+
+type errUnknownEventType struct {
+	unknownType byte
+}
+
+func (err errUnknownEventType) Error() string {
+	return fmt.Sprintf("unknown event type: %#x", err.unknownType)
 }

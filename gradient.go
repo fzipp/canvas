@@ -4,9 +4,7 @@
 
 package canvas
 
-import (
-	"image/color"
-)
+import "image/color"
 
 type Gradient struct {
 	id  uint32

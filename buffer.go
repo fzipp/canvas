@@ -6,7 +6,6 @@ package canvas
 
 import (
 	"encoding/binary"
-	"errors"
 	"image/color"
 	"math"
 )
@@ -108,5 +107,11 @@ func (buf *buffer) reset() {
 
 func (buf *buffer) dataTooShort() {
 	buf.reset()
-	buf.error = errors.New("data too short")
+	buf.error = errDataTooShort{}
+}
+
+type errDataTooShort struct{}
+
+func (err errDataTooShort) Error() string {
+	return "data too short"
 }
