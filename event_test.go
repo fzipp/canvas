@@ -78,14 +78,14 @@ func TestDecodeEvent(t *testing.T) {
 			"MouseMoveEvent",
 			[]byte{
 				0x01,                   // Event type
-				0b00000011,             // Buttons
+				0b00000000,             // Buttons
 				0x00, 0x00, 0x00, 0xc8, // X
 				0x00, 0x00, 0x00, 0x96, // Y
 				0b00000101, // Modifier keys
 			},
 			MouseMoveEvent{
 				MouseEvent{
-					Buttons:      ButtonPrimary | ButtonSecondary,
+					Buttons:      ButtonNone,
 					X:            200,
 					Y:            150,
 					modifierKeys: modKeyCtrl | modKeyAlt,
@@ -240,6 +240,29 @@ func TestDecodeEvent(t *testing.T) {
 			},
 		},
 		{
+			"TouchStartEvent",
+			[]byte{
+				0x0a,                   // Event type
+				0x01,                   // len(Touches)
+				0x00, 0x00, 0x00, 0x00, // Touches[0].Identifier
+				0x00, 0x00, 0x01, 0x54, // Touches[0].X
+				0x00, 0x00, 0x00, 0xd2, // Touches[0].Y
+				0x00,       // len(ChangedTouches)
+				0x00,       // len(TargetTouches)
+				0b00001000, // Modifier keys
+			},
+			TouchStartEvent{
+				TouchEvent{
+					Touches: TouchList{
+						{Identifier: 0, X: 340, Y: 210},
+					},
+					ChangedTouches: TouchList{},
+					TargetTouches:  TouchList{},
+					modifierKeys:   modKeyMeta,
+				},
+			},
+		},
+		{
 			"TouchMoveEvent",
 			[]byte{
 				0x0b, // Event type
@@ -266,13 +289,59 @@ func TestDecodeEvent(t *testing.T) {
 			},
 			TouchMoveEvent{
 				TouchEvent{
-					Touches: []Touch{
+					Touches: TouchList{
 						{Identifier: 0, X: 3840, Y: 165},
 						{Identifier: 1, X: 784, Y: 517},
 					},
-					ChangedTouches: []Touch{{Identifier: 1, X: 240, Y: 162}},
-					TargetTouches:  []Touch{{Identifier: 2, X: 256, Y: 512}},
+					ChangedTouches: TouchList{{Identifier: 1, X: 240, Y: 162}},
+					TargetTouches:  TouchList{{Identifier: 2, X: 256, Y: 512}},
 					modifierKeys:   modKeyAlt | modKeyCtrl,
+				},
+			},
+		},
+		{
+			"TouchEndEvent",
+			[]byte{
+				0x0c,                   // Event type
+				0x00,                   // len(Touches)
+				0x01,                   // len(ChangedTouches)
+				0x00, 0x00, 0x00, 0x00, // Touches[0].Identifier
+				0x00, 0x00, 0x01, 0x54, // Touches[0].X
+				0x00, 0x00, 0x00, 0xd2, // Touches[0].Y
+				0x00,       // len(TargetTouches)
+				0b00000001, // Modifier keys
+			},
+			TouchEndEvent{
+				TouchEvent{
+					Touches: TouchList{},
+					ChangedTouches: TouchList{
+						{Identifier: 0, X: 340, Y: 210},
+					},
+					TargetTouches: TouchList{},
+					modifierKeys:  modKeyAlt,
+				},
+			},
+		},
+		{
+			"TouchCancelEvent",
+			[]byte{
+				0x0d,                   // Event type
+				0x00,                   // len(Touches)
+				0x00,                   // len(ChangedTouches)
+				0x01,                   // len(TargetTouches)
+				0x00, 0x00, 0x00, 0x00, // Touches[0].Identifier
+				0x00, 0x00, 0x01, 0x54, // Touches[0].X
+				0x00, 0x00, 0x00, 0xd2, // Touches[0].Y
+				0b00000011, // Modifier keys
+			},
+			TouchCancelEvent{
+				TouchEvent{
+					Touches:        TouchList{},
+					ChangedTouches: TouchList{},
+					TargetTouches: TouchList{
+						{Identifier: 0, X: 340, Y: 210},
+					},
+					modifierKeys: modKeyAlt | modKeyShift,
 				},
 			},
 		},
@@ -310,6 +379,29 @@ func TestUnsupportedEventType(t *testing.T) {
 		}
 		if !strings.HasPrefix(err.Error(), wantErrorMessage) {
 			t.Errorf("expected %q error message, but got: %q", wantErrorMessage, err)
+		}
+		if got != nil {
+			t.Errorf("expected nil event, but got: %#v", got)
+		}
+	}
+}
+
+func TestEventDataTooShort(t *testing.T) {
+	tests := []struct {
+		p []byte
+	}{
+		{[]byte{0x01}},
+		{[]byte{0x02, 0x00, 0x00, 0x00}},
+		{[]byte{0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
+	}
+	for _, tt := range tests {
+		got, err := decodeEvent(tt.p)
+		if err == nil {
+			t.Errorf("expected error, but got none")
+			return
+		}
+		if wantType, ok := err.(errDataTooShort); !ok {
+			t.Errorf("expected %T error, but got: %#v", wantType, err)
 		}
 		if got != nil {
 			t.Errorf("expected nil event, but got: %#v", got)

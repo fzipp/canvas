@@ -175,6 +175,7 @@ const (
 	ButtonAuxiliary
 	Button4th
 	Button5th
+	ButtonNone MouseButtons = 0
 )
 
 const (
