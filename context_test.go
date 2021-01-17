@@ -805,12 +805,22 @@ func TestContextDrawing(t *testing.T) {
 			func(ctx *Context) {
 				img := &ImageData{id: 16}
 				ctx.CreatePattern(img, PatternRepeatX)
+				ctx.CreatePattern(img, PatternRepeatY)
+				ctx.CreatePattern(img, PatternNoRepeat)
 			},
 			[]byte{
 				0x0a,                   // CreatePattern
 				0x00, 0x00, 0x00, 0x00, // ID
 				0x00, 0x00, 0x00, 0x10, // ImageData ID
 				0x01,
+				0x0a,                   // CreatePattern
+				0x00, 0x00, 0x00, 0x01, // ID
+				0x00, 0x00, 0x00, 0x10, // ImageData ID
+				0x02,
+				0x0a,                   // CreatePattern
+				0x00, 0x00, 0x00, 0x02, // ID
+				0x00, 0x00, 0x00, 0x10, // ImageData ID
+				0x03,
 			},
 		},
 		{
@@ -852,5 +862,25 @@ func TestContextDrawing(t *testing.T) {
 				t.Errorf("\ngot : %#02v\nwant: %#02v", got, tt.want)
 			}
 		})
+	}
+}
+
+func TestImageDataSize(t *testing.T) {
+	tests := []struct {
+		width  int
+		height int
+	}{
+		{12, 32},
+		{320, 200},
+		{1350, 875},
+	}
+	ctx := newContext(nil, nil, config{})
+	for _, tt := range tests {
+		got := ctx.CreateImageData(image.NewRGBA(image.Rect(0, 0, tt.width, tt.height)))
+		if got.Width() != tt.width || got.Height() != tt.height {
+			t.Errorf("got: W %d H %d, want: W %d H %d",
+				got.Width(), got.Height(),
+				tt.width, tt.height)
+		}
 	}
 }

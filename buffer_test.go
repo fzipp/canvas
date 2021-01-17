@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestBuffer(t *testing.T) {
+func TestBufferWrite(t *testing.T) {
 	tests := []struct {
 		name string
 		use  func(buf *buffer)
@@ -111,6 +111,74 @@ func TestBuffer(t *testing.T) {
 			got := buf.bytes
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("\ngot : %#v\nwant: %#v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestBufferRead(t *testing.T) {
+	tests := []struct {
+		name      string
+		bytes     []byte
+		read      func(buf *buffer) interface{}
+		wantValue interface{}
+		wantBytes []byte
+	}{
+		{
+			"readByte",
+			[]byte{0x01, 0x02},
+			func(buf *buffer) interface{} {
+				return buf.readByte()
+			},
+			byte(0x01),
+			[]byte{0x02},
+		},
+		{
+			"readUint32",
+			[]byte{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08},
+			func(buf *buffer) interface{} {
+				return buf.readUint32()
+			},
+			uint32(0x01020304),
+			[]byte{0x05, 0x06, 0x07, 0x08},
+		},
+		{
+			"readUint64",
+			[]byte{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09},
+			func(buf *buffer) interface{} {
+				return buf.readUint64()
+			},
+			uint64(0x0102030405060708),
+			[]byte{0x09},
+		},
+		{
+			"readFloat64",
+			[]byte{0x40, 0x09, 0x99, 0x99, 0x99, 0x99, 0x99, 0x9a, 0xab},
+			func(buf *buffer) interface{} {
+				return buf.readFloat64()
+			},
+			3.2,
+			[]byte{0xab},
+		},
+		{
+			"readString",
+			[]byte{0x00, 0x00, 0x00, 0x04, 0x54, 0x65, 0x73, 0x74, 0x42},
+			func(buf *buffer) interface{} {
+				return buf.readString()
+			},
+			"Test",
+			[]byte{0x42},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			buf := &buffer{bytes: tt.bytes}
+			got := tt.read(buf)
+			if !reflect.DeepEqual(got, tt.wantValue) {
+				t.Errorf("\ngot : %#v\nwant: %#v", got, tt.wantValue)
+			}
+			if !reflect.DeepEqual(buf.bytes, tt.wantBytes) {
+				t.Errorf("\n(buf.bytes) got : %#v\n(buf.bytes) want: %#v", buf.bytes, tt.wantBytes)
 			}
 		})
 	}

@@ -92,6 +92,42 @@ func TestDecodeEvent(t *testing.T) {
 			},
 		},
 		{
+			"MouseDownEvent",
+			[]byte{
+				0x02,                   // Event type
+				0b00010000,             // Buttons
+				0x00, 0x00, 0x02, 0xfc, // X
+				0x00, 0x00, 0x03, 0xff, // Y
+				0b00001000, // Modifier keys
+			},
+			MouseDownEvent{
+				MouseEvent{
+					Buttons:      Button5th,
+					X:            764,
+					Y:            1023,
+					modifierKeys: modKeyMeta,
+				},
+			},
+		},
+		{
+			"MouseUpEvent",
+			[]byte{
+				0x03,                   // Event type
+				0b00000001,             // Buttons
+				0x00, 0x00, 0x00, 0xf0, // X
+				0x00, 0x00, 0x0c, 0x8a, // Y
+				0b00000100, // Modifier keys
+			},
+			MouseUpEvent{
+				MouseEvent{
+					Buttons:      ButtonPrimary,
+					X:            240,
+					Y:            3210,
+					modifierKeys: modKeyCtrl,
+				},
+			},
+		},
+		{
 			"KeyDownEvent",
 			[]byte{
 				0x04,                   // Event type
@@ -103,6 +139,39 @@ func TestDecodeEvent(t *testing.T) {
 				KeyboardEvent{
 					Key:          "ArrowLeft",
 					modifierKeys: modKeyShift | modKeyMeta,
+				},
+			},
+		},
+		{
+			"KeyUpEvent",
+			[]byte{
+				0x05,                   // Event type
+				0b00000011,             // Modifier keys
+				0x00, 0x00, 0x00, 0x0a, // len(Key)
+				0x41, 0x72, 0x72, 0x6f, 0x77, 0x52, 0x69, 0x67, 0x68, 0x74, // Key
+			},
+			KeyUpEvent{
+				KeyboardEvent{
+					Key:          "ArrowRight",
+					modifierKeys: modKeyAlt | modKeyShift,
+				},
+			},
+		},
+		{
+			"ClickEvent",
+			[]byte{
+				0x06,                   // Event type
+				0b00000010,             // Buttons
+				0x00, 0x00, 0x07, 0x81, // X
+				0x00, 0x00, 0x02, 0x02, // Y
+				0b00000010, // Modifier keys
+			},
+			ClickEvent{
+				MouseEvent{
+					Buttons:      ButtonSecondary,
+					X:            1921,
+					Y:            514,
+					modifierKeys: modKeyShift,
 				},
 			},
 		},
@@ -182,5 +251,36 @@ func TestDecodeEvent(t *testing.T) {
 				t.Errorf("\ngot : %#v\nwant: %#v", got, tt.want)
 			}
 		})
+	}
+}
+
+func TestEventMask(t *testing.T) {
+	tests := []struct {
+		event Event
+		want  eventMask
+	}{
+		{CloseEvent{}, 0},
+		{MouseEvent{}, 0b11100111},
+		{MouseMoveEvent{}, 0b00000001},
+		{MouseDownEvent{}, 0b00000010},
+		{MouseUpEvent{}, 0b00000100},
+		{ClickEvent{}, 0b00100000},
+		{DblClickEvent{}, 0b01000000},
+		{AuxClickEvent{}, 0b10000000},
+		{WheelEvent{}, 0b100000000},
+		{KeyboardEvent{}, 0b00011000},
+		{KeyDownEvent{}, 0b00001000},
+		{KeyUpEvent{}, 0b00010000},
+		{TouchEvent{}, 0b1111000000000},
+		{TouchStartEvent{}, 0b0001000000000},
+		{TouchMoveEvent{}, 0b0010000000000},
+		{TouchEndEvent{}, 0b0100000000000},
+		{TouchCancelEvent{}, 0b1000000000000},
+	}
+	for _, tt := range tests {
+		got := tt.event.mask()
+		if got != tt.want {
+			t.Errorf("Event mask for %T; got: %#b, want: %#b", tt.event, got, tt.want)
+		}
 	}
 }
