@@ -21,7 +21,7 @@ type MouseEvent struct {
 }
 
 func (e MouseEvent) mask() eventMask {
-	return maskMouseMove | maskMouseUp | maskKeyDown | maskClick | maskDblClick | maskAuxClick
+	return maskMouseMove | maskMouseUp | maskMouseDown | maskClick | maskDblClick | maskAuxClick
 }
 
 type MouseMoveEvent struct{ MouseEvent }
