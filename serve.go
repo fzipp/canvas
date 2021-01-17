@@ -43,7 +43,7 @@ type htmlHandler struct {
 	config config
 }
 
-func (h *htmlHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *htmlHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
 	model := map[string]interface{}{
 		"DrawURL":             template.URL("draw"),
 		"Width":               h.config.width,
@@ -62,7 +62,7 @@ func (h *htmlHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func javaScriptHandler(w http.ResponseWriter, r *http.Request) {
+func javaScriptHandler(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Add("Content-Type", "text/javascript")
 	err := javaScriptTemplate.Execute(w, nil)
 	if err != nil {
