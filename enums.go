@@ -164,12 +164,17 @@ const (
 	BaselineMiddle
 )
 
+// PatternRepetition indicates how to repeat a pattern's image.
 type PatternRepetition byte
 
 const (
+	// PatternRepeat repeats the image in both directions.
 	PatternRepeat PatternRepetition = iota
+	// PatternRepeatX repeats the image only horizontally.
 	PatternRepeatX
+	// PatternRepeatY repeats the image only vertically.
 	PatternRepeatY
+	// PatternNoRepeat repeats the image in neither direction.
 	PatternNoRepeat
 )
 

@@ -725,6 +725,10 @@ func (ctx *Context) SetLineDash(segments []float64) {
 	}
 }
 
+// CreateImageData creates a new, blank ImageData object on the client with the
+// specified dimensions. All of the pixels in the new object are transparent
+// black. The ImageData object should be released with the ImageData.Release
+// method when it is no longer needed.
 func (ctx *Context) CreateImageData(m image.Image) *ImageData {
 	rgba := ensureRGBA(m)
 	bounds := m.Bounds()
@@ -737,6 +741,16 @@ func (ctx *Context) CreateImageData(m image.Image) *ImageData {
 	return &ImageData{id: id, ctx: ctx, width: bounds.Dx(), height: bounds.Dy()}
 }
 
+// PutImageData paints data from the given ImageData object onto the
+// canvas. If a dirty rectangle is provided, only the pixels from that
+// rectangle are painted. This method is not affected by the canvas
+// transformation matrix.
+//
+// (dx, dy) is the position at which to place the image data in the destination
+// canvas.
+//
+// Note: Image data can be retrieved from a canvas using the GetImageData
+// method.
 func (ctx *Context) PutImageData(src *ImageData, dx, dy float64) {
 	ctx.buf.addByte(bPutImageData)
 	ctx.buf.addUint32(src.id)
@@ -744,6 +758,20 @@ func (ctx *Context) PutImageData(src *ImageData, dx, dy float64) {
 	ctx.buf.addFloat64(dy)
 }
 
+// PutImageDataDirty paints data from the given ImageData object onto the
+// canvas. If a dirty rectangle is provided, only the pixels from that
+// rectangle are painted. This method is not affected by the canvas
+// transformation matrix.
+//
+// (dx, dy) is the position at which to place the image data in the destination
+// canvas.
+//
+// (dirtyX, dirtyY) is the position of the top-left corner from which the image
+// data will be extracted; dirtyWidth and dirtyHeight are the width and height
+// of the rectangle to be painted.
+//
+// Note: Image data can be retrieved from a canvas using the GetImageData
+// method.
 func (ctx *Context) PutImageDataDirty(src *ImageData, dx, dy, dirtyX, dirtyY, dirtyWidth, dirtyHeight float64) {
 	ctx.buf.addByte(bPutImageDataDirty)
 	ctx.buf.addUint32(src.id)
@@ -755,6 +783,10 @@ func (ctx *Context) PutImageDataDirty(src *ImageData, dx, dy, dirtyX, dirtyY, di
 	ctx.buf.addFloat64(dirtyHeight)
 }
 
+// DrawImage draws an image onto the canvas.
+//
+// (dx, dy) is the position in the destination canvas at which to place the
+// top-left corner of the source image.
 func (ctx *Context) DrawImage(src *ImageData, dx, dy float64) {
 	ctx.buf.addByte(bDrawImage)
 	ctx.buf.addUint32(src.id)
@@ -762,6 +794,12 @@ func (ctx *Context) DrawImage(src *ImageData, dx, dy float64) {
 	ctx.buf.addFloat64(dy)
 }
 
+// DrawImageScaled draws an image onto the canvas.
+//
+// (dx, dy) is the position in the destination canvas at which to place the
+// top-left corner of the source image; dWidth and dHeight are the width to
+// draw the image in the destination canvas. This allows scaling of the drawn
+// image.
 func (ctx *Context) DrawImageScaled(src *ImageData, dx, dy, dWidth, dHeight float64) {
 	ctx.buf.addByte(bDrawImageScaled)
 	ctx.buf.addUint32(src.id)
@@ -771,6 +809,17 @@ func (ctx *Context) DrawImageScaled(src *ImageData, dx, dy, dWidth, dHeight floa
 	ctx.buf.addFloat64(dHeight)
 }
 
+// DrawImageSubRectangle draws an image onto the canvas.
+//
+// (sx, sy) is the position of the top left corner of the sub-rectangle of the
+// source image to draw into the destination context; sWidth and sHeight are
+// the width and height of the sub-rectangle of the source image to draw into
+// the destination context.
+//
+// (dx, dy) is the position in the destination canvas at which to place the
+// top-left corner of the source image; dWidth and dHeight are the width to
+// draw the image in the destination canvas. This allows scaling of the drawn
+// image.
 func (ctx *Context) DrawImageSubRectangle(src *ImageData, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight float64) {
 	ctx.buf.addByte(bDrawImageSubRectangle)
 	ctx.buf.addUint32(src.id)
@@ -784,6 +833,16 @@ func (ctx *Context) DrawImageSubRectangle(src *ImageData, sx, sy, sWidth, sHeigh
 	ctx.buf.addFloat64(dHeight)
 }
 
+// CreateLinearGradient creates a gradient along the line connecting two given
+// coordinates. To be applied to a shape, the gradient must first be set via
+// the SetFillStyleGradient or SetStrokeStyleGradient methods.
+//
+// (x0, y0) defines the start point, and (x1, y1) defines the end point of the
+// gradient line.
+//
+// Note: Gradient coordinates are global, i.e., relative to the current
+// coordinate space. When applied to a shape, the coordinates are NOT relative
+// to the shape's coordinates.
 func (ctx *Context) CreateLinearGradient(x0, y0, x1, y1 float64) *Gradient {
 	id := ctx.gradientIDs.GenerateID()
 	ctx.buf.addByte(bCreateLinearGradient)
@@ -795,6 +854,17 @@ func (ctx *Context) CreateLinearGradient(x0, y0, x1, y1 float64) *Gradient {
 	return &Gradient{id: id, ctx: ctx}
 }
 
+// CreateRadialGradient creates a radial gradient using the size and
+// coordinates of two circles. To be applied to a shape, the gradient must
+// first be set via the SetFillStyleGradient or SetStrokeStyleGradient methods.
+//
+// (x0, y0) defines the center, and r0 the radius of the start circle.
+// (x1, y1) defines the center, and r1 the radius of the end circle.
+// Each radius must be non-negative and finite.
+//
+// Note: Gradient coordinates are global, i.e., relative to the current
+// coordinate space. When applied to a shape, the coordinates are NOT relative
+// to the shape's coordinates.
 func (ctx *Context) CreateRadialGradient(x0, y0, r0, x1, y1, r1 float64) *Gradient {
 	id := ctx.gradientIDs.GenerateID()
 	ctx.buf.addByte(bCreateRadialGradient)
@@ -808,6 +878,12 @@ func (ctx *Context) CreateRadialGradient(x0, y0, r0, x1, y1, r1 float64) *Gradie
 	return &Gradient{id: id, ctx: ctx}
 }
 
+// CreatePattern creates a pattern using the specified image and repetition.
+// The repetition indicates how to repeat the pattern's image.
+//
+// This method doesn't draw anything to the canvas directly. The pattern it
+// creates must be set via the SetFillStylePattern or SetStrokeStylePattern
+// methods, after which it is applied to any subsequent drawing.
 func (ctx *Context) CreatePattern(src *ImageData, repetition PatternRepetition) *Pattern {
 	id := ctx.patternIDs.GenerateID()
 	ctx.buf.addByte(bCreatePattern)
@@ -817,6 +893,18 @@ func (ctx *Context) CreatePattern(src *ImageData, repetition PatternRepetition) 
 	return &Pattern{id: id, ctx: ctx}
 }
 
+// GetImageData returns an ImageData object representing the underlying pixel
+// data for a specified portion of the canvas.
+//
+// (sx, sy) is the position of the top-left corner of the rectangle from which
+// the ImageData will be extracted; sw and sh are the width and height of the
+// rectangle from which the ImageData will be extracted.
+//
+// This method is not affected by the canvas's transformation matrix. If the
+// specified rectangle extends outside the bounds of the canvas, the pixels
+// outside the canvas are transparent black in the returned ImageData object.
+//
+// Note: Image data can be painted onto a canvas using the PutImageData method.
 func (ctx *Context) GetImageData(sx, sy, sw, sh float64) *ImageData {
 	id := ctx.imageDataIDs.GenerateID()
 	ctx.buf.addByte(bGetImageData)
