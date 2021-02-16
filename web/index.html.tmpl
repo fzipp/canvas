@@ -1,16 +1,10 @@
-// Copyright 2020 Frederik Zipp. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+<!--
+Copyright 2021 Frederik Zipp. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
 
-package canvas
-
-import "html/template"
-
-var htmlTemplate *template.Template
-
-func init() {
-	htmlTemplate = template.Must(template.New("index.html").Parse(`
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
     <title>{{.Title}}</title>
@@ -41,5 +35,3 @@ func init() {
             data-disable-context-menu="{{.ContextMenuDisabled}}"></canvas>
   </body>
 </html>
-`))
-}

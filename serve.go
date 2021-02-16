@@ -5,13 +5,25 @@
 package canvas
 
 import (
-	"html/template"
+	_ "embed"
+	htmltemplate "html/template"
 	"log"
 	"net/http"
 	"sync"
+	texttemplate "text/template"
 	"time"
 
 	"github.com/gorilla/websocket"
+)
+
+var (
+	//go:embed web/canvas-websocket.js
+	javaScriptCode     string
+	javaScriptTemplate = texttemplate.Must(texttemplate.New("canvas-websocket.js").Parse(javaScriptCode))
+
+	//go:embed web/index.html.tmpl
+	indexHTMLCode     string
+	indexHTMLTemplate = htmltemplate.Must(htmltemplate.New("index.html.tmpl").Parse(indexHTMLCode))
 )
 
 func ListenAndServe(addr string, run func(*Context), options ...Option) error {
@@ -42,7 +54,7 @@ type htmlHandler struct {
 
 func (h *htmlHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
 	model := map[string]interface{}{
-		"DrawURL":             template.URL("draw"),
+		"DrawURL":             htmltemplate.URL("draw"),
 		"Width":               h.config.width,
 		"Height":              h.config.height,
 		"Title":               h.config.title,
@@ -52,7 +64,7 @@ func (h *htmlHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
 		"FullPage":            h.config.fullPage,
 		"ReconnectInterval":   int64(h.config.reconnectInterval / time.Millisecond),
 	}
-	err := htmlTemplate.Execute(w, model)
+	err := indexHTMLTemplate.Execute(w, model)
 	if err != nil {
 		log.Println(err)
 		return

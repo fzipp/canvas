@@ -1,15 +1,7 @@
-// Copyright 2020 Frederik Zipp. All rights reserved.
+// Copyright 2021 Frederik Zipp. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package canvas
-
-import "text/template"
-
-var javaScriptTemplate *template.Template
-
-func init() {
-	javaScriptTemplate = template.Must(template.New("canvas-websocket.js").Parse(`
 document.addEventListener("DOMContentLoaded", function () {
     "use strict";
 
@@ -147,7 +139,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         Object.keys(handlers).forEach(function (type) {
             const target = (type.indexOf("key") !== 0) ? canvas : document;
-            target.addEventListener(type, handlers[type], { passive: false });
+            target.addEventListener(type, handlers[type], {passive: false});
         });
 
         const rect = canvas.getBoundingClientRect();
@@ -579,10 +571,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 return 5;
             case 68: {
                 const id = data.getUint32(1);
-                const imageData = ctx.getImageData(
+                allocImageData[id] = ctx.getImageData(
                     data.getFloat64(5), data.getFloat64(13),
                     data.getFloat64(21), data.getFloat64(29));
-                allocImageData[id] = imageData;
                 return 37;
             }
         }
@@ -607,5 +598,3 @@ document.addEventListener("DOMContentLoaded", function () {
             data.getUint8(offset + 3) / 255 + ")";
     }
 });
-`))
-}
