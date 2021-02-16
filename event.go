@@ -68,6 +68,9 @@ const (
 	DeltaPage
 )
 
+// KeyboardEvent objects describe a user interaction with the keyboard; each
+// event describes a single interaction between the user and a key (or
+// combination of a key with modifier keys) on the keyboard.
 type KeyboardEvent struct {
 	Key string
 	modifierKeys
@@ -129,18 +132,27 @@ const (
 	modKeyMeta
 )
 
+// AltKey returns true if the Alt (Option or ⌥ on OS X) key was active when
+// the event was generated.
 func (m modifierKeys) AltKey() bool {
 	return m.isPressed(modKeyAlt)
 }
 
+// ShiftKey returns true if the Shift key was active when the event was
+// generated.
 func (m modifierKeys) ShiftKey() bool {
 	return m.isPressed(modKeyShift)
 }
 
+// CtrlKey returns true if the Ctrl key was active when the event was
+// generated.
 func (m modifierKeys) CtrlKey() bool {
 	return m.isPressed(modKeyCtrl)
 }
 
+// MetaKey returns true if the Meta key (on Mac keyboards, the ⌘ Command key;
+// on Windows keyboards, the Windows key (⊞)) was active when the event
+// was generated.
 func (m modifierKeys) MetaKey() bool {
 	return m.isPressed(modKeyMeta)
 }
