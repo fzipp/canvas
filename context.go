@@ -15,6 +15,13 @@ import (
 	"sync"
 )
 
+// Context is the server-side drawing context for a client-side canvas. It
+// buffers all drawing operations until the Flush method is called. The Flush
+// method then sends the buffered operations to the client.
+//
+// The Context for a client-server connection is obtained from the parameter
+// of the run function that was passed to ListenAndServe, ListenAndServeTLS,
+// or NewServeMux.
 type Context struct {
 	config config
 	draws  chan<- []byte
@@ -34,6 +41,10 @@ func newContext(draws chan<- []byte, events <-chan Event, config config) *Contex
 	}
 }
 
+// Events returns a channel of events sent by the client.
+//
+// A type switch on the received Event values can differentiate between the
+// concrete event types such as MouseDownEvent or KeyUpEvent.
 func (ctx *Context) Events() <-chan Event {
 	return ctx.events
 }
@@ -203,6 +214,19 @@ func (ctx *Context) SetShadowColor(c color.Color) {
 	ctx.buf.addColor(c)
 }
 
+// SetShadowColorString sets the color of shadows.
+// The default value is fully-transparent black.
+//
+// The color is parsed as a CSS color value like "#a100cb", "#ccc",
+// "darkgreen", "rgba(0.5, 0.2, 0.7, 1.0)", etc.
+//
+// Be aware that the shadow's rendered opacity will be affected by the opacity
+// of the SetFillStyle color when filling, and of the SetStrokeStyle color
+// when stroking.
+//
+// Note: Shadows are only drawn if the SetShadowColor / SetShadowColorString
+// property is set to a non-transparent value. One of the SetShadowBlur,
+// SetShadowOffsetX, or SetShadowOffsetY properties must be non-zero, as well.
 func (ctx *Context) SetShadowColorString(color string) {
 	ctx.buf.addByte(bShadowColorString)
 	ctx.buf.addString(color)
@@ -240,11 +264,16 @@ func (ctx *Context) SetShadowOffsetY(offset float64) {
 
 // SetStrokeStyle sets the color to use for the strokes (outlines) around
 // shapes. The default color is black.
+//
+// The color is parsed as a CSS color value like "#a100cb", "#ccc",
+// "darkgreen", "rgba(0.5, 0.2, 0.7, 1.0)", etc.
 func (ctx *Context) SetStrokeStyle(c color.Color) {
 	ctx.buf.addByte(bStrokeStyle)
 	ctx.buf.addColor(c)
 }
 
+// SetStrokeStyleString sets the color to use for the strokes (outlines) around
+// shapes. The default color is black.
 func (ctx *Context) SetStrokeStyleString(color string) {
 	ctx.buf.addByte(bStrokeStyleString)
 	ctx.buf.addString(color)
@@ -916,6 +945,11 @@ func (ctx *Context) GetImageData(sx, sy, sw, sh float64) *ImageData {
 	return &ImageData{id: id, ctx: ctx, width: int(sw), height: int(sh)}
 }
 
+// Flush sends the buffered drawing operations of the context from the server
+// to the client.
+//
+// Nothing is displayed on the client canvas until Flush is called.
+// An animation loop usually has one flush per animation frame.
 func (ctx *Context) Flush() {
 	ctx.draws <- ctx.buf.bytes
 	ctx.buf.reset()

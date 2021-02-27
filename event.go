@@ -14,7 +14,11 @@ type CloseEvent struct{}
 
 func (e CloseEvent) mask() eventMask { return 0 }
 
+// MouseEvent represents events that occur due to the user interacting with a
+// pointing device (such as a mouse).
 type MouseEvent struct {
+	// Buttons encodes the buttons being depressed (if any) when the mouse
+	// event was fired.
 	Buttons MouseButtons
 	X, Y    int
 	modifierKeys
@@ -48,11 +52,17 @@ type AuxClickEvent struct{ MouseEvent }
 
 func (e AuxClickEvent) mask() eventMask { return maskAuxClick }
 
+// WheelEvent represents events that occur due to the user moving a mouse
+// wheel or similar input device.
 type WheelEvent struct {
 	MouseEvent
+	// DeltaX represents the horizontal scroll amount.
 	DeltaX    float64
+	// DeltaY represents the vertical scroll amount.
 	DeltaY    float64
+	// DeltaZ represents the scroll amount for the z-axis.
 	DeltaZ    float64
+	// DeltaMode represents the unit of the delta values' scroll amount.
 	DeltaMode DeltaMode
 }
 
@@ -60,11 +70,15 @@ func (e WheelEvent) mask() eventMask {
 	return maskWheel
 }
 
+// DeltaMode represents the unit of the delta values' scroll amount.
 type DeltaMode byte
 
 const (
+	// DeltaPixel means the delta values are specified in pixels.
 	DeltaPixel DeltaMode = iota
+	// DeltaLine means the delta values are specified in lines.
 	DeltaLine
+	// DeltaPage means the delta values are specified in pages.
 	DeltaPage
 )
 
@@ -72,6 +86,7 @@ const (
 // event describes a single interaction between the user and a key (or
 // combination of a key with modifier keys) on the keyboard.
 type KeyboardEvent struct {
+	// Key represents the key value of the key represented by the event.
 	Key string
 	modifierKeys
 }
