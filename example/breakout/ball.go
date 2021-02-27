@@ -41,36 +41,47 @@ func (b *ball) bounds() image.Rectangle {
 
 func (b *ball) bounceOnCollision(rect image.Rectangle) collision {
 	c := b.checkCollision(rect)
-	switch c {
-	case collisionLeft, collisionRight:
-		b.v.X = -b.v.X
-	case collisionTop, collisionBottom:
+	switch {
+	case c&collisionTop > 0:
+		b.pos.Y = rect.Min.Y - b.radius - b.v.Y
 		b.v.Y = -b.v.Y
+	case c&collisionBottom > 0:
+		b.pos.Y = rect.Max.Y + b.radius + b.v.Y
+		b.v.Y = -b.v.Y
+	case c&collisionLeft > 0:
+		b.pos.X = rect.Min.X - b.radius - b.v.X
+		b.v.X = -b.v.X
+	case c&collisionRight > 0:
+		b.pos.X = rect.Max.X + b.radius + b.v.X
+		b.v.X = -b.v.X
 	}
 	return c
 }
 
 func (b *ball) checkCollision(rect image.Rectangle) collision {
 	is := b.bounds().Intersect(rect)
-	switch {
-	case is.Max.X == rect.Max.X:
-		return collisionRight
-	case is.Min.X == rect.Min.X:
-		return collisionLeft
-	case is.Max.Y == rect.Max.Y:
-		return collisionBottom
-	case is.Min.Y == rect.Min.Y:
-		return collisionTop
+	c := collisionNone
+	if is.Min.Y == rect.Min.Y {
+		c |= collisionTop
 	}
-	return collisionNone
+	if is.Max.Y == rect.Max.Y {
+		c |= collisionBottom
+	}
+	if is.Min.X == rect.Min.X {
+		c |= collisionLeft
+	}
+	if is.Max.X == rect.Max.X {
+		c |= collisionRight
+	}
+	return c
 }
 
 type collision int
 
 const (
-	collisionNone = iota
-	collisionLeft
+	collisionLeft collision = 1 << iota
 	collisionRight
 	collisionTop
 	collisionBottom
+	collisionNone collision = 0
 )
