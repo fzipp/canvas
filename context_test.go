@@ -884,3 +884,24 @@ func TestImageDataSize(t *testing.T) {
 		}
 	}
 }
+
+func TestCanvasSize(t *testing.T) {
+	tests := []struct {
+		width, height int
+	}{
+		{width: 0, height: 0},
+		{width: 12, height: 36},
+		{width: 840, height: 900},
+		{width: 42314, height: 42355},
+	}
+	for _, tt := range tests {
+		cfg := configFrom([]Option{Size(tt.width, tt.height)})
+		ctx := newContext(nil, nil, cfg)
+		gotWidth := ctx.CanvasWidth()
+		gotHeight := ctx.CanvasHeight()
+		if gotWidth != tt.width || gotHeight != tt.height {
+			t.Errorf("got: W %d H %d, want: W %d H %d",
+				gotWidth, gotHeight, tt.width, tt.height)
+		}
+	}
+}
