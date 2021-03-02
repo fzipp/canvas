@@ -6,11 +6,10 @@ package canvas
 
 import (
 	_ "embed"
-	htmltemplate "html/template"
+	"html/template"
 	"log"
 	"net/http"
 	"sync"
-	texttemplate "text/template"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -18,12 +17,11 @@ import (
 
 var (
 	//go:embed web/canvas-websocket.js
-	javaScriptCode     string
-	javaScriptTemplate = texttemplate.Must(texttemplate.New("canvas-websocket.js").Parse(javaScriptCode))
+	javaScriptCode []byte
 
 	//go:embed web/index.html.tmpl
 	indexHTMLCode     string
-	indexHTMLTemplate = htmltemplate.Must(htmltemplate.New("index.html.tmpl").Parse(indexHTMLCode))
+	indexHTMLTemplate = template.Must(template.New("index.html.tmpl").Parse(indexHTMLCode))
 )
 
 func ListenAndServe(addr string, run func(*Context), options ...Option) error {
@@ -54,7 +52,7 @@ type htmlHandler struct {
 
 func (h *htmlHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
 	model := map[string]interface{}{
-		"DrawURL":             htmltemplate.URL("draw"),
+		"DrawURL":             template.URL("draw"),
 		"Width":               h.config.width,
 		"Height":              h.config.height,
 		"Title":               h.config.title,
@@ -73,7 +71,7 @@ func (h *htmlHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
 
 func javaScriptHandler(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Add("Content-Type", "text/javascript")
-	err := javaScriptTemplate.Execute(w, nil)
+	_, err := w.Write(javaScriptCode)
 	if err != nil {
 		log.Println(err)
 		return
