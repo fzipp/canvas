@@ -58,9 +58,11 @@ func (b *ball) bounceOnCollision(rect image.Rectangle) collision {
 	return c
 }
 
-func (b *ball) checkCollision(rect image.Rectangle) collision {
+func (b *ball) checkCollision(rect image.Rectangle) (c collision) {
 	is := b.bounds().Intersect(rect)
-	c := collisionNone
+	if is == (image.Rectangle{}) {
+		return c
+	}
 	if is.Min.Y == rect.Min.Y {
 		c |= collisionTop
 	}
