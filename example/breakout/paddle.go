@@ -12,20 +12,20 @@ import (
 )
 
 type paddle struct {
-	pos   image.Point
-	size  image.Point
+	pos   vec2
+	size  vec2
 	color color.Color
 }
 
 func (p *paddle) draw(ctx *canvas.Context) {
 	ctx.SetFillStyle(p.color)
-	x := p.pos.X - (p.size.X / 2)
-	y := p.pos.Y - (p.size.Y / 2)
-	ctx.FillRect(float64(x), float64(y), float64(p.size.X), float64(p.size.Y))
+	x := p.pos.x - (p.size.x / 2)
+	y := p.pos.y - (p.size.y / 2)
+	ctx.FillRect(x, y, p.size.x, p.size.y)
 }
 
 func (p *paddle) bounds() image.Rectangle {
 	return image.Rect(
-		p.pos.X-p.size.X/2, p.pos.Y-p.size.Y/2,
-		p.pos.X+p.size.X/2, p.pos.Y+p.size.Y/2)
+		int(p.pos.x-p.size.x/2), int(p.pos.y-p.size.y/2),
+		int(p.pos.x+p.size.x/2), int(p.pos.y+p.size.y/2))
 }

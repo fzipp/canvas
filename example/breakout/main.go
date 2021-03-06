@@ -6,7 +6,6 @@ package main
 
 import (
 	"fmt"
-	"image"
 	"log"
 	"time"
 
@@ -35,13 +34,13 @@ func main() {
 }
 
 func run(ctx *canvas.Context) {
-	size := image.Pt(ctx.CanvasWidth(), ctx.CanvasHeight())
+	size := vec2{x: float64(ctx.CanvasWidth()), y: float64(ctx.CanvasHeight())}
 	game := newGame(size)
 	ctx.SetFont("30px sans-serif")
 	for !game.quit {
 		select {
 		case event := <-ctx.Events():
-			game.handle(event, ctx)
+			game.handle(event)
 		default:
 			game.update()
 			game.draw(ctx)

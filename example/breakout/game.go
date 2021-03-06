@@ -17,13 +17,13 @@ type game struct {
 	quit    bool
 	score   int
 	round   int
-	size    image.Point
+	size    vec2
 	bricks  []brick
 	paddle  paddle
 	ball    ball
 }
 
-func newGame(size image.Point) *game {
+func newGame(size vec2) *game {
 	g := &game{size: size}
 	g.resetGame()
 	return g
@@ -33,16 +33,16 @@ func (g *game) resetGame() {
 	g.started = true
 	g.score = 0
 	g.round = 1
-	paddleSize := image.Pt(100, 20)
+	paddleSize := vec2{x: 100, y: 20}
 	g.paddle = paddle{
-		pos:   image.Pt(g.size.X/2, g.size.Y-(paddleSize.Y/2)),
+		pos:   vec2{x: g.size.x / 2, y: g.size.y - (paddleSize.y / 2)},
 		size:  paddleSize,
 		color: color.RGBA{R: 0x0a, G: 0x85, B: 0xc2, A: 0xff},
 	}
-	ballRadius := 5
+	ballRadius := 5.0
 	g.ball = ball{
 		radius: ballRadius,
-		v:      image.Pt(1, -1),
+		v:      vec2{x: 1, y: -1},
 		color:  color.White,
 	}
 	g.bricks = g.initialBricks(14, 8)
@@ -59,7 +59,7 @@ var rowGroupColors = []color.Color{
 var rowGroupPoints = []int{7, 5, 3, 1}
 
 func (g *game) initialBricks(columns, rows int) []brick {
-	width := g.size.X / columns
+	width := int(g.size.x) / columns
 	height := 30
 	bricks := make([]brick, 0, columns*rows)
 	for row := 0; row < rows; row++ {
@@ -77,34 +77,34 @@ func (g *game) initialBricks(columns, rows int) []brick {
 	return bricks
 }
 
-func (g *game) handle(event canvas.Event, ctx *canvas.Context) {
+func (g *game) handle(event canvas.Event) {
 	switch e := event.(type) {
 	case canvas.CloseEvent:
 		g.quit = true
 	case canvas.MouseMoveEvent:
 		if g.started {
-			g.paddle.pos.X = e.X
+			g.paddle.pos.x = float64(e.X)
 		}
 	case canvas.TouchStartEvent:
 		if len(e.Touches) == 1 {
-			g.paddle.pos.X = e.Touches[0].X
+			g.paddle.pos.x = float64(e.Touches[0].X)
 		}
 	case canvas.TouchMoveEvent:
 		if len(e.Touches) == 1 {
-			g.paddle.pos.X = e.Touches[0].X
+			g.paddle.pos.x = float64(e.Touches[0].X)
 		}
 	case canvas.KeyDownEvent:
 		const paddleSpeedX = 15
 		switch e.Key {
 		case "ArrowRight":
-			g.paddle.pos.X += paddleSpeedX
-			if g.paddle.pos.X >= ctx.CanvasWidth() {
-				g.paddle.pos.X = ctx.CanvasWidth() - 1
+			g.paddle.pos.x += paddleSpeedX
+			if g.paddle.pos.x >= g.size.x {
+				g.paddle.pos.x = g.size.x - 1
 			}
 		case "ArrowLeft":
-			g.paddle.pos.X -= paddleSpeedX
-			if g.paddle.pos.X < 0 {
-				g.paddle.pos.X = 0
+			g.paddle.pos.x -= paddleSpeedX
+			if g.paddle.pos.x < 0 {
+				g.paddle.pos.x = 0
 			}
 		case " ":
 			g.started = !g.started
@@ -123,7 +123,7 @@ func (g *game) update() {
 }
 
 func (g *game) resetBall() {
-	g.ball.pos = g.paddle.pos.Sub(image.Pt(0, g.ball.radius+(g.paddle.size.Y/2)))
+	g.ball.pos = g.paddle.pos.sub(vec2{x: 0, y: g.ball.radius + (g.paddle.size.y / 2)})
 }
 
 func (g *game) checkWallCollisions() {
@@ -134,9 +134,9 @@ func (g *game) checkWallCollisions() {
 	right := ballBounds.Max.X >= gameBounds.Max.X
 	top := ballBounds.Min.Y <= gameBounds.Min.Y
 	if left || right {
-		g.ball.v.X = -g.ball.v.X
+		g.ball.v.x = -g.ball.v.x
 	} else if top {
-		g.ball.v.Y = -g.ball.v.Y
+		g.ball.v.y = -g.ball.v.y
 	} else if bottom {
 		g.round++
 		if g.round > 3 {
@@ -176,7 +176,7 @@ func (g *game) draw(ctx *canvas.Context) {
 
 func (g *game) drawBackground(ctx *canvas.Context) {
 	ctx.SetFillStyle(color.Black)
-	ctx.FillRect(0, 0, float64(g.size.X), float64(g.size.Y))
+	ctx.FillRect(0, 0, g.size.x, g.size.y)
 }
 
 func (g *game) drawScore(ctx *canvas.Context) {
@@ -185,5 +185,5 @@ func (g *game) drawScore(ctx *canvas.Context) {
 }
 
 func (g *game) bounds() image.Rectangle {
-	return image.Rect(0, 0, g.size.X, g.size.Y)
+	return image.Rect(0, 0, int(g.size.x), int(g.size.y))
 }
