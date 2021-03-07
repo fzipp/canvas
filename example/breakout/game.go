@@ -42,7 +42,6 @@ func (g *game) resetGame() {
 	ballRadius := 5.0
 	g.ball = ball{
 		radius: ballRadius,
-		v:      vec2{x: 1, y: -1},
 		color:  color.White,
 	}
 	g.bricks = g.initialBricks(14, 8)
@@ -124,6 +123,7 @@ func (g *game) update() {
 
 func (g *game) resetBall() {
 	g.ball.pos = g.paddle.pos.sub(vec2{x: 0, y: g.ball.radius + (g.paddle.size.y / 2)})
+	g.ball.v = vec2{x: 1, y: -1}
 }
 
 func (g *game) checkWallCollisions() {
@@ -151,17 +151,17 @@ func (g *game) checkBrickCollisions() {
 	survivingBricks := make([]brick, 0, len(g.bricks))
 	for _, brick := range g.bricks {
 		collision := g.ball.bounceOnCollision(brick.bounds())
-		if collision == collisionNone {
-			survivingBricks = append(survivingBricks, brick)
-		} else {
+		if collision {
 			g.score += brick.points
+		} else {
+			survivingBricks = append(survivingBricks, brick)
 		}
 	}
 	g.bricks = survivingBricks
 }
 
-func (g *game) checkPaddleCollision() collision {
-	return g.ball.bounceOnCollision(g.paddle.bounds())
+func (g *game) checkPaddleCollision() {
+	g.ball.bounceOnCollision(g.paddle.bounds())
 }
 
 func (g *game) draw(ctx *canvas.Context) {

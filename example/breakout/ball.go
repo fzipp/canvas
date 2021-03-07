@@ -28,7 +28,7 @@ func (b *ball) draw(ctx *canvas.Context) {
 	ctx.BeginPath()
 	ctx.Arc(
 		b.pos.x, b.pos.y,
-		float64(b.radius), 0, 2*math.Pi, false)
+		b.radius, 0, 2*math.Pi, false)
 	ctx.ClosePath()
 	ctx.Fill()
 }
@@ -39,63 +39,33 @@ func (b *ball) bounds() image.Rectangle {
 		int(b.pos.x+b.radius), int(b.pos.y+b.radius))
 }
 
-func (b *ball) bounceOnCollision(rect image.Rectangle) collision {
-	c := b.checkCollision(rect)
-	switch {
-	case c&collisionTop > 0:
-		b.pos.y = float64(rect.Min.Y) - b.radius - b.v.y
-		b.v.y = -b.v.y
-	case c&collisionBottom > 0:
-		b.pos.y = float64(rect.Max.Y) + b.radius + b.v.y
-		b.v.y = -b.v.y
-	case c&collisionLeft > 0:
-		b.pos.x = float64(rect.Min.X) - b.radius - b.v.x
-		b.v.x = -b.v.x
-	case c&collisionRight > 0:
-		b.pos.x = float64(rect.Max.X) + b.radius + b.v.x
-		b.v.x = -b.v.x
+func (b *ball) bounceOnCollision(rect image.Rectangle) bool {
+	n := b.checkCollision(rect)
+	if n == (vec2{}) {
+		return false
 	}
-	return c
+	b.pos = b.pos.sub(b.v)
+	b.v = b.v.reflect(n)
+	b.pos = b.pos.add(b.v)
+	return true
 }
 
-func (b *ball) checkCollision(rect image.Rectangle) (c collision) {
+func (b *ball) checkCollision(rect image.Rectangle) (normal vec2) {
 	is := b.bounds().Intersect(rect)
 	if is == (image.Rectangle{}) {
-		return c
+		return normal
 	}
 	if is.Min.Y == rect.Min.Y {
-		c |= collisionTop
+		normal = normal.add(vec2{0, -1})
 	}
 	if is.Max.Y == rect.Max.Y {
-		c |= collisionBottom
+		normal = normal.add(vec2{0, 1})
 	}
 	if is.Min.X == rect.Min.X {
-		c |= collisionLeft
+		normal = normal.add(vec2{-1, 0})
 	}
 	if is.Max.X == rect.Max.X {
-		c |= collisionRight
+		normal = normal.add(vec2{1, 0})
 	}
-	return c
+	return normal.norm()
 }
-
-type vec2 struct {
-	x, y float64
-}
-
-func (v vec2) add(w vec2) vec2 {
-	return vec2{x: v.x + w.x, y: v.y + w.y}
-}
-
-func (v vec2) sub(w vec2) vec2 {
-	return vec2{x: v.x - w.x, y: v.y - w.y}
-}
-
-type collision int
-
-const (
-	collisionLeft collision = 1 << iota
-	collisionRight
-	collisionTop
-	collisionBottom
-	collisionNone collision = 0
-)
