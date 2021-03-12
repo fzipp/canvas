@@ -20,7 +20,10 @@ type MouseEvent struct {
 	// Buttons encodes the buttons being depressed (if any) when the mouse
 	// event was fired.
 	Buttons MouseButtons
-	X, Y    int
+	// The X coordinate of the mouse pointer.
+	X int
+	// The Y coordinate of the mouse pointer.
+	Y int
 	modifierKeys
 }
 
@@ -28,32 +31,55 @@ func (e MouseEvent) mask() eventMask {
 	return maskMouseMove | maskMouseUp | maskMouseDown | maskClick | maskDblClick | maskAuxClick
 }
 
+// The MouseMoveEvent is fired when a pointing device (usually a mouse) is
+// moved.
 type MouseMoveEvent struct{ MouseEvent }
 
 func (e MouseMoveEvent) mask() eventMask { return maskMouseMove }
 
+// The MouseDownEvent is fired when a pointing device button is pressed.
+//
+// Note: This differs from the ClickEvent in that click is fired after a full
+// click action occurs; that is, the mouse button is pressed and released
+// while the pointer remains inside the canvas. MouseDownEvent is fired
+// the moment the button is initially pressed.
 type MouseDownEvent struct{ MouseEvent }
 
 func (e MouseDownEvent) mask() eventMask { return maskMouseDown }
 
+// The MouseUpEvent is fired when a button on a pointing device (such as a
+// mouse or trackpad) is released. It is the counterpoint to the
+// MouseDownEvent.
 type MouseUpEvent struct{ MouseEvent }
 
 func (e MouseUpEvent) mask() eventMask { return maskMouseUp }
 
+// The ClickEvent is fired when a pointing device button (such as a mouse's
+// primary mouse button) is both pressed and released while the pointer is
+// located inside the canvas.
 type ClickEvent struct{ MouseEvent }
 
 func (e ClickEvent) mask() eventMask { return maskClick }
 
+// The DblClickEvent is fired when a pointing device button (such as a mouse's
+// primary button) is double-clicked; that is, when it's rapidly clicked twice
+// on the canvas within a very short span of time.
+//
+// DblClickEvent fires after two ClickEvents (and by extension, after two pairs
+// of MouseDownEvents and MouseUpEvents).
 type DblClickEvent struct{ MouseEvent }
 
 func (e DblClickEvent) mask() eventMask { return maskDblClick }
 
+// The AuxClickEvent is fired when a non-primary pointing device button (any
+// mouse button other than the primary—usually leftmost—button) has been
+// pressed and released both within the same element.
 type AuxClickEvent struct{ MouseEvent }
 
 func (e AuxClickEvent) mask() eventMask { return maskAuxClick }
 
-// WheelEvent represents events that occur due to the user moving a mouse
-// wheel or similar input device.
+// The WheelEvent is fired due to the user moving a mouse wheel or similar
+// input device.
 type WheelEvent struct {
 	MouseEvent
 	// DeltaX represents the horizontal scroll amount.
@@ -95,18 +121,38 @@ func (e KeyboardEvent) mask() eventMask {
 	return maskKeyDown | maskKeyUp
 }
 
+// The KeyDownEvent is fired when a key is pressed.
 type KeyDownEvent struct{ KeyboardEvent }
 
 func (e KeyDownEvent) mask() eventMask { return maskKeyDown }
 
+// The KeyUpEvent is fired when a key is released.
 type KeyUpEvent struct{ KeyboardEvent }
 
 func (e KeyUpEvent) mask() eventMask { return maskKeyUp }
 
+// The TouchEvent is fired when the state of contacts with a touch-sensitive
+// surface changes. This surface can be a touch screen or trackpad, for
+// example. The event can describe one or more points of contact with the
+// screen and includes support for detecting movement, addition and removal of
+// contact points, and so forth.
+//
+// Touches are represented by the Touch object; each touch is described by a
+// position, size and shape, amount of pressure, and target element. Lists of
+// touches are represented by TouchList objects.
 type TouchEvent struct {
-	Touches        TouchList
+	// Touches is a TouchList of all the Touch objects representing all current
+	// points of contact with the surface, regardless of target or changed
+	// status.
+	Touches TouchList
+	// ChangedTouches is a TouchList of all the Touch objects representing
+	// individual points of contact whose states changed between the previous
+	// touch event and this one.
 	ChangedTouches TouchList
-	TargetTouches  TouchList
+	// TargetTouches is a TouchList of all the Touch objects that are both
+	// currently in contact with the touch surface and were also started on the
+	// same element that is the target of the event.
+	TargetTouches TouchList
 	modifierKeys
 }
 
@@ -114,12 +160,25 @@ func (e TouchEvent) mask() eventMask {
 	return maskTouchStart | maskTouchMove | maskTouchEnd | maskTouchCancel
 }
 
+// TouchList represents a list of contact points on a touch surface. For
+// example, if the user has three fingers on the touch surface (such as a
+// screen or trackpad), the corresponding TouchList object would have one
+// Touch object for each finger, for a total of three entries.
 type TouchList []Touch
 
+// Touch represents a single contact point on a touch-sensitive device.
+// The contact point is commonly a finger or stylus and the device may be a
+// touchscreen or trackpad.
 type Touch struct {
+	// Identifier is a unique identifier for this Touch object. A given touch
+	// point (say, by a finger) will have the same identifier for the duration
+	// of its movement around the surface. This lets you ensure that you're
+	// tracking the same touch all the time.
 	Identifier uint32
-	X          int
-	Y          int
+	// The X coordinate of the touch point.
+	X int
+	// The Y coordinate of the touch point.
+	Y int
 }
 
 type TouchStartEvent struct{ TouchEvent }

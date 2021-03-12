@@ -25,14 +25,35 @@ var (
 	indexHTMLTemplate = template.Must(template.New("index.html.tmpl").Parse(indexHTMLCode))
 )
 
+// ListenAndServe listens on the TCP network address addr and serves
+// an HTML page on "/" with a canvas that connects to the server via
+// WebSockets on a "/draw" endpoint. It also serves a JavaScript file on
+// "/canvas-websocket.js" that is used by the HTML page to provide this
+// functionality.
+//
+// The run function is called when a client canvas connects to the server.
+// The Context parameter of the run function allows the server to send draw
+// commands to the canvas and receive events from the canvas. Each instance
+// of the run function runs on its own goroutine, so the run function should
+// not access shared state without proper synchronization.
+//
+// The options configure various aspects the canvas such as its size, which
+// events to handle etc.
 func ListenAndServe(addr string, run func(*Context), options ...Option) error {
 	return http.ListenAndServe(addr, NewServeMux(run, options...))
 }
 
+// ListenAndServeTLS acts identically to ListenAndServe, except that it
+// expects HTTPS / WSS connections. Additionally, files containing a
+// certificate and matching private key for the server must be provided. If the
+// certificate is signed by a certificate authority, the certFile should be the
+// concatenation of the server's certificate, any intermediates, and the CA's
+// certificate.
 func ListenAndServeTLS(addr, certFile, keyFile string, run func(*Context), options ...Option) error {
 	return http.ListenAndServeTLS(addr, certFile, keyFile, NewServeMux(run, options...))
 }
 
+// NewServeMux creates a http.ServeMux as used by ListenAndServe.
 func NewServeMux(run func(*Context), options ...Option) *http.ServeMux {
 	config := configFrom(options)
 	mux := http.NewServeMux()
