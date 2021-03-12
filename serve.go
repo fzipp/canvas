@@ -5,6 +5,7 @@
 package canvas
 
 import (
+	// Package embed is used to embed the HTML template and JavaScript files.
 	_ "embed"
 	"html/template"
 	"log"

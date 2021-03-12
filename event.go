@@ -57,11 +57,11 @@ func (e AuxClickEvent) mask() eventMask { return maskAuxClick }
 type WheelEvent struct {
 	MouseEvent
 	// DeltaX represents the horizontal scroll amount.
-	DeltaX    float64
+	DeltaX float64
 	// DeltaY represents the vertical scroll amount.
-	DeltaY    float64
+	DeltaY float64
 	// DeltaZ represents the scroll amount for the z-axis.
-	DeltaZ    float64
+	DeltaZ float64
 	// DeltaMode represents the unit of the delta values' scroll amount.
 	DeltaMode DeltaMode
 }
@@ -194,14 +194,24 @@ const (
 	maskTouchCancel
 )
 
+// MouseButtons is a number representing one or more buttons. For more than
+// one button pressed simultaneously, the values are combined (e.g., 3 is
+// ButtonPrimary + ButtonSecondary).
 type MouseButtons int
 
 const (
+	// ButtonPrimary is the primary button (usually the left button).
 	ButtonPrimary MouseButtons = 1 << iota
+	// ButtonSecondary is the secondary button (usually the right button).
 	ButtonSecondary
+	// ButtonAuxiliary is the auxiliary button (usually the mouse wheel button
+	// or middle button)
 	ButtonAuxiliary
+	// Button4th is the 4th button (typically the "Browser Back" button).
 	Button4th
+	// Button5th is the 5th button (typically the "Browser Forward" button).
 	Button5th
+	// ButtonNone stands for no button or un-initialized.
 	ButtonNone MouseButtons = 0
 )
 

@@ -647,6 +647,25 @@ func (ctx *Context) StrokeText(text string, x, y float64) {
 	ctx.buf.addString(text)
 }
 
+// StrokeTextMaxWidth strokes - that is, draws the outlines of - the characters
+// of a text string at the specified coordinates. A parameter allows
+// specifying a maximum width for the rendered text, which the user agent will
+// achieve by condensing the text or by using a lower font size.
+//
+// The text is rendered using the settings specified by SetFont, SetTextAlign,
+// and SetTextBaseline. (x, y) is the coordinate of the point at which to begin
+// drawing the text.
+//
+// The user agent will adjust the kerning, select a more horizontally condensed
+// font (if one is available or can be generated without loss of quality), or
+// scale down to a smaller font size in order to fit the text in the specified
+// maxWidth.
+//
+// This method draws directly to the canvas without modifying the current path,
+// so any subsequent Fill or Stroke calls will have no effect on it.
+//
+// Use the FillText method to fill the text characters rather than having just
+// their outlines drawn.
 func (ctx *Context) StrokeTextMaxWidth(text string, x, y, maxWidth float64) {
 	ctx.buf.addByte(bStrokeTextMaxWidth)
 	ctx.buf.addFloat64(x)

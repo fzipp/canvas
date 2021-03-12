@@ -9,6 +9,14 @@ import (
 	"image/draw"
 )
 
+// ImageData represents the underlying pixel data of an image. It is
+// created using the Context.CreateImageData and Context.GetImageData methods.
+// It can also be used to set a part of the canvas by using
+// Context.PutImageData, Context.PutImageDataDirty, Context.DrawImage and
+// Context.DrawImageScaled.
+//
+// The image data should be released with the Release method when it is no
+// longer needed.
 type ImageData struct {
 	id     uint32
 	ctx    *Context
@@ -16,14 +24,17 @@ type ImageData struct {
 	height int
 }
 
+// Width returns the actual width, in pixels, of the image.
 func (m *ImageData) Width() int {
 	return m.width
 }
 
+// Height returns the actual height, in pixels, of the image.
 func (m *ImageData) Height() int {
 	return m.height
 }
 
+// Release releases the image data on the client side.
 func (m *ImageData) Release() {
 	m.ctx.buf.addByte(bReleaseImageData)
 	m.ctx.buf.addUint32(m.id)
