@@ -6,10 +6,17 @@ package canvas
 
 import "fmt"
 
+// Event is an interface implemented by all event subtypes. Events can be
+// received from the channel returned by Context.Events. Use a type switch
+// to distinguish between different event types.
 type Event interface {
 	mask() eventMask
 }
 
+// The CloseEvent is fired when the WebSocket connection to the client is
+// closed. It is not necessary to enable the CloseEvent with the EnableEvents
+// option, it is always enabled. Animation loops should handle the CloseEvent
+// to quit the loop.
 type CloseEvent struct{}
 
 func (e CloseEvent) mask() eventMask { return 0 }
@@ -181,18 +188,27 @@ type Touch struct {
 	Y int
 }
 
+// The TouchStartEvent is fired when one or more touch points are placed on
+// the touch surface.
 type TouchStartEvent struct{ TouchEvent }
 
 func (e TouchStartEvent) mask() eventMask { return maskTouchStart }
 
+// The TouchMoveEvent is fired when one or more touch points are moved along
+// the touch surface.
 type TouchMoveEvent struct{ TouchEvent }
 
 func (e TouchMoveEvent) mask() eventMask { return maskTouchMove }
 
+// The TouchEndEvent is fired when one or more touch points are removed from
+// the touch surface.
 type TouchEndEvent struct{ TouchEvent }
 
 func (e TouchEndEvent) mask() eventMask { return maskTouchEnd }
 
+// The TouchCancelEvent is fired when one or more touch points have been
+// disrupted in an implementation-specific manner (for example, too many touch
+// points are created).
 type TouchCancelEvent struct{ TouchEvent }
 
 func (e TouchCancelEvent) mask() eventMask { return maskTouchCancel }
