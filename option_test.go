@@ -5,6 +5,7 @@
 package canvas
 
 import (
+	"image/color"
 	"testing"
 	"time"
 )
@@ -18,43 +19,78 @@ func TestConfigFrom(t *testing.T) {
 		{
 			"Title",
 			[]Option{Title("Test title")},
-			config{title: "Test title"},
+			config{
+				title:           "Test title",
+				width:           300,
+				height:          150,
+				backgroundColor: color.White,
+			},
 		},
 		{
 			"Size",
 			[]Option{Size(800, 600)},
-			config{width: 800, height: 600},
+			config{
+				width:           800,
+				height:          600,
+				backgroundColor: color.White,
+			},
 		},
 		{
 			"EnableEvents",
 			[]Option{EnableEvents(MouseMoveEvent{}, MouseDownEvent{}, KeyDownEvent{})},
-			config{eventMask: 0b1011},
+			config{
+				eventMask:       0b1011,
+				width:           300,
+				height:          150,
+				backgroundColor: color.White,
+			},
 		},
 		{
 			"DisableCursor",
 			[]Option{DisableCursor()},
-			config{cursorDisabled: true},
+			config{
+				cursorDisabled:  true,
+				width:           300,
+				height:          150,
+				backgroundColor: color.White,
+			},
 		},
 		{
 			"DisableContextMenu",
 			[]Option{DisableContextMenu()},
-			config{contextMenuDisabled: true},
+			config{
+				contextMenuDisabled: true,
+				width:               300,
+				height:              150,
+				backgroundColor:     color.White,
+			},
 		},
 		{
 			"FullPage",
 			[]Option{FullPage()},
-			config{fullPage: true},
+			config{
+				fullPage:        true,
+				width:           300,
+				height:          150,
+				backgroundColor: color.White,
+			},
 		},
 		{
 			"Reconnect",
 			[]Option{Reconnect(2 * time.Second)},
-			config{reconnectInterval: 2 * time.Second},
+			config{
+				reconnectInterval: 2 * time.Second,
+				width:             300,
+				height:            150,
+				backgroundColor:   color.White,
+			},
 		},
 		{
 			"Multiple options",
 			[]Option{
 				Title("hello, world"),
 				Size(320, 200),
+				BackgroundColor(color.Black),
 				EnableEvents(MouseMoveEvent{}, MouseDownEvent{}, MouseUpEvent{}),
 				DisableCursor(),
 				DisableContextMenu(),
@@ -65,6 +101,7 @@ func TestConfigFrom(t *testing.T) {
 				title:               "hello, world",
 				width:               320,
 				height:              200,
+				backgroundColor:     color.Black,
 				eventMask:           0b0111,
 				cursorDisabled:      true,
 				contextMenuDisabled: true,
