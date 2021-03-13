@@ -4,7 +4,10 @@
 
 package canvas
 
-import "time"
+import (
+	"image/color"
+	"time"
+)
 
 // Option represents an option that configures the canvas.
 // The functions ListenAndServe, ListenAndServeTLS and NewServeMux take
@@ -69,10 +72,19 @@ func Reconnect(interval time.Duration) Option {
 	}
 }
 
+// BackgroundColor returns an option that configures the background color of
+// the served HTML page.
+func BackgroundColor(c color.Color) Option {
+	return func(cfg *config) {
+		cfg.backgroundColor = c
+	}
+}
+
 type config struct {
 	title               string
 	width               int
 	height              int
+	backgroundColor     color.Color
 	eventMask           eventMask
 	cursorDisabled      bool
 	contextMenuDisabled bool
@@ -81,7 +93,10 @@ type config struct {
 }
 
 func configFrom(options []Option) config {
-	c := &config{width: 300, height: 150}
+	c := &config{
+		width: 300, height: 150,
+		backgroundColor: color.White,
+	}
 	for _, opt := range options {
 		opt(c)
 	}

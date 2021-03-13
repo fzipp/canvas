@@ -7,7 +7,9 @@ package canvas
 import (
 	// Package embed is used to embed the HTML template and JavaScript files.
 	_ "embed"
+	"fmt"
 	"html/template"
+	"image/color"
 	"log"
 	"net/http"
 	"sync"
@@ -78,6 +80,7 @@ func (h *htmlHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
 		"Width":               h.config.width,
 		"Height":              h.config.height,
 		"Title":               h.config.title,
+		"BackgroundColor":     template.CSS(rgbaString(h.config.backgroundColor)),
 		"EventMask":           h.config.eventMask,
 		"CursorDisabled":      h.config.cursorDisabled,
 		"ContextMenuDisabled": h.config.contextMenuDisabled,
@@ -89,6 +92,11 @@ func (h *htmlHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
 		log.Println(err)
 		return
 	}
+}
+
+func rgbaString(c color.Color) string {
+	clr := color.RGBAModel.Convert(c).(color.RGBA)
+	return fmt.Sprintf("rgba(%d, %d, %d, %g)", clr.R, clr.G, clr.B, float64(clr.A)/255)
 }
 
 func javaScriptHandler(w http.ResponseWriter, _ *http.Request) {
