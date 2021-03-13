@@ -66,7 +66,7 @@ func main() {
 
 func run(ctx *canvas.Context) {
 
-	particles := newParticles(
+	demo := newParticlesDemo(
 		float64(ctx.CanvasWidth()),
 		float64(ctx.CanvasHeight()),
 		particlesNum)
@@ -81,30 +81,30 @@ func run(ctx *canvas.Context) {
 				return
 			}
 		default:
-			particles.draw(ctx)
+			demo.draw(ctx)
 			ctx.Flush()
 			time.Sleep(5 * time.Millisecond)
 		}
 	}
 }
 
-type Particles struct {
+type particlesDemo struct {
 	w, h      float64
 	particles []*particle
 }
 
-func newParticles(width, height float64, n int) *Particles {
+func newParticlesDemo(width, height float64, n int) *particlesDemo {
 	particles := make([]*particle, n)
 	for i := 0; i < len(particles); i++ {
 		particles[i] = randomParticle(width, height)
 	}
-	return &Particles{
+	return &particlesDemo{
 		w: width, h: height,
 		particles: particles,
 	}
 }
 
-func (p *Particles) draw(ctx *canvas.Context) {
+func (p *particlesDemo) draw(ctx *canvas.Context) {
 	ctx.ClearRect(0, 0, p.w, p.h)
 	for _, p1 := range p.particles {
 		factor := 1.0
