@@ -81,7 +81,7 @@ type config struct {
 }
 
 func configFrom(options []Option) config {
-	c := &config{}
+	c := &config{width: 300, height: 150}
 	for _, opt := range options {
 		opt(c)
 	}
