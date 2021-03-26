@@ -145,8 +145,18 @@ document.addEventListener("DOMContentLoaded", function () {
         const rect = canvas.getBoundingClientRect();
 
         function sendMouseEvent(eventType) {
+            const mouseMoveThreshold = 25;
+            let lastMouseMoveTime = 0;
+
             return function (event) {
                 event.preventDefault();
+                if (eventType === 1) {
+                    const now = new Date().getTime();
+                    if ((now - lastMouseMoveTime) < mouseMoveThreshold) {
+                        return;
+                    }
+                    lastMouseMoveTime = now;
+                }
                 const eventMessage = new ArrayBuffer(11);
                 const dataView = new DataView(eventMessage);
                 setMouseEvent(dataView, eventType, event);
