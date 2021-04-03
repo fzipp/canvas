@@ -705,6 +705,18 @@ func TestContextDrawing(t *testing.T) {
 			},
 		},
 		{
+			"ImageData.Release idempotency",
+			func(ctx *Context) {
+				img := &ImageData{id: 2, ctx: ctx}
+				img.Release()
+				img.Release()
+			},
+			[]byte{
+				0x41,                   // ReleaseImage
+				0x00, 0x00, 0x00, 0x02, // ID
+			},
+		},
+		{
 			"CreateLinearGradient",
 			func(ctx *Context) {
 				ctx.CreateLinearGradient(70, 80, 100, 120)
@@ -801,6 +813,18 @@ func TestContextDrawing(t *testing.T) {
 			},
 		},
 		{
+			"Gradient.Release idempotency",
+			func(ctx *Context) {
+				g := &Gradient{id: 4, ctx: ctx}
+				g.Release()
+				g.Release()
+			},
+			[]byte{
+				0x21,                   // ReleaseGradient
+				0x00, 0x00, 0x00, 0x04, // ID
+			},
+		},
+		{
 			"CreatePattern",
 			func(ctx *Context) {
 				img := &ImageData{id: 16}
@@ -832,6 +856,18 @@ func TestContextDrawing(t *testing.T) {
 			[]byte{
 				0x1b,                   // ReleasePattern
 				0x00, 0x00, 0x03, 0xff, // ID
+			},
+		},
+		{
+			"Pattern.Release idempotency",
+			func(ctx *Context) {
+				p := &Pattern{id: 10, ctx: ctx}
+				p.Release()
+				p.Release()
+			},
+			[]byte{
+				0x1b,                   // ReleasePattern
+				0x00, 0x00, 0x00, 0x0a, // ID
 			},
 		},
 		{
@@ -903,5 +939,60 @@ func TestCanvasSize(t *testing.T) {
 			t.Errorf("got: W %d H %d, want: W %d H %d",
 				gotWidth, gotHeight, tt.width, tt.height)
 		}
+	}
+}
+
+func TestUseAfterRelease(t *testing.T) {
+	tests := []struct {
+		name     string
+		typeName string
+		draw     func(ctx *Context)
+	}{
+		{
+			name:     "ImageData",
+			typeName: "ImageData",
+			draw: func(ctx *Context) {
+				img := ctx.CreateImageData(image.NewRGBA(image.Rect(0, 0, 0, 0)))
+				img.Release()
+				ctx.DrawImage(img, 0, 0)
+			},
+		},
+		{
+			name:     "Gradient",
+			typeName: "Gradient",
+			draw: func(ctx *Context) {
+				g := ctx.CreateLinearGradient(0, 0, 0, 0)
+				g.Release()
+				g.AddColorStop(0, color.Black)
+			},
+		},
+		{
+			name:     "Pattern",
+			typeName: "Pattern",
+			draw: func(ctx *Context) {
+				img := ctx.CreateImageData(image.NewRGBA(image.Rect(0, 0, 0, 0)))
+				p := ctx.CreatePattern(img, PatternRepeat)
+				p.Release()
+				ctx.SetFillStylePattern(p)
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				r := recover()
+				if r == nil {
+					t.Errorf("expected panic, but did not panic")
+					return
+				}
+				want := tt.typeName + ": use after release"
+				if r != want {
+					t.Errorf("expected panic message %q, but was: %q", want, r)
+				}
+			}()
+			ctx := newContext(nil, nil, config{})
+			tt.draw(ctx)
+		})
 	}
 }
