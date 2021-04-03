@@ -784,7 +784,7 @@ func (ctx *Context) SetLineDash(segments []float64) {
 func (ctx *Context) CreateImageData(m image.Image) *ImageData {
 	rgba := ensureRGBA(m)
 	bounds := m.Bounds()
-	id := ctx.imageDataIDs.GenerateID()
+	id := ctx.imageDataIDs.generateID()
 	ctx.buf.addByte(bCreateImageData)
 	ctx.buf.addUint32(id)
 	ctx.buf.addUint32(uint32(bounds.Dx()))
@@ -901,7 +901,7 @@ func (ctx *Context) DrawImageSubRectangle(src *ImageData, sx, sy, sWidth, sHeigh
 // coordinate space. When applied to a shape, the coordinates are NOT relative
 // to the shape's coordinates.
 func (ctx *Context) CreateLinearGradient(x0, y0, x1, y1 float64) *Gradient {
-	id := ctx.gradientIDs.GenerateID()
+	id := ctx.gradientIDs.generateID()
 	ctx.buf.addByte(bCreateLinearGradient)
 	ctx.buf.addUint32(id)
 	ctx.buf.addFloat64(x0)
@@ -923,7 +923,7 @@ func (ctx *Context) CreateLinearGradient(x0, y0, x1, y1 float64) *Gradient {
 // coordinate space. When applied to a shape, the coordinates are NOT relative
 // to the shape's coordinates.
 func (ctx *Context) CreateRadialGradient(x0, y0, r0, x1, y1, r1 float64) *Gradient {
-	id := ctx.gradientIDs.GenerateID()
+	id := ctx.gradientIDs.generateID()
 	ctx.buf.addByte(bCreateRadialGradient)
 	ctx.buf.addUint32(id)
 	ctx.buf.addFloat64(x0)
@@ -943,7 +943,7 @@ func (ctx *Context) CreateRadialGradient(x0, y0, r0, x1, y1, r1 float64) *Gradie
 // methods, after which it is applied to any subsequent drawing.
 func (ctx *Context) CreatePattern(src *ImageData, repetition PatternRepetition) *Pattern {
 	src.checkUseAfterRelease()
-	id := ctx.patternIDs.GenerateID()
+	id := ctx.patternIDs.generateID()
 	ctx.buf.addByte(bCreatePattern)
 	ctx.buf.addUint32(id)
 	ctx.buf.addUint32(src.id)
@@ -964,7 +964,7 @@ func (ctx *Context) CreatePattern(src *ImageData, repetition PatternRepetition) 
 //
 // Note: Image data can be painted onto a canvas using the PutImageData method.
 func (ctx *Context) GetImageData(sx, sy, sw, sh float64) *ImageData {
-	id := ctx.imageDataIDs.GenerateID()
+	id := ctx.imageDataIDs.generateID()
 	ctx.buf.addByte(bGetImageData)
 	ctx.buf.addUint32(id)
 	ctx.buf.addFloat64(sx)
@@ -989,7 +989,7 @@ type idGenerator struct {
 	next   uint32
 }
 
-func (g *idGenerator) GenerateID() uint32 {
+func (g *idGenerator) generateID() uint32 {
 	g.nextMu.Lock()
 	defer g.nextMu.Unlock()
 	id := g.next
