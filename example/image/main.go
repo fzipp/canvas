@@ -18,7 +18,7 @@ import (
 )
 
 //go:embed gopher.png
-var gopher []byte
+var gopherPNG []byte
 
 func main() {
 	http := flag.String("http", ":8080", "HTTP service address (e.g., '127.0.0.1:8080' or just ':8080')")
@@ -35,7 +35,7 @@ func main() {
 }
 
 func run(ctx *canvas.Context) {
-	img, _, err := image.Decode(bytes.NewBuffer(gopher))
+	img, _, err := image.Decode(bytes.NewBuffer(gopherPNG))
 	if err != nil {
 		log.Println(err)
 		return
