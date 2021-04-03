@@ -12,7 +12,6 @@ package canvas
 import (
 	"image"
 	"image/color"
-	"sync"
 )
 
 // Context is the server-side drawing context for a client-side canvas. It
@@ -985,13 +984,10 @@ func (ctx *Context) Flush() {
 }
 
 type idGenerator struct {
-	nextMu sync.Mutex
-	next   uint32
+	next uint32
 }
 
 func (g *idGenerator) generateID() uint32 {
-	g.nextMu.Lock()
-	defer g.nextMu.Unlock()
 	id := g.next
 	g.next++
 	return id
