@@ -5,6 +5,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 
@@ -12,9 +13,11 @@ import (
 )
 
 func main() {
-	port := ":8080"
-	fmt.Println("Listening on http://localhost" + port)
-	err := canvas.ListenAndServe(port, run,
+	http := flag.String("http", ":8080", "HTTP service address (e.g., '127.0.0.1:8080' or just ':8080')")
+	flag.Parse()
+
+	fmt.Println("Listening on " + httpLink(*http))
+	err := canvas.ListenAndServe(*http, run,
 		canvas.Title("Hilbert"),
 		canvas.Size(1000, 500),
 		canvas.FullPage(),
@@ -130,4 +133,11 @@ func (h *hilbert) W() {
 func (h *hilbert) S() {
 	h.y += h.d
 	h.ctx.LineTo(float64(h.x), float64(h.y))
+}
+
+func httpLink(addr string) string {
+	if addr[0] == ':' {
+		addr = "localhost" + addr
+	}
+	return "http://" + addr
 }

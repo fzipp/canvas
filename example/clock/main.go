@@ -12,6 +12,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"image/color"
 	"log"
@@ -22,9 +23,11 @@ import (
 )
 
 func main() {
-	port := ":8080"
-	fmt.Println("Listening on http://localhost" + port)
-	err := canvas.ListenAndServe(port, run,
+	http := flag.String("http", ":8080", "HTTP service address (e.g., '127.0.0.1:8080' or just ':8080')")
+	flag.Parse()
+
+	fmt.Println("Listening on " + httpLink(*http))
+	err := canvas.ListenAndServe(*http, run,
 		canvas.Size(800, 600),
 		canvas.Title("Clock"),
 	)
@@ -143,4 +146,11 @@ func drawClock(ctx *canvas.Context) {
 	ctx.Stroke()
 
 	ctx.Restore()
+}
+
+func httpLink(addr string) string {
+	if addr[0] == ':' {
+		addr = "localhost" + addr
+	}
+	return "http://" + addr
 }
