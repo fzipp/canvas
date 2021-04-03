@@ -19,7 +19,7 @@ func TestModifierKeys(t *testing.T) {
 	}
 	tests := []struct {
 		name    string
-		modKeys modifierKeys
+		modKeys ModifierKeys
 		want    modifierKeyStates
 	}{
 		{
@@ -88,7 +88,7 @@ func TestDecodeEvent(t *testing.T) {
 					Buttons:      ButtonNone,
 					X:            200,
 					Y:            150,
-					modifierKeys: modKeyCtrl | modKeyAlt,
+					ModifierKeys: modKeyCtrl | modKeyAlt,
 				},
 			},
 		},
@@ -106,7 +106,7 @@ func TestDecodeEvent(t *testing.T) {
 					Buttons:      Button5th,
 					X:            764,
 					Y:            1023,
-					modifierKeys: modKeyMeta,
+					ModifierKeys: modKeyMeta,
 				},
 			},
 		},
@@ -124,7 +124,7 @@ func TestDecodeEvent(t *testing.T) {
 					Buttons:      ButtonPrimary,
 					X:            240,
 					Y:            3210,
-					modifierKeys: modKeyCtrl,
+					ModifierKeys: modKeyCtrl,
 				},
 			},
 		},
@@ -138,8 +138,8 @@ func TestDecodeEvent(t *testing.T) {
 			},
 			KeyDownEvent{
 				KeyboardEvent{
-					Key:          "ArrowLeft",
-					modifierKeys: modKeyShift | modKeyMeta,
+					Key: "ArrowLeft",
+					Mod: modKeyShift | modKeyMeta,
 				},
 			},
 		},
@@ -153,8 +153,8 @@ func TestDecodeEvent(t *testing.T) {
 			},
 			KeyUpEvent{
 				KeyboardEvent{
-					Key:          "ArrowRight",
-					modifierKeys: modKeyAlt | modKeyShift,
+					Key: "ArrowRight",
+					Mod: modKeyAlt | modKeyShift,
 				},
 			},
 		},
@@ -172,7 +172,7 @@ func TestDecodeEvent(t *testing.T) {
 					Buttons:      ButtonSecondary,
 					X:            1921,
 					Y:            514,
-					modifierKeys: modKeyShift,
+					ModifierKeys: modKeyShift,
 				},
 			},
 		},
@@ -190,7 +190,7 @@ func TestDecodeEvent(t *testing.T) {
 					Buttons:      ButtonPrimary,
 					X:            4032,
 					Y:            5343,
-					modifierKeys: modKeyAlt | modKeyShift,
+					ModifierKeys: modKeyAlt | modKeyShift,
 				},
 			},
 		},
@@ -208,7 +208,7 @@ func TestDecodeEvent(t *testing.T) {
 					Buttons:      ButtonPrimary,
 					X:            321,
 					Y:            543,
-					modifierKeys: modKeyCtrl | modKeyMeta,
+					ModifierKeys: modKeyCtrl | modKeyMeta,
 				},
 			},
 		},
@@ -231,7 +231,7 @@ func TestDecodeEvent(t *testing.T) {
 					Buttons:      ButtonAuxiliary | Button4th,
 					X:            130,
 					Y:            410,
-					modifierKeys: modKeyShift,
+					ModifierKeys: modKeyShift,
 				},
 				DeltaX:    10,
 				DeltaY:    24,
@@ -258,7 +258,7 @@ func TestDecodeEvent(t *testing.T) {
 					},
 					ChangedTouches: TouchList{},
 					TargetTouches:  TouchList{},
-					modifierKeys:   modKeyMeta,
+					ModifierKeys:   modKeyMeta,
 				},
 			},
 		},
@@ -295,7 +295,7 @@ func TestDecodeEvent(t *testing.T) {
 					},
 					ChangedTouches: TouchList{{Identifier: 1, X: 240, Y: 162}},
 					TargetTouches:  TouchList{{Identifier: 2, X: 256, Y: 512}},
-					modifierKeys:   modKeyAlt | modKeyCtrl,
+					ModifierKeys:   modKeyAlt | modKeyCtrl,
 				},
 			},
 		},
@@ -318,7 +318,7 @@ func TestDecodeEvent(t *testing.T) {
 						{Identifier: 0, X: 340, Y: 210},
 					},
 					TargetTouches: TouchList{},
-					modifierKeys:  modKeyAlt,
+					ModifierKeys:  modKeyAlt,
 				},
 			},
 		},
@@ -341,7 +341,7 @@ func TestDecodeEvent(t *testing.T) {
 					TargetTouches: TouchList{
 						{Identifier: 0, X: 340, Y: 210},
 					},
-					modifierKeys: modKeyAlt | modKeyShift,
+					ModifierKeys: modKeyAlt | modKeyShift,
 				},
 			},
 		},

@@ -31,7 +31,8 @@ type MouseEvent struct {
 	X int
 	// The Y coordinate of the mouse pointer.
 	Y int
-	modifierKeys
+	// Mod describes the modifier keys pressed during the event.
+	Mod ModifierKeys
 }
 
 func (e MouseEvent) mask() eventMask {
@@ -121,7 +122,8 @@ const (
 type KeyboardEvent struct {
 	// Key represents the key value of the key represented by the event.
 	Key string
-	modifierKeys
+	// Mod describes the modifier keys pressed during the event.
+	Mod ModifierKeys
 }
 
 func (e KeyboardEvent) mask() eventMask {
@@ -160,7 +162,8 @@ type TouchEvent struct {
 	// currently in contact with the touch surface and were also started on the
 	// same element that is the target of the event.
 	TargetTouches TouchList
-	modifierKeys
+	// Mod describes the modifier keys pressed during the event.
+	Mod ModifierKeys
 }
 
 func (e TouchEvent) mask() eventMask {
@@ -213,10 +216,12 @@ type TouchCancelEvent struct{ TouchEvent }
 
 func (e TouchCancelEvent) mask() eventMask { return maskTouchCancel }
 
-type modifierKeys byte
+// ModifierKeys describes the modifier keys (Alt, Shift, Ctrl, Meta) pressed
+// during an event.
+type ModifierKeys byte
 
 const (
-	modKeyAlt modifierKeys = 1 << iota
+	modKeyAlt ModifierKeys = 1 << iota
 	modKeyShift
 	modKeyCtrl
 	modKeyMeta
@@ -224,30 +229,30 @@ const (
 
 // AltKey returns true if the Alt (Option or ⌥ on OS X) key was active when
 // the event was generated.
-func (m modifierKeys) AltKey() bool {
+func (m ModifierKeys) AltKey() bool {
 	return m.isPressed(modKeyAlt)
 }
 
 // ShiftKey returns true if the Shift key was active when the event was
 // generated.
-func (m modifierKeys) ShiftKey() bool {
+func (m ModifierKeys) ShiftKey() bool {
 	return m.isPressed(modKeyShift)
 }
 
 // CtrlKey returns true if the Ctrl key was active when the event was
 // generated.
-func (m modifierKeys) CtrlKey() bool {
+func (m ModifierKeys) CtrlKey() bool {
 	return m.isPressed(modKeyCtrl)
 }
 
 // MetaKey returns true if the Meta key (on Mac keyboards, the ⌘ Command key;
 // on Windows keyboards, the Windows key (⊞)) was active when the event
 // was generated.
-func (m modifierKeys) MetaKey() bool {
+func (m ModifierKeys) MetaKey() bool {
 	return m.isPressed(modKeyMeta)
 }
 
-func (m modifierKeys) isPressed(k modifierKeys) bool {
+func (m ModifierKeys) isPressed(k ModifierKeys) bool {
 	return m&k != 0
 }
 
@@ -350,17 +355,17 @@ func decodeEventBuf(buf *buffer) (Event, error) {
 
 func decodeMouseEvent(buf *buffer) MouseEvent {
 	return MouseEvent{
-		Buttons:      MouseButtons(buf.readByte()),
-		X:            int(buf.readUint32()),
-		Y:            int(buf.readUint32()),
-		modifierKeys: modifierKeys(buf.readByte()),
+		Buttons: MouseButtons(buf.readByte()),
+		X:       int(buf.readUint32()),
+		Y:       int(buf.readUint32()),
+		Mod:     ModifierKeys(buf.readByte()),
 	}
 }
 
 func decodeKeyboardEvent(buf *buffer) KeyboardEvent {
 	return KeyboardEvent{
-		modifierKeys: modifierKeys(buf.readByte()),
-		Key:          buf.readString(),
+		Mod: ModifierKeys(buf.readByte()),
+		Key: buf.readString(),
 	}
 }
 
@@ -379,7 +384,7 @@ func decodeTouchEvent(buf *buffer) TouchEvent {
 		Touches:        decodeTouchList(buf),
 		ChangedTouches: decodeTouchList(buf),
 		TargetTouches:  decodeTouchList(buf),
-		modifierKeys:   modifierKeys(buf.readByte()),
+		Mod:            ModifierKeys(buf.readByte()),
 	}
 }
 
