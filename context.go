@@ -78,6 +78,7 @@ func (ctx *Context) SetFillStyleString(color string) {
 // SetFillStyleGradient sets the gradient (a linear or radial gradient) to
 // use inside shapes.
 func (ctx *Context) SetFillStyleGradient(g *Gradient) {
+	g.checkUseAfterRelease()
 	ctx.buf.addByte(bFillStyleGradient)
 	ctx.buf.addUint32(g.id)
 }
@@ -85,6 +86,7 @@ func (ctx *Context) SetFillStyleGradient(g *Gradient) {
 // SetFillStylePattern sets the pattern (a repeating image) to use inside
 // shapes.
 func (ctx *Context) SetFillStylePattern(p *Pattern) {
+	p.checkUseAfterRelease()
 	ctx.buf.addByte(bFillStylePattern)
 	ctx.buf.addUint32(p.id)
 }
@@ -282,6 +284,7 @@ func (ctx *Context) SetStrokeStyleString(color string) {
 // SetStrokeStyleGradient sets the gradient (a linear or radial gradient) to
 // use for the strokes (outlines) around shapes.
 func (ctx *Context) SetStrokeStyleGradient(g *Gradient) {
+	g.checkUseAfterRelease()
 	ctx.buf.addByte(bStrokeStyleGradient)
 	ctx.buf.addUint32(g.id)
 }
@@ -289,6 +292,7 @@ func (ctx *Context) SetStrokeStyleGradient(g *Gradient) {
 // SetStrokeStylePattern sets the pattern (a repeating image) to use for the
 // strokes (outlines) around shapes.
 func (ctx *Context) SetStrokeStylePattern(p *Pattern) {
+	p.checkUseAfterRelease()
 	ctx.buf.addByte(bStrokeStylePattern)
 	ctx.buf.addUint32(p.id)
 }
@@ -800,6 +804,7 @@ func (ctx *Context) CreateImageData(m image.Image) *ImageData {
 // Note: Image data can be retrieved from a canvas using the GetImageData
 // method.
 func (ctx *Context) PutImageData(src *ImageData, dx, dy float64) {
+	src.checkUseAfterRelease()
 	ctx.buf.addByte(bPutImageData)
 	ctx.buf.addUint32(src.id)
 	ctx.buf.addFloat64(dx)
@@ -821,6 +826,7 @@ func (ctx *Context) PutImageData(src *ImageData, dx, dy float64) {
 // Note: Image data can be retrieved from a canvas using the GetImageData
 // method.
 func (ctx *Context) PutImageDataDirty(src *ImageData, dx, dy, dirtyX, dirtyY, dirtyWidth, dirtyHeight float64) {
+	src.checkUseAfterRelease()
 	ctx.buf.addByte(bPutImageDataDirty)
 	ctx.buf.addUint32(src.id)
 	ctx.buf.addFloat64(dx)
@@ -836,6 +842,7 @@ func (ctx *Context) PutImageDataDirty(src *ImageData, dx, dy, dirtyX, dirtyY, di
 // (dx, dy) is the position in the destination canvas at which to place the
 // top-left corner of the source image.
 func (ctx *Context) DrawImage(src *ImageData, dx, dy float64) {
+	src.checkUseAfterRelease()
 	ctx.buf.addByte(bDrawImage)
 	ctx.buf.addUint32(src.id)
 	ctx.buf.addFloat64(dx)
@@ -849,6 +856,7 @@ func (ctx *Context) DrawImage(src *ImageData, dx, dy float64) {
 // draw the image in the destination canvas. This allows scaling of the drawn
 // image.
 func (ctx *Context) DrawImageScaled(src *ImageData, dx, dy, dWidth, dHeight float64) {
+	src.checkUseAfterRelease()
 	ctx.buf.addByte(bDrawImageScaled)
 	ctx.buf.addUint32(src.id)
 	ctx.buf.addFloat64(dx)
@@ -869,6 +877,7 @@ func (ctx *Context) DrawImageScaled(src *ImageData, dx, dy, dWidth, dHeight floa
 // draw the image in the destination canvas. This allows scaling of the drawn
 // image.
 func (ctx *Context) DrawImageSubRectangle(src *ImageData, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight float64) {
+	src.checkUseAfterRelease()
 	ctx.buf.addByte(bDrawImageSubRectangle)
 	ctx.buf.addUint32(src.id)
 	ctx.buf.addFloat64(sx)
@@ -933,6 +942,7 @@ func (ctx *Context) CreateRadialGradient(x0, y0, r0, x1, y1, r1 float64) *Gradie
 // creates must be set via the SetFillStylePattern or SetStrokeStylePattern
 // methods, after which it is applied to any subsequent drawing.
 func (ctx *Context) CreatePattern(src *ImageData, repetition PatternRepetition) *Pattern {
+	src.checkUseAfterRelease()
 	id := ctx.patternIDs.GenerateID()
 	ctx.buf.addByte(bCreatePattern)
 	ctx.buf.addUint32(id)

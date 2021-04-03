@@ -18,10 +18,11 @@ import (
 // The image data should be released with the Release method when it is no
 // longer needed.
 type ImageData struct {
-	id     uint32
-	ctx    *Context
-	width  int
-	height int
+	id       uint32
+	ctx      *Context
+	width    int
+	height   int
+	released bool
 }
 
 // Width returns the actual width, in pixels, of the image.
@@ -36,8 +37,18 @@ func (m *ImageData) Height() int {
 
 // Release releases the image data on the client side.
 func (m *ImageData) Release() {
+	if m.released {
+		return
+	}
 	m.ctx.buf.addByte(bReleaseImageData)
 	m.ctx.buf.addUint32(m.id)
+	m.released = true
+}
+
+func (m *ImageData) checkUseAfterRelease() {
+	if m.released {
+		panic("ImageData: use after release")
+	}
 }
 
 func ensureRGBA(img image.Image) *image.RGBA {

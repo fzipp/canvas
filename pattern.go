@@ -11,12 +11,23 @@ package canvas
 // The pattern should be released with the Release method when it is no longer
 // needed.
 type Pattern struct {
-	id  uint32
-	ctx *Context
+	id       uint32
+	ctx      *Context
+	released bool
 }
 
 // Release releases the pattern on the client side.
 func (p *Pattern) Release() {
+	if p.released {
+		return
+	}
 	p.ctx.buf.addByte(bReleasePattern)
 	p.ctx.buf.addUint32(p.id)
+	p.released = true
+}
+
+func (p *Pattern) checkUseAfterRelease() {
+	if p.released {
+		panic("Pattern: use after release")
+	}
 }

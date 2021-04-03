@@ -14,13 +14,15 @@ import "image/color"
 // The gradient should be released with the Release method when it is no longer
 // needed.
 type Gradient struct {
-	id  uint32
-	ctx *Context
+	id       uint32
+	ctx      *Context
+	released bool
 }
 
 // AddColorStop adds a new stop, defined by an offset and a color, to the
 // gradient.
 func (g *Gradient) AddColorStop(offset float64, c color.Color) {
+	g.checkUseAfterRelease()
 	g.ctx.buf.addByte(bGradientAddColorStop)
 	g.ctx.buf.addUint32(g.id)
 	g.ctx.buf.addFloat64(offset)
@@ -33,6 +35,7 @@ func (g *Gradient) AddColorStop(offset float64, c color.Color) {
 // The color is parsed as a CSS color value like "#a100cb", "#ccc",
 // "darkgreen", "rgba(0.5, 0.2, 0.7, 1.0)", etc.
 func (g *Gradient) AddColorStopString(offset float64, color string) {
+	g.checkUseAfterRelease()
 	g.ctx.buf.addByte(bGradientAddColorStopString)
 	g.ctx.buf.addUint32(g.id)
 	g.ctx.buf.addFloat64(offset)
@@ -41,6 +44,16 @@ func (g *Gradient) AddColorStopString(offset float64, color string) {
 
 // Release releases the gradient on the client side.
 func (g *Gradient) Release() {
+	if g.released {
+		return
+	}
 	g.ctx.buf.addByte(bReleaseGradient)
 	g.ctx.buf.addUint32(g.id)
+	g.released = true
+}
+
+func (g *Gradient) checkUseAfterRelease() {
+	if g.released {
+		panic("Gradient: use after release")
+	}
 }
