@@ -12,7 +12,7 @@ a Go program.
 
 The Go program (server) sends draw commands to the web browser (client) via
 WebSockets using a binary format.
-The client in return sends keyboard and mouse events to the server.
+The client in return sends keyboard, mouse and touch events to the server.
 
 The module does not require operating system specific backends or Cgo bindings.
 It does not use WebAssembly, which means the Go code runs on the server side,
@@ -83,7 +83,10 @@ function and pass the state to other functions called by the run function.
 
 You can create an animation by putting a `for` loop in the `run` function.
 Within this loop the `ctx.Events()` channel should be observed for a
-`canvas.CloseEvent`.
+`canvas.CloseEvent` to exit the loop when the connection is closed.
+
+A useful pattern is to create a struct that holds the animation state and
+has an update and a draw method:
 
 ```go
 package main
@@ -117,33 +120,34 @@ func run(ctx *canvas.Context) {
 			d.update()
 			d.draw(ctx)
 			ctx.Flush()
-			time.Sleep(time.Second / 2)
+			time.Sleep(time.Second / 6)
 		}
 	}
 }
 
 type demo struct {
+	// Animation state, for example:
 	x, y int
 	// ...
 }
 
 func (d *demo) update() {
-	d.x += 1
-	d.y += 1
+	// Update animation state for the next frame
 	// ...
 }
 
 func (d *demo) draw(ctx *canvas.Context) {
+	// Draw the frame here, based on the animation state
 	// ...
 }
 ```
 
-### Keyboard and mouse events
+### Keyboard, mouse and touch events
 
-In order to handle keyboard and mouse events you have to specify which events
-the client should observe and send to the server.
+In order to handle keyboard, mouse and touch events you have to specify which
+events the client should observe and send to the server.
 This is done by passing an `EnableEvents` option to the `ListenAndServe`
-function. 
+function.
 Mouse move events typically create more WebSocket communication than the
 others.
 So you may want to enable them only if you actually use them.
@@ -168,6 +172,8 @@ func main() {
 		canvas.EnableEvents(
 			canvas.MouseDownEvent{},
 			canvas.MouseMoveEvent{},
+			canvas.TouchStartEvent{},
+			canvas.TouchMoveEvent{},
 			canvas.KeyDownEvent{},
 		),
 	)
@@ -203,6 +209,10 @@ func (d *demo) handle(event canvas.Event) {
 		// ...
 	case canvas.MouseMoveEvent:
 		// ...
+	case canvas.TouchStartEvent:
+		// ...
+   	case canvas.TouchMoveEvent:
+		// ...
    	case canvas.KeyDownEvent:
 		// ...
 	}
@@ -216,6 +226,9 @@ func (d *demo) draw(ctx *canvas.Context) {
 	// ...
 }
 ```
+
+Note that the `canvas.CloseEvent` does not have to be explicitly enabled.
+It is always enabled.
 
 ## Alternatives
 
