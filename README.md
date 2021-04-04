@@ -24,6 +24,12 @@ The WebSocket communication imposes some overhead, but it is good enough for
 many use cases. Different browsers also have different performance
 characteristics.
 
+## Examples
+
+The [example](example) subdirectory contains several demo programs.
+
+![Screenshots of examples](https://github.com/fzipp/canvas/blob/assets/examples.png)
+
 ## Usage
 
 ### Drawing
