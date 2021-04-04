@@ -21,7 +21,7 @@ func main() {
 	fmt.Println("Listening on " + httpLink(*http))
 	err := canvas.ListenAndServe(*http, run,
 		canvas.Size(1334, 750),
-		canvas.FullPage(),
+		canvas.ScaleFullPage(true, true),
 		canvas.Title("Breakout"),
 		canvas.DisableCursor(),
 		canvas.EnableEvents(

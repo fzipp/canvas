@@ -55,11 +55,12 @@ func DisableContextMenu() Option {
 	}
 }
 
-// FullPage returns an option that resizes the canvas to the full extent of the
-// page in the browser window.
-func FullPage() Option {
+// ScaleFullPage returns an option that scales the canvas to the full extent of
+// the page (horizontally, vertically, or both) in the browser window.
+func ScaleFullPage(fullWidth, fullHeight bool) Option {
 	return func(c *config) {
-		c.fullPage = true
+		c.fullPageWidth = fullWidth
+		c.fullPageHeight = fullHeight
 	}
 }
 
@@ -88,7 +89,8 @@ type config struct {
 	eventMask           eventMask
 	cursorDisabled      bool
 	contextMenuDisabled bool
-	fullPage            bool
+	fullPageWidth       bool
+	fullPageHeight      bool
 	reconnectInterval   time.Duration
 }
 

@@ -58,8 +58,8 @@ func main() {
 	fmt.Println("Listening on " + httpLink(*http))
 	err := canvas.ListenAndServe(*http, run,
 		canvas.Size(750, 1334),
-		// canvas.Size(900, 600),
-		canvas.FullPage(),
+		//canvas.Size(900, 600),
+		canvas.ScaleFullPage(true, true),
 		canvas.EnableEvents(
 			canvas.MouseMoveEvent{},
 			canvas.MouseDownEvent{},

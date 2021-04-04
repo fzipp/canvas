@@ -18,10 +18,12 @@ license that can be found in the LICENSE file.
         height: 100%;
         background-color: {{.BackgroundColor}};
         overflow: hidden;
+        text-align: center;
       }
-      .full-page {
-        position: absolute;
+      .full-page-width {
         width: 100%;
+      }
+      .full-page-height {
         height: 100%;
       }
     </style>
@@ -30,7 +32,7 @@ license that can be found in the LICENSE file.
     <noscript><p>Please enable JavaScript in your browser.</p></noscript>
     <canvas width="{{.Width}}" height="{{.Height}}"
             style="cursor: {{if .CursorDisabled}}none{{else}}default{{end}}"
-            class="{{if .FullPage}}full-page{{end}}"
+            class="{{if .FullPageWidth}}full-page-width{{end}} {{if .FullPageHeight}}full-page-height{{end}}"
             data-websocket-draw-url="{{.DrawURL}}"
             data-websocket-event-mask="{{.EventMask}}"
             data-websocket-reconnect-interval="{{.ReconnectInterval}}"

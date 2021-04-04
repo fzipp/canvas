@@ -29,7 +29,7 @@ func main() {
 
 	fmt.Println("Listening on " + httpLink(*http))
 	err := canvas.ListenAndServe(*http, run,
-		canvas.Size(800, 600),
+		canvas.Size(150, 150),
 		canvas.Title("Clock"),
 	)
 	if err != nil {

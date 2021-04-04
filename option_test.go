@@ -66,10 +66,11 @@ func TestConfigFrom(t *testing.T) {
 			},
 		},
 		{
-			"FullPage",
-			[]Option{FullPage()},
+			"ScaleFullPage",
+			[]Option{ScaleFullPage(true, true)},
 			config{
-				fullPage:        true,
+				fullPageWidth:   true,
+				fullPageHeight:  true,
 				width:           300,
 				height:          150,
 				backgroundColor: color.White,
@@ -94,7 +95,7 @@ func TestConfigFrom(t *testing.T) {
 				EnableEvents(MouseMoveEvent{}, MouseDownEvent{}, MouseUpEvent{}),
 				DisableCursor(),
 				DisableContextMenu(),
-				FullPage(),
+				ScaleFullPage(true, false),
 				Reconnect(1500 * time.Millisecond),
 			},
 			config{
@@ -105,7 +106,8 @@ func TestConfigFrom(t *testing.T) {
 				eventMask:           0b0111,
 				cursorDisabled:      true,
 				contextMenuDisabled: true,
-				fullPage:            true,
+				fullPageWidth:       true,
+				fullPageHeight:      false,
 				reconnectInterval:   1500 * time.Millisecond,
 			},
 		},

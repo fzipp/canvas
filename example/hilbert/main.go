@@ -21,8 +21,8 @@ func main() {
 	fmt.Println("Listening on " + httpLink(*http))
 	err := canvas.ListenAndServe(*http, run,
 		canvas.Title("Hilbert"),
-		canvas.Size(1000, 500),
-		canvas.FullPage(),
+		canvas.Size(500, 500),
+		canvas.ScaleFullPage(false, true),
 	)
 	if err != nil {
 		log.Fatal(err)
