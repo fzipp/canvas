@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+// Draws superimposed Hilbert curves as described by N. Wirth in
+// "Algorithms and Data Structures".
 package main
 
 import (

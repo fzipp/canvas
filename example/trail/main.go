@@ -26,6 +26,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
+// An interactive animation of rotating particles that follow the mouse or
+// touch pointer.
 package main
 
 import (

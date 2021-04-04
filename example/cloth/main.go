@@ -26,6 +26,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
+// An interactive simulation of a cloth that can be torn by clicking and
+// dragging the mouse.
 package main
 
 import (
