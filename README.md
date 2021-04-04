@@ -20,10 +20,6 @@ not in the browser.
 The client-server design means the canvas can be displayed on a different
 machine over the network.
 
-The WebSocket communication imposes some overhead, but it is good enough for
-many use cases. Different browsers also have different performance
-characteristics.
-
 ## Examples
 
 The [example](example) subdirectory contains several demo programs.
@@ -222,9 +218,6 @@ func (d *demo) draw(ctx *canvas.Context) {
 ```
 
 ## Alternatives
-
-If this module is not the right thing for you, and if you are looking for a
-more direct solution for 2D graphics have a look at these alternatives:
 
 * [github.com/tfriedel6/canvas](https://github.com/tfriedel6/canvas) -
   A canvas implementation for Go with OpenGL backends for various
