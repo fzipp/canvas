@@ -43,15 +43,13 @@ import (
 
 const particlesNum = 500
 
-var (
-	colors = []color.RGBA{
-		{R: 0xf3, G: 0x5d, B: 0x4f, A: 0xff},
-		{R: 0xf3, G: 0x68, B: 0x49, A: 0xff},
-		{R: 0xc0, G: 0xd9, B: 0x88, A: 0xff},
-		{R: 0x6d, G: 0xda, B: 0xf1, A: 0xff},
-		{R: 0xf1, G: 0xe8, B: 0x5b, A: 0xff},
-	}
-)
+var colors = []color.RGBA{
+	{R: 0xf3, G: 0x5d, B: 0x4f, A: 0xff},
+	{R: 0xf3, G: 0x68, B: 0x49, A: 0xff},
+	{R: 0xc0, G: 0xd9, B: 0x88, A: 0xff},
+	{R: 0x6d, G: 0xda, B: 0xf1, A: 0xff},
+	{R: 0xf1, G: 0xe8, B: 0x5b, A: 0xff},
+}
 
 func main() {
 	http := flag.String("http", ":8080", "HTTP service address (e.g., '127.0.0.1:8080' or just ':8080')")
@@ -69,7 +67,6 @@ func main() {
 }
 
 func run(ctx *canvas.Context) {
-
 	demo := newParticlesDemo(
 		float64(ctx.CanvasWidth()),
 		float64(ctx.CanvasHeight()),
