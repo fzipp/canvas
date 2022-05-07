@@ -708,16 +708,17 @@ func (ctx *Context) Translate(x, y float64) {
 // Transform multiplies the current transformation with the matrix described
 // by the arguments of this method. This lets you scale, rotate, translate
 // (move), and skew the context. The transformation matrix is described by:
-//    [ a b 0 ]
-//    [ c d 0 ]
-//    [ e f 1 ]
 //
-//    a: Horizontal scaling. A value of 1 results in no scaling.
-//    b: Vertical skewing.
-//    c: Horizontal skewing.
-//    d: Vertical scaling. A value of 1 results in no scaling.
-//    e: Horizontal translation (moving).
-//    f: Vertical translation (moving).
+//	[ a b 0 ]
+//	[ c d 0 ]
+//	[ e f 1 ]
+//
+//	a: Horizontal scaling. A value of 1 results in no scaling.
+//	b: Vertical skewing.
+//	c: Horizontal skewing.
+//	d: Vertical scaling. A value of 1 results in no scaling.
+//	e: Horizontal translation (moving).
+//	f: Vertical translation (moving).
 //
 // Note: See also the SetTransform method, which resets the current transform
 // to the identity matrix and then invokes Transform.
@@ -735,16 +736,17 @@ func (ctx *Context) Transform(a, b, c, d, e, f float64) {
 // matrix, and then invokes a transformation described by the arguments of this
 // method. This lets you scale, rotate, translate (move), and skew the context.
 // The transformation matrix is described by:
-//    [ a b 0 ]
-//    [ c d 0 ]
-//    [ e f 1 ]
 //
-//    a: Horizontal scaling. A value of 1 results in no scaling.
-//    b: Vertical skewing.
-//    c: Horizontal skewing.
-//    d: Vertical scaling. A value of 1 results in no scaling.
-//    e: Horizontal translation (moving).
-//    f: Vertical translation (moving).
+//	[ a b 0 ]
+//	[ c d 0 ]
+//	[ e f 1 ]
+//
+//	a: Horizontal scaling. A value of 1 results in no scaling.
+//	b: Vertical skewing.
+//	c: Horizontal skewing.
+//	d: Vertical scaling. A value of 1 results in no scaling.
+//	e: Horizontal translation (moving).
+//	f: Vertical translation (moving).
 //
 // Note: See also the Transform method; instead of overriding the current
 // transform matrix, it multiplies it with a given one.
