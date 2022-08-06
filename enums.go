@@ -39,8 +39,10 @@ const (
 // CompositeOperation represents the type of compositing operation to apply
 // when drawing new shapes.
 //
-// For visual explanations of the composite operations see
-// https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation#types
+// For visual explanations of the composite operations see the [MDN docs]
+// for CanvasRenderingContext2D.globalCompositeOperation.
+//
+// [MDN docs]: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation#operations
 type CompositeOperation byte
 
 const (

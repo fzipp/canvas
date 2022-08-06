@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// The API doc comments are based on the MDN Web Docs for the Canvas API
-// (https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D)
-// by Mozilla Contributors and are licensed under CC-BY-SA 2.5.
-// https://creativecommons.org/licenses/by-sa/2.5/
+// The API doc comments are based on the MDN Web Docs for the [Canvas API]
+// by Mozilla Contributors and are licensed under [CC-BY-SA 2.5].
+//
+// [Canvas API]: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D
+// [CC-BY-SA 2.5]: https://creativecommons.org/licenses/by-sa/2.5/
 
 package canvas
 
@@ -624,9 +625,10 @@ func (ctx *Context) Scale(x, y float64) {
 // Strokes are aligned to the center of a path; in other words, half of the
 // stroke is drawn on the inner side, and half on the outer side.
 //
-// The stroke is drawn using the non-zero winding rule, which means that path
+// The stroke is drawn using the [non-zero winding rule], which means that path
 // intersections will still get filled.
-// https://en.wikipedia.org/wiki/Nonzero-rule
+//
+// [non-zero winding rule]: https://en.wikipedia.org/wiki/Nonzero-rule
 func (ctx *Context) Stroke() {
 	ctx.buf.addByte(bStroke)
 }

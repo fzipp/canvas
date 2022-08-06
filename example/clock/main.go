@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// This example was ported from the MDN canvas tutorial: "An animated clock"
-// https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Basic_animations#An_animated_clock
-// Original copyright:
-//
-// Any copyright is dedicated to the Public Domain.
-// https://creativecommons.org/publicdomain/zero/1.0/
-
 // An animated clock.
+//
+// This example was ported from the MDN canvas tutorial "[An animated clock]".
+// Original copyright: Any copyright is dedicated to the [Public Domain].
+//
+// [An animated clock]: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Basic_animations#An_animated_clock
+// [Public Domain]: https://creativecommons.org/publicdomain/zero/1.0/
 package main
 
 import (
