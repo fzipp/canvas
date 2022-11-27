@@ -11,6 +11,7 @@ import (
 	"html/template"
 	"image/color"
 	"log"
+	"math"
 	"net/http"
 	"sync"
 	"time"
@@ -97,7 +98,7 @@ func (h *htmlHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
 
 func rgbaString(c color.Color) string {
 	clr := color.RGBAModel.Convert(c).(color.RGBA)
-	return fmt.Sprintf("rgba(%d, %d, %d, %g)", clr.R, clr.G, clr.B, float64(clr.A)/255)
+	return fmt.Sprintf("rgba(%d, %d, %d, %g)", clr.R, clr.G, clr.B, math.Round((float64(clr.A)/255)*100)/100)
 }
 
 func javaScriptHandler(w http.ResponseWriter, _ *http.Request) {
