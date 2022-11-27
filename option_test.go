@@ -8,6 +8,8 @@ import (
 	"image/color"
 	"testing"
 	"time"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestConfigFrom(t *testing.T) {
@@ -115,8 +117,8 @@ func TestConfigFrom(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := configFrom(tt.options)
-			if got != tt.want {
-				t.Errorf("\ngot : %#v\nwant: %#v", got, tt.want)
+			if diff := cmp.Diff(tt.want, got, cmp.AllowUnexported(config{})); diff != "" {
+				t.Errorf("mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}

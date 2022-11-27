@@ -5,9 +5,10 @@
 package canvas
 
 import (
-	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestModifierKeys(t *testing.T) {
@@ -353,8 +354,8 @@ func TestDecodeEvent(t *testing.T) {
 				t.Errorf("did not expect error, but got error: %s", err)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("\ngot : %#v\nwant: %#v", got, tt.want)
+			if diff := cmp.Diff(tt.want, got); diff != "" {
+				t.Errorf("mismatch (-want, +got)\n%s", diff)
 			}
 		})
 	}

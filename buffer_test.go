@@ -8,6 +8,8 @@ import (
 	"image/color"
 	"reflect"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestBufferWrite(t *testing.T) {
@@ -109,8 +111,8 @@ func TestBufferWrite(t *testing.T) {
 			buf := &buffer{}
 			tt.use(buf)
 			got := buf.bytes
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("\ngot : %#v\nwant: %#v", got, tt.want)
+			if diff := cmp.Diff(tt.want, got); diff != "" {
+				t.Errorf("mismatch (-want, +got):\n%s", diff)
 			}
 		})
 	}

@@ -7,8 +7,9 @@ package canvas
 import (
 	"image"
 	"image/color"
-	"reflect"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestEnsureRGBA(t *testing.T) {
@@ -69,8 +70,8 @@ func TestEnsureRGBA(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := ensureRGBA(tt.img)
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("\n got: %#v\nwant: %#v", got, tt.want)
+			if diff := cmp.Diff(tt.want, got); diff != "" {
+				t.Errorf("mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}

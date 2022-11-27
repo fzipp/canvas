@@ -8,8 +8,9 @@ import (
 	"image"
 	"image/color"
 	"math"
-	"reflect"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestContextDrawing(t *testing.T) {
@@ -894,8 +895,8 @@ func TestContextDrawing(t *testing.T) {
 				ctx.Flush()
 			}(tt.draw)
 			got := <-draws
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("\ngot : %#02v\nwant: %#02v", got, tt.want)
+			if diff := cmp.Diff(tt.want, got); diff != "" {
+				t.Errorf("mismatch (-want, +got)\n%s", diff)
 			}
 		})
 	}
@@ -993,6 +994,40 @@ func TestUseAfterRelease(t *testing.T) {
 			}()
 			ctx := newContext(nil, nil, config{})
 			tt.draw(ctx)
+		})
+	}
+}
+
+func TestEvents(t *testing.T) {
+	tests := []struct {
+		name string
+		want []Event
+	}{
+		{
+			"multiple events", []Event{
+				MouseMoveEvent{},
+				KeyDownEvent{},
+				KeyUpEvent{},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			eventsIn := make(chan Event)
+			ctx := newContext(nil, eventsIn, config{})
+			go func() {
+				for _, ev := range tt.want {
+					eventsIn <- ev
+				}
+				close(eventsIn)
+			}()
+			var got []Event
+			for event := range ctx.Events() {
+				got = append(got, event)
+			}
+			if diff := cmp.Diff(tt.want, got); diff != "" {
+				t.Errorf("mismatch (-want, +got)\n%s", diff)
+			}
 		})
 	}
 }
