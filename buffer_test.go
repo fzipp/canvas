@@ -120,14 +120,14 @@ func TestBufferRead(t *testing.T) {
 	tests := []struct {
 		name      string
 		bytes     []byte
-		read      func(buf *buffer) interface{}
-		wantValue interface{}
+		read      func(buf *buffer) any
+		wantValue any
 		wantBytes []byte
 	}{
 		{
 			"readByte",
 			[]byte{0x01, 0x02},
-			func(buf *buffer) interface{} {
+			func(buf *buffer) any {
 				return buf.readByte()
 			},
 			byte(0x01),
@@ -136,7 +136,7 @@ func TestBufferRead(t *testing.T) {
 		{
 			"readUint32",
 			[]byte{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08},
-			func(buf *buffer) interface{} {
+			func(buf *buffer) any {
 				return buf.readUint32()
 			},
 			uint32(0x01020304),
@@ -145,7 +145,7 @@ func TestBufferRead(t *testing.T) {
 		{
 			"readUint64",
 			[]byte{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09},
-			func(buf *buffer) interface{} {
+			func(buf *buffer) any {
 				return buf.readUint64()
 			},
 			uint64(0x0102030405060708),
@@ -154,7 +154,7 @@ func TestBufferRead(t *testing.T) {
 		{
 			"readFloat64",
 			[]byte{0x40, 0x09, 0x99, 0x99, 0x99, 0x99, 0x99, 0x9a, 0xab},
-			func(buf *buffer) interface{} {
+			func(buf *buffer) any {
 				return buf.readFloat64()
 			},
 			3.2,
@@ -163,7 +163,7 @@ func TestBufferRead(t *testing.T) {
 		{
 			"readString",
 			[]byte{0x00, 0x00, 0x00, 0x04, 0x54, 0x65, 0x73, 0x74, 0x42},
-			func(buf *buffer) interface{} {
+			func(buf *buffer) any {
 				return buf.readString()
 			},
 			"Test",
@@ -191,13 +191,13 @@ func TestBufferReadErrors(t *testing.T) {
 	tests := []struct {
 		name      string
 		bytes     []byte
-		read      func(buf *buffer) interface{}
-		wantValue interface{}
+		read      func(buf *buffer) any
+		wantValue any
 	}{
 		{
 			"readByte",
 			[]byte{},
-			func(buf *buffer) interface{} {
+			func(buf *buffer) any {
 				return buf.readByte()
 			},
 			byte(0),
@@ -205,7 +205,7 @@ func TestBufferReadErrors(t *testing.T) {
 		{
 			"readUint32",
 			[]byte{0x01, 0x02, 0x03},
-			func(buf *buffer) interface{} {
+			func(buf *buffer) any {
 				return buf.readUint32()
 			},
 			uint32(0),
@@ -213,7 +213,7 @@ func TestBufferReadErrors(t *testing.T) {
 		{
 			"readUint64",
 			[]byte{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07},
-			func(buf *buffer) interface{} {
+			func(buf *buffer) any {
 				return buf.readUint64()
 			},
 			uint64(0),
@@ -221,7 +221,7 @@ func TestBufferReadErrors(t *testing.T) {
 		{
 			"readFloat64",
 			[]byte{0x40, 0x09, 0x99, 0x99, 0x99, 0x99, 0x99},
-			func(buf *buffer) interface{} {
+			func(buf *buffer) any {
 				return buf.readFloat64()
 			},
 			float64(0),
@@ -229,7 +229,7 @@ func TestBufferReadErrors(t *testing.T) {
 		{
 			"readString: length data too short",
 			[]byte{0x00, 0x00, 0x00},
-			func(buf *buffer) interface{} {
+			func(buf *buffer) any {
 				return buf.readString()
 			},
 			"",
@@ -237,7 +237,7 @@ func TestBufferReadErrors(t *testing.T) {
 		{
 			"readString: string data too short",
 			[]byte{0x00, 0x00, 0x00, 0x04, 0x54, 0x65, 0x73},
-			func(buf *buffer) interface{} {
+			func(buf *buffer) any {
 				return buf.readString()
 			},
 			"",

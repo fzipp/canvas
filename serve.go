@@ -76,7 +76,7 @@ type htmlHandler struct {
 }
 
 func (h *htmlHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
-	model := map[string]interface{}{
+	model := map[string]any{
 		"DrawURL":             template.URL("draw"),
 		"Width":               h.config.width,
 		"Height":              h.config.height,
