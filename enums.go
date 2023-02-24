@@ -81,7 +81,7 @@ const (
 	// OpMultiply multiplies the pixels of the top layer with the corresponding
 	// pixels of the bottom layer. A darker picture is the result.
 	OpMultiply
-	// OpScreen inverts inverts, multiplies, and inverts the pixels again.
+	// OpScreen inverts, multiplies, and inverts the pixels again.
 	// A lighter picture is the result (opposite of multiply)
 	OpScreen
 	// OpOverlay is a combination of OpMultiply and OpScreen. Dark parts on the
