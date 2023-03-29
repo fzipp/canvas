@@ -26,8 +26,17 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-// An interactive animation of rotating particles that follow the mouse or
-// touch pointer.
+// Trail is an interactive animation of rotating particles that follow the
+// mouse or touch pointer.
+//
+// Usage:
+//
+//	trail [-http address]
+//
+// Flags:
+//
+//	-http  HTTP service address (e.g., '127.0.0.1:8080' or just ':8080').
+//	       The default is ':8080'.
 package main
 
 import (

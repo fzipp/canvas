@@ -2,7 +2,20 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// A simple Breakout game.
+// Breakout is a classic arcade game where the player controls a paddle at the
+// bottom of the screen to bounce a ball and break through a wall of bricks at
+// the top of the screen. The objective is to clear all the bricks while
+// keeping the ball in play and preventing it from falling off the bottom of
+// the screen.
+//
+// Usage:
+//
+//	breakout [-http address]
+//
+// Flags:
+//
+//	-http  HTTP service address (e.g., '127.0.0.1:8080' or just ':8080').
+//	       The default is ':8080'.
 package main
 
 import (

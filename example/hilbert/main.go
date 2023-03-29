@@ -2,8 +2,18 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Draws superimposed Hilbert curves as described by N. Wirth in
-// "Algorithms and Data Structures".
+// Hilbert draws a graphic pattern consisting of multiple superimposed Hilbert
+// curves using the recursive algorithm described in the book "Algorithms and
+// Data Structures" by N. Wirth.
+//
+// Usage:
+//
+//	hilbert [-http address]
+//
+// Flags:
+//
+//	-http  HTTP service address (e.g., '127.0.0.1:8080' or just ':8080').
+//	       The default is ':8080'.
 package main
 
 import (

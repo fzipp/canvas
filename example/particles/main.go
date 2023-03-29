@@ -1,10 +1,6 @@
-// Copyright 2020 Frederik Zipp. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
-
-// This example was ported from:
+// Original JavaScript code by Elton Kamami:
 // https://codepen.io/eltonkamami/pen/ECrKd
-// Original copyright:
+// Ported to Go by Frederik Zipp. Original copyright:
 //
 // Copyright (c) 2020 by Elton Kamami (https://codepen.io/eltonkamami/pen/ECrKd)
 //
@@ -26,7 +22,17 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-// Animated particles (non-interactive).
+// Particles is a non-interactive canvas demo showing colorful animated
+// particles.
+//
+// Usage:
+//
+//	particles [-http address]
+//
+// Flags:
+//
+//	-http  HTTP service address (e.g., '127.0.0.1:8080' or just ':8080').
+//	       The default is ':8080'.
 package main
 
 import (

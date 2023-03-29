@@ -2,13 +2,22 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// An animated clock.
-//
-// This example was ported from the MDN canvas tutorial "[An animated clock]".
+// This example was ported from the MDN canvas tutorial [An animated clock].
 // Original copyright: Any copyright is dedicated to the [Public Domain].
 //
 // [An animated clock]: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Basic_animations#An_animated_clock
 // [Public Domain]: https://creativecommons.org/publicdomain/zero/1.0/
+
+// Clock draws an animated clock, showing the current time.
+//
+// Usage:
+//
+//	clock [-http address]
+//
+// Flags:
+//
+//	-http  HTTP service address (e.g., '127.0.0.1:8080' or just ':8080').
+//	       The default is ':8080'.
 package main
 
 import (

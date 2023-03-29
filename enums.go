@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+// The API doc comments are based on the MDN Web Docs for the [Canvas API]
+// by Mozilla Contributors and are licensed under [CC-BY-SA 2.5].
+//
+// [Canvas API]: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D
+// [CC-BY-SA 2.5]: https://creativecommons.org/licenses/by-sa/2.5/
+
 package canvas
 
 // LineCap represents the shape used to draw the end points of lines.

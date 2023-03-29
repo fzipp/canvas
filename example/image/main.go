@@ -2,7 +2,17 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// A scaling animation of a gopher image.
+// Image demonstrates how to draw image data on the canvas.
+// It displays a scaling animation of a Go gopher image loaded from PNG data.
+//
+// Usage:
+//
+//	image [-http address]
+//
+// Flags:
+//
+//	-http  HTTP service address (e.g., '127.0.0.1:8080' or just ':8080').
+//	       The default is ':8080'.
 package main
 
 import (

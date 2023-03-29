@@ -49,7 +49,7 @@ func (ctx *Context) Events() <-chan Event {
 	return ctx.events
 }
 
-// CanvasWidth returns the with of the canvas in pixels.
+// CanvasWidth returns the width of the canvas in pixels.
 func (ctx *Context) CanvasWidth() int {
 	return ctx.config.width
 }

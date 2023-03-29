@@ -35,7 +35,7 @@ following arguments: the network address with the port number to bind to, a
 run function, and zero or more options, such as the canvas size in pixels,
 or a title for the browser tab.
 
-The run function is executed when a client connects to the server.
+The `run` function is called when a client connects to the server.
 This is the entry point for drawing.
 
 ```go

@@ -2,4 +2,4 @@
 The design is licensed under the Creative Commons 3.0 Attributions license.
 
 [Renee French]: https://reneefrench.blogspot.com/
-[The Go gopher]: https://blog.golang.org/gopher
+[The Go gopher]: https://go.dev/blog/gopher
