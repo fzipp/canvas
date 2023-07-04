@@ -54,12 +54,13 @@ func main() {
 	flag.Parse()
 
 	fmt.Println("Listening on " + httpLink(*http))
-	err := canvas.ListenAndServe(*http, run,
-		canvas.Size(1440, 694),
-		canvas.Title("Retro Synthwave"),
-		canvas.ScaleFullPage(false, true),
-		canvas.BackgroundColor(color.Black),
-	)
+	err := canvas.ListenAndServe(*http, run, &canvas.Options{
+		Title:             "Retro Synthwave",
+		Width:             1440,
+		Height:            694,
+		ScaleToPageHeight: true,
+		PageBackground:    color.Black,
+	})
 	if err != nil {
 		log.Fatal(err)
 	}

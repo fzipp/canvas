@@ -11,7 +11,7 @@ It offers a portable way to create interactive 2D graphics from within
 a Go program.
 
 The Go program (server) sends draw commands to the web browser (client) via
-WebSockets using a binary format.
+WebSocket using a binary format.
 The client in return sends keyboard, mouse and touch events to the server.
 
 The module does not require operating system specific backends or Cgo bindings.
@@ -32,8 +32,8 @@ The [example](example) subdirectory contains several demo programs.
 
 The `ListenAndServe` function initializes the canvas server and takes the
 following arguments: the network address with the port number to bind to, a
-run function, and zero or more options, such as the canvas size in pixels,
-or a title for the browser tab.
+run function, and an options structure, that configures various aspects
+such as the canvas size in pixels, or a title for the browser tab.
 
 The `run` function is called when a client connects to the server.
 This is the entry point for drawing.
@@ -49,10 +49,11 @@ import (
 )
 
 func main() {
-	err := canvas.ListenAndServe(":8080", run,
-		canvas.Size(100, 80),
-		canvas.Title("Example 1: Drawing"),
-	)
+	err := canvas.ListenAndServe(":8080", run, &canvas.Options{
+		Title:  "Example 1: Drawing",
+		Width:  100,
+		Height: 80,
+	})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -99,10 +100,11 @@ import (
 )
 
 func main() {
-	err := canvas.ListenAndServe(":8080", run,
-		canvas.Size(800, 600),
-		canvas.Title("Example 2: Animation"),
-	)
+	err := canvas.ListenAndServe(":8080", run, &canvas.Options{
+		Title:  "Example 2: Animation",
+		Width:  800,
+		Height: 600,
+	})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -146,7 +148,7 @@ func (d *demo) draw(ctx *canvas.Context) {
 
 In order to handle keyboard, mouse and touch events you have to specify which
 events the client should observe and send to the server.
-This is done by passing an `EnableEvents` option to the `ListenAndServe`
+This is done by passing an `EnabledEvents` option to the `ListenAndServe`
 function.
 Mouse move events typically create more WebSocket communication than the
 others.
@@ -166,17 +168,18 @@ import (
 )
 
 func main() {
-	err := canvas.ListenAndServe(":8080", run,
-		canvas.Size(800, 600),
-		canvas.Title("Example 3: Events"),
-		canvas.EnableEvents(
+	err := canvas.ListenAndServe(":8080", run, &canvas.Options{
+		Title:  "Example 3: Events",
+		Width:  800,
+		Height: 600,
+		EnabledEvents: []canvas.Event{
 			canvas.MouseDownEvent{},
 			canvas.MouseMoveEvent{},
 			canvas.TouchStartEvent{},
 			canvas.TouchMoveEvent{},
 			canvas.KeyDownEvent{},
-		),
-	)
+		},
+	})
 	if err != nil {
 		log.Fatal(err)
 	}

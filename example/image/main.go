@@ -36,10 +36,11 @@ func main() {
 	flag.Parse()
 
 	fmt.Println("Listening on " + httpLink(*http))
-	err := canvas.ListenAndServe(*http, run,
-		canvas.Size(1280, 720),
-		canvas.Title("ImageData"),
-	)
+	err := canvas.ListenAndServe(*http, run, &canvas.Options{
+		Title:  "ImageData",
+		Width:  1280,
+		Height: 720,
+	})
 	if err != nil {
 		log.Fatal(err)
 	}

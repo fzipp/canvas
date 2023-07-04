@@ -67,15 +67,16 @@ func main() {
 	flag.Parse()
 
 	fmt.Println("Listening on " + httpLink(*http))
-	err := canvas.ListenAndServe(*http, run,
-		canvas.Size(560, 350),
-		canvas.Title("Tearable Cloth"),
-		canvas.EnableEvents(
+	err := canvas.ListenAndServe(*http, run, &canvas.Options{
+		Title:  "Tearable Cloth",
+		Width:  560,
+		Height: 350,
+		EnabledEvents: []canvas.Event{
 			canvas.MouseMoveEvent{},
 			canvas.MouseDownEvent{},
 			canvas.MouseUpEvent{},
-		),
-	)
+		},
+	})
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -889,7 +889,7 @@ func TestContextDrawing(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			draws := make(chan []byte)
-			ctx := newContext(draws, nil, config{})
+			ctx := newContext(draws, nil, nil)
 			go func(draw func(*Context)) {
 				draw(ctx)
 				ctx.Flush()
@@ -911,7 +911,7 @@ func TestImageDataSize(t *testing.T) {
 		{320, 200},
 		{1350, 875},
 	}
-	ctx := newContext(nil, nil, config{})
+	ctx := newContext(nil, nil, nil)
 	for _, tt := range tests {
 		got := ctx.CreateImageData(image.NewRGBA(image.Rect(0, 0, tt.width, tt.height)))
 		if got.Width() != tt.width || got.Height() != tt.height {
@@ -932,8 +932,10 @@ func TestCanvasSize(t *testing.T) {
 		{width: 42314, height: 42355},
 	}
 	for _, tt := range tests {
-		cfg := configFrom([]Option{Size(tt.width, tt.height)})
-		ctx := newContext(nil, nil, cfg)
+		ctx := newContext(nil, nil, &Options{
+			Width:  tt.width,
+			Height: tt.height,
+		})
 		gotWidth := ctx.CanvasWidth()
 		gotHeight := ctx.CanvasHeight()
 		if gotWidth != tt.width || gotHeight != tt.height {
@@ -992,7 +994,7 @@ func TestUseAfterRelease(t *testing.T) {
 					t.Errorf("expected panic message %q, but was: %q", want, r)
 				}
 			}()
-			ctx := newContext(nil, nil, config{})
+			ctx := newContext(nil, nil, nil)
 			tt.draw(ctx)
 		})
 	}
@@ -1014,7 +1016,7 @@ func TestEvents(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			eventsIn := make(chan Event)
-			ctx := newContext(nil, eventsIn, config{})
+			ctx := newContext(nil, eventsIn, nil)
 			go func() {
 				for _, ev := range tt.want {
 					eventsIn <- ev

@@ -62,11 +62,12 @@ func main() {
 	flag.Parse()
 
 	fmt.Println("Listening on " + httpLink(*http))
-	err := canvas.ListenAndServe(*http, run,
-		canvas.Size(500, 500),
-		canvas.Title("Particles"),
-		canvas.BackgroundColor(color.Black),
-	)
+	err := canvas.ListenAndServe(*http, run, &canvas.Options{
+		Title:          "Particles",
+		Width:          500,
+		Height:         500,
+		PageBackground: color.Black,
+	})
 	if err != nil {
 		log.Fatal(err)
 	}

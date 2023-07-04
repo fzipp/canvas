@@ -23,7 +23,7 @@ import (
 // of the run function that was passed to ListenAndServe, ListenAndServeTLS,
 // or NewServeMux.
 type Context struct {
-	config config
+	opts   *Options
 	draws  chan<- []byte
 	events <-chan Event
 	buf    buffer
@@ -33,9 +33,9 @@ type Context struct {
 	patternIDs   idGenerator
 }
 
-func newContext(draws chan<- []byte, events <-chan Event, config config) *Context {
+func newContext(draws chan<- []byte, events <-chan Event, opts *Options) *Context {
 	return &Context{
-		config: config,
+		opts:   opts,
 		draws:  draws,
 		events: events,
 	}
@@ -51,12 +51,12 @@ func (ctx *Context) Events() <-chan Event {
 
 // CanvasWidth returns the width of the canvas in pixels.
 func (ctx *Context) CanvasWidth() int {
-	return ctx.config.width
+	return ctx.opts.Width
 }
 
 // CanvasHeight returns the height of the canvas in pixels.
 func (ctx *Context) CanvasHeight() int {
-	return ctx.config.height
+	return ctx.opts.Height
 }
 
 // SetFillStyle sets the color to use inside shapes.

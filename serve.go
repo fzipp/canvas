@@ -42,8 +42,8 @@ var (
 //
 // The options configure various aspects the canvas such as its size, which
 // events to handle etc.
-func ListenAndServe(addr string, run func(*Context), options ...Option) error {
-	return http.ListenAndServe(addr, NewServeMux(run, options...))
+func ListenAndServe(addr string, run func(*Context), opts *Options) error {
+	return http.ListenAndServe(addr, NewServeMux(run, opts))
 }
 
 // ListenAndServeTLS acts identically to ListenAndServe, except that it
@@ -52,42 +52,45 @@ func ListenAndServe(addr string, run func(*Context), options ...Option) error {
 // certificate is signed by a certificate authority, the certFile should be the
 // concatenation of the server's certificate, any intermediates, and the CA's
 // certificate.
-func ListenAndServeTLS(addr, certFile, keyFile string, run func(*Context), options ...Option) error {
-	return http.ListenAndServeTLS(addr, certFile, keyFile, NewServeMux(run, options...))
+func ListenAndServeTLS(addr, certFile, keyFile string, run func(*Context), opts *Options) error {
+	return http.ListenAndServeTLS(addr, certFile, keyFile, NewServeMux(run, opts))
 }
 
 // NewServeMux creates a http.ServeMux as used by ListenAndServe.
-func NewServeMux(run func(*Context), options ...Option) *http.ServeMux {
-	config := configFrom(options)
+func NewServeMux(run func(*Context), opts *Options) *http.ServeMux {
+	if opts == nil {
+		opts = &Options{}
+	}
+	opts.applyDefaults()
 	mux := http.NewServeMux()
 	mux.Handle("/", &htmlHandler{
-		config: config,
+		opts: opts,
 	})
 	mux.HandleFunc("/canvas-websocket.js", javaScriptHandler)
 	mux.Handle("/draw", &drawHandler{
-		config: config,
-		draw:   run,
+		opts: opts,
+		draw: run,
 	})
 	return mux
 }
 
 type htmlHandler struct {
-	config config
+	opts *Options
 }
 
 func (h *htmlHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
 	model := map[string]any{
 		"DrawURL":             template.URL("draw"),
-		"Width":               h.config.width,
-		"Height":              h.config.height,
-		"Title":               h.config.title,
-		"BackgroundColor":     template.CSS(rgbaString(h.config.backgroundColor)),
-		"EventMask":           h.config.eventMask,
-		"CursorDisabled":      h.config.cursorDisabled,
-		"ContextMenuDisabled": h.config.contextMenuDisabled,
-		"FullPageWidth":       h.config.fullPageWidth,
-		"FullPageHeight":      h.config.fullPageHeight,
-		"ReconnectInterval":   int64(h.config.reconnectInterval / time.Millisecond),
+		"Width":               h.opts.Width,
+		"Height":              h.opts.Height,
+		"Title":               h.opts.Title,
+		"PageBackground":      template.CSS(rgbaString(h.opts.PageBackground)),
+		"EventMask":           h.opts.eventMask(),
+		"MouseCursorHidden":   h.opts.MouseCursorHidden,
+		"ContextMenuDisabled": h.opts.ContextMenuDisabled,
+		"ScaleToPageWidth":    h.opts.ScaleToPageWidth,
+		"ScaleToPageHeight":   h.opts.ScaleToPageHeight,
+		"ReconnectInterval":   int64(h.opts.ReconnectInterval / time.Millisecond),
 	}
 	err := indexHTMLTemplate.Execute(w, model)
 	if err != nil {
@@ -116,8 +119,8 @@ var upgrader = websocket.Upgrader{
 }
 
 type drawHandler struct {
-	config config
-	draw   func(*Context)
+	opts *Options
+	draw func(*Context)
 }
 
 func (h *drawHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -137,7 +140,7 @@ func (h *drawHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	go readMessages(conn, events, &wg)
 	go writeMessages(conn, draws, &wg)
 
-	ctx := newContext(draws, events, h.config)
+	ctx := newContext(draws, events, h.opts)
 	go func() {
 		defer wg.Done()
 		h.draw(ctx)

@@ -20,9 +20,10 @@ type Event interface {
 }
 
 // The CloseEvent is fired when the WebSocket connection to the client is
-// closed. It is not necessary to enable the CloseEvent with the EnableEvents
-// option, it is always enabled. Animation loops should handle the CloseEvent
-// to quit the loop.
+// closed.
+// It is not necessary to enable the CloseEvent with Options.EnabledEvents,
+// it is always enabled.
+// Animation loops should handle the CloseEvent to quit the loop.
 type CloseEvent struct{}
 
 func (e CloseEvent) mask() eventMask { return 0 }

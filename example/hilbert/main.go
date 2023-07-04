@@ -29,11 +29,12 @@ func main() {
 	flag.Parse()
 
 	fmt.Println("Listening on " + httpLink(*http))
-	err := canvas.ListenAndServe(*http, run,
-		canvas.Title("Hilbert"),
-		canvas.Size(500, 500),
-		canvas.ScaleFullPage(false, true),
-	)
+	err := canvas.ListenAndServe(*http, run, &canvas.Options{
+		Title:             "Hilbert",
+		Width:             500,
+		Height:            500,
+		ScaleToPageHeight: true,
+	})
 	if err != nil {
 		log.Fatal(err)
 	}

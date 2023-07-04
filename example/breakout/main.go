@@ -32,19 +32,21 @@ func main() {
 	flag.Parse()
 
 	fmt.Println("Listening on " + httpLink(*http))
-	err := canvas.ListenAndServe(*http, run,
-		canvas.Size(1334, 750),
-		canvas.ScaleFullPage(true, true),
-		canvas.Title("Breakout"),
-		canvas.DisableCursor(),
-		canvas.EnableEvents(
+	err := canvas.ListenAndServe(*http, run, &canvas.Options{
+		Title:             "Breakout",
+		Width:             1334,
+		Height:            750,
+		ScaleToPageWidth:  true,
+		ScaleToPageHeight: true,
+		MouseCursorHidden: true,
+		EnabledEvents: []canvas.Event{
 			canvas.MouseMoveEvent{},
 			canvas.KeyDownEvent{},
 			canvas.TouchStartEvent{},
 			canvas.TouchMoveEvent{},
-		),
-		canvas.Reconnect(time.Second),
-	)
+		},
+		ReconnectInterval: time.Second,
+	})
 	if err != nil {
 		log.Fatal(err)
 	}
