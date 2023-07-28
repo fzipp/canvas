@@ -4,25 +4,27 @@
 ![Build Status](https://github.com/fzipp/canvas/workflows/build/badge.svg)
 [![Go Report Card](https://goreportcard.com/badge/github.com/fzipp/canvas)](https://goreportcard.com/report/github.com/fzipp/canvas)
 
-This Go module uses WebSockets to communicate with a
+This Go module utilizes WebSockets to establish communication with a
 [2D canvas graphics context](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D)
-in a web browser.
-It offers a portable way to create interactive 2D graphics from within
-a Go program.
+in a web browser,
+providing a portable way to create interactive 2D graphics
+from within a Go program.
 
-The Go program (server) sends draw commands to the web browser (client) via
-WebSocket using a binary format.
-The client in return sends keyboard, mouse and touch events to the server.
+The Go program (server) sends draw commands to the web browser (client)
+via WebSocket using a binary format.
+In return, the client sends keyboard, mouse, and touch events to the server.
 
-The module does not require operating system specific backends or Cgo bindings.
-It does not use WebAssembly, which means the Go code runs on the server side,
-not in the browser.
-The client-server design means the canvas can be displayed on a different
-machine over the network.
+This module does not rely on operating system-specific backends
+or Cgo bindings.
+It also does not utilize WebAssembly,
+which means the Go code runs on the server side,
+rather than in the browser.
+The client-server design enables the canvas
+to be displayed on a different machine over the network.
 
 ## Examples
 
-The [example](example) subdirectory contains several demo programs.
+The [example](example) subdirectory contains a variety of demo programs.
 
 ![Screenshots of examples](https://github.com/fzipp/canvas/blob/assets/examples.png)
 
@@ -30,13 +32,16 @@ The [example](example) subdirectory contains several demo programs.
 
 ### Drawing
 
-The `ListenAndServe` function initializes the canvas server and takes the
-following arguments: the network address with the port number to bind to, a
-run function, and an options structure, that configures various aspects
-such as the canvas size in pixels, or a title for the browser tab.
+The `ListenAndServe` function initializes the canvas server
+and takes the following arguments:
+the network address with the port number to bind to,
+a run function,
+and an options structure that configures various aspects
+such as the canvas size in pixels
+or a title for the browser tab.
 
 The `run` function is called when a client connects to the server.
-This is the entry point for drawing.
+This serves as the entry point for drawing.
 
 ```go
 package main
@@ -67,27 +72,33 @@ func run(ctx *canvas.Context) {
 }
 ```
 
-After the program has been started, the canvas can be accessed by
-opening http://localhost:8080 in a web browser.
+After starting the program,
+you can access the canvas by opening http://localhost:8080
+in a web browser.
 
-The server does not immediately send each drawing operation to the client,
-but buffers them until the `Flush` method gets called.
-The flush should happen once the image, or an animation frame is complete.
-Without a flush nothing gets displayed.
+The server doesn't immediately send each drawing operation to the client
+but instead buffers them until the `Flush` method is called.
+The flush should occur once the image or an animation frame is complete;
+otherwise, nothing will be displayed.
 
-Each client connection starts its own run function as a goroutine. Access to
-shared state between client connections must be synchronized. If you do not
-want to share state between connections you should keep it local to the run
-function and pass the state to other functions called by the run function.
+Each client connection starts its own run function as a goroutine.
+Access to shared state between client connections must be synchronized.
+If you don't want to share state between connections,
+you should keep it local to the run function
+and pass the state to other functions called by the run function.
 
 ### An animation loop
 
-You can create an animation by putting a `for` loop in the `run` function.
-Within this loop the `ctx.Events()` channel should be observed for a
-`canvas.CloseEvent` to exit the loop when the connection is closed.
+To create an animation,
+you can use a `for` loop within the `run` function.
+Inside this loop,
+observe the `ctx.Events()` channel
+for a `canvas.CloseEvent` to exit the loop
+when the connection is closed.
 
-A useful pattern is to create a struct that holds the animation state and
-has an update and a draw method:
+A useful pattern is to create a struct
+that holds the animation state
+and has both an update and a draw method:
 
 ```go
 package main
@@ -146,17 +157,18 @@ func (d *demo) draw(ctx *canvas.Context) {
 
 ### Keyboard, mouse and touch events
 
-In order to handle keyboard, mouse and touch events you have to specify which
-events the client should observe and send to the server.
-This is done by passing an `EnabledEvents` option to the `ListenAndServe`
-function.
-Mouse move events typically create more WebSocket communication than the
-others.
-So you may want to enable them only if you actually use them.
+To handle keyboard, mouse, and touch events,
+you need to specify which events the client should observe
+and send to the server.
+This is achieved by passing an `EnabledEvents` option
+to the `ListenAndServe` function.
+Mouse move events typically generate more WebSocket communication
+than the others,
+so you may want to enable them only if necessary.
 
-The `ctx.Events()` channel receives the observed events, and a type switch
-determines the specific event type.
-A useful pattern is a `handle` method dedicated to event handling:
+The `ctx.Events()` channel receives the observed events,
+and a type switch is used to determine the specific event type.
+A useful pattern involves creating a `handle` method for event handling:
 
 ```go
 package main
@@ -231,7 +243,7 @@ func (d *demo) draw(ctx *canvas.Context) {
 ```
 
 Note that the `canvas.CloseEvent` does not have to be explicitly enabled.
-It is always enabled.
+It is always enabled by default.
 
 ## Alternatives
 
