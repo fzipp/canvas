@@ -99,18 +99,18 @@ func drawClock(ctx *canvas.Context) {
 	}
 	ctx.Restore()
 
-	sec := float64(now.Second())
-	min := float64(now.Minute())
-	hr := float64(now.Hour())
-	if hr >= 12 {
-		hr = hr - 12
+	second := float64(now.Second())
+	minute := float64(now.Minute())
+	hour := float64(now.Hour())
+	if hour >= 12 {
+		hour = hour - 12
 	}
 
 	ctx.SetFillStyle(color.Black)
 
 	// write Hours
 	ctx.Save()
-	ctx.Rotate(hr*(math.Pi/6) + (math.Pi/360)*min + (math.Pi/21600)*sec)
+	ctx.Rotate(hour*(math.Pi/6) + (math.Pi/360)*minute + (math.Pi/21600)*second)
 	ctx.SetLineWidth(14)
 	ctx.BeginPath()
 	ctx.MoveTo(-20, 0)
@@ -120,7 +120,7 @@ func drawClock(ctx *canvas.Context) {
 
 	// write Minutes
 	ctx.Save()
-	ctx.Rotate((math.Pi/30)*min + (math.Pi/1800)*sec)
+	ctx.Rotate((math.Pi/30)*minute + (math.Pi/1800)*second)
 	ctx.SetLineWidth(10)
 	ctx.BeginPath()
 	ctx.MoveTo(-28, 0)
@@ -130,7 +130,7 @@ func drawClock(ctx *canvas.Context) {
 
 	// Write seconds
 	ctx.Save()
-	ctx.Rotate(sec * math.Pi / 30)
+	ctx.Rotate(second * math.Pi / 30)
 	ctx.SetStrokeStyleString("#D40000")
 	ctx.SetFillStyleString("#D40000")
 	ctx.SetLineWidth(6)
