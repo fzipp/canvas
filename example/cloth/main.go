@@ -120,8 +120,8 @@ func newCloth(canvasWidth int, boundsX, boundsY float64) *cloth {
 		boundsY: boundsY,
 	}
 	startX := float64(canvasWidth)/2 - clothWidth*spacing/2
-	for y := 0; y <= clothHeight; y++ {
-		for x := 0; x <= clothWidth; x++ {
+	for y := range clothHeight + 1 {
+		for x := range clothWidth + 1 {
 			p := newPoint(
 				startX+float64(x*spacing),
 				startY+float64(y*spacing),
@@ -161,7 +161,7 @@ func (c *cloth) handle(event canvas.Event) {
 }
 
 func (c *cloth) update() {
-	for i := 0; i < physicsAccuracy; i++ {
+	for range physicsAccuracy {
 		for _, p := range c.points {
 			p.resolveConstraints(c.boundsX, c.boundsY)
 		}

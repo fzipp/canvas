@@ -61,8 +61,8 @@ func (g *game) initialBricks(columns, rows int) []brick {
 	width := int(g.size.x) / columns
 	height := 30
 	bricks := make([]brick, 0, columns*rows)
-	for row := 0; row < rows; row++ {
-		for col := 0; col < columns; col++ {
+	for row := range rows {
+		for col := range columns {
 			x := col * width
 			y := row * height
 			rowGroup := (row / 2) % len(rowGroupColors)

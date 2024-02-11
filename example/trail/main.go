@@ -131,7 +131,7 @@ type demo struct {
 
 func (d *demo) createParticles() {
 	d.particles = make([]particle, 0, quantity)
-	for i := 0; i < quantity; i++ {
+	for range quantity {
 		p := particle{
 			position:   point{x: d.mouseX, y: d.mouseY},
 			shift:      point{x: d.mouseX, y: d.mouseY},

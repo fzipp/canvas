@@ -103,7 +103,7 @@ type particlesDemo struct {
 
 func newParticlesDemo(width, height float64, n int) *particlesDemo {
 	particles := make([]*particle, n)
-	for i := 0; i < len(particles); i++ {
+	for i := range particles {
 		particles[i] = randomParticle(width, height)
 	}
 	return &particlesDemo{

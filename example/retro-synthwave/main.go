@@ -159,8 +159,8 @@ func (d *demo) draw(ctx *canvas.Context) {
 	ctx.SetFillStyleGradient(d.gradient)
 	ctx.Fill()
 	ctx.SetShadowBlur(0)
-	for i := 0; i < len(d.points)-1; i++ {
-		for j := 0; j < len(d.points[i])-1; j++ {
+	for i := range len(d.points) - 1 {
+		for j := range len(d.points[i]) - 1 {
 			size := 300 / (300 + d.points[i][j].z)
 			nextSize := 300 / (300 + d.points[i+1][j].z)
 			ctx.BeginPath()

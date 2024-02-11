@@ -76,7 +76,7 @@ func drawClock(ctx *canvas.Context) {
 
 	// Hour marks
 	ctx.Save()
-	for i := 0; i < 12; i++ {
+	for range 12 {
 		ctx.BeginPath()
 		ctx.Rotate(math.Pi / 6)
 		ctx.MoveTo(100, 0)
@@ -88,7 +88,7 @@ func drawClock(ctx *canvas.Context) {
 	// Minute marks
 	ctx.Save()
 	ctx.SetLineWidth(5)
-	for i := 0; i < 60; i++ {
+	for i := range 60 {
 		if i%5 != 0 {
 			ctx.BeginPath()
 			ctx.MoveTo(117, 0)
