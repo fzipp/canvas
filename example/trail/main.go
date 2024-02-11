@@ -177,7 +177,7 @@ func (d *demo) draw(ctx *canvas.Context) {
 		d.radiusScale -= (d.radiusScale - radiusScaleMin) * (0.02)
 	}
 
-	d.radiusScale = math.Min(d.radiusScale, radiusScaleMax)
+	d.radiusScale = min(d.radiusScale, radiusScaleMax)
 
 	// Fade out the lines slowly by drawing a rectangle over the entire canvas
 	ctx.SetFillStyleString("rgba(0,0,0,0.05)")
@@ -200,8 +200,8 @@ func (d *demo) draw(ctx *canvas.Context) {
 		p.position.y = p.shift.y + math.Sin(float64(i)+p.angle)*(p.orbit*d.radiusScale)
 
 		// Limit to screen bounds
-		p.position.x = math.Max(math.Min(p.position.x, float64(ctx.CanvasWidth())), 0)
-		p.position.y = math.Max(math.Min(p.position.y, float64(ctx.CanvasHeight())), 0)
+		p.position.x = max(min(p.position.x, float64(ctx.CanvasWidth())), 0)
+		p.position.y = max(min(p.position.y, float64(ctx.CanvasHeight())), 0)
 
 		p.size += (p.targetSize - p.size) * 0.05
 
