@@ -63,11 +63,11 @@ func NewServeMux(run func(*Context), opts *Options) *http.ServeMux {
 	}
 	opts.applyDefaults()
 	mux := http.NewServeMux()
-	mux.Handle("/", &htmlHandler{
+	mux.Handle("GET /", &htmlHandler{
 		opts: opts,
 	})
-	mux.HandleFunc("/canvas-websocket.js", javaScriptHandler)
-	mux.Handle("/draw", &drawHandler{
+	mux.HandleFunc("GET /canvas-websocket.js", javaScriptHandler)
+	mux.Handle("GET /draw", &drawHandler{
 		opts: opts,
 		draw: run,
 	})
