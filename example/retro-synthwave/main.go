@@ -43,7 +43,7 @@ import (
 	"image/color"
 	"log"
 	"math"
-	"math/rand"
+	"math/rand/v2"
 	"time"
 
 	"github.com/fzipp/canvas"
